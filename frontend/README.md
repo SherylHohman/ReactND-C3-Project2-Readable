@@ -1,3 +1,27 @@
+# Readable
+
+
+### Getting Started
+#### To Install the App
+
+  - Follow the directions in the [`../READEME.md`](../README.md) file to install and start the API server.
+  - From this `frontend` folder in a new terminal window, type `npm install` or `yarn install` or `yarn` to install app dependencies. 
+  - From this `frontend` folder in a new terminal window, type `npm start` or `yarn start` to serve the app to your OS's default browser.  After a brief pause, a new browser window will automatically open to the app.
+  
+#### To Run the App - Getting Started  
+
+  - From the [`api-server`](../api-server) folder in a new terminal window, type `node server` to start the backend API server which serves up app data.
+  - From this `frontend` folder in a new terminal window, type `npm start` or `yarn start` to serve the app in your OS's default browser.  After a brief pause, a new browser window will automatically open to the running app.
+
+### What this app does..
+...
+
+
+## 
+
+----------------
+## README.md from create-react-app (below)
+----------------
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>

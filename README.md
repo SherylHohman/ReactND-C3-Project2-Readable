@@ -1,21 +1,36 @@
-# Readable API Server
+# Readable
 
-This is the starter project for the final assessment project for Udacity's Redux course where you will build a content and comment web app. Users will be able to post content to predefined categories, comment on their posts and other users' posts, and vote on posts and comments. Users will also be able to edit and delete posts and comments.
+This is the final assessment project for Udacity's React-Redux course, as part of the React NanoDegree.
 
-This repository includes the code for the backend API Server that you'll use to develop and interact with the front-end portion of the project.
+Readable is  a content and comment web app. 
 
-## Start Developing
+Users can:  
+- post content to predefined categories, 
+- comment on their posts and other users' posts, and 
+- vote on posts and comments. 
+- edit and delete their own posts and comments.
 
-To get started developing right away:
+UI includes the ability to:  
+- sort by data, and author
+- filter posts by category
 
-* Install and start the API server
+This repository includes the code for the backend API Server that interacts with the front-end portion of the app.
+
+## Getting Started
+
+To run Readable:
+
+* In a terminal window, install and start the API server:
     - `cd api-server`
     - `npm install` or `yarn install` or just `yarn`
     - `node server`
-* In another terminal window, use Create React App to scaffold out the front-end
-    - `create-react-app frontend`
+* In another terminal window, install the Readable App, and start the front-end server:
     - `cd frontend`
+    - `npm install` or `yarn install` or just `yarn`
     - `npm start` or `yarn start`
+    
+After the first time, repeat the steps above to start both servers   
+(ie do not run the commands `npm install` or `yarn install` or `yarn`)
 
 ## API Server
 
