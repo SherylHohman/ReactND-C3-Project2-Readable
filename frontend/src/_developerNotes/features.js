@@ -34,10 +34,10 @@ IF on the UserProfile, then comment/post will be added/removed from array when h
   EDIT      (only if ownComment)
   REMOVE    (only if ownComment)
   showCommentText
-  showEditButton   (only if ownComment)
-  showRemoveButton (only if ownComment)
+  showEditButton   //(only if ownComment)
+  showRemoveButton //(only if ownComment)
   showNumVotes
-  - isCurrentUser (T/F: if this post was authored by the currentUser)
+  // - isCurrentUser (T/F: if this post was authored by the currentUser)
 
 
   // POSTS
@@ -56,14 +56,18 @@ IF on the UserProfile, then comment/post will be added/removed from array when h
   EDIT      (only if ownPost)
   REMOVE    (only if ownPost)
   showPostText
-  showEditButton   (only if ownPost)
-  showRemoveButton (only if ownPost)
+  showEditButton   //(only if ownPost)
+  showRemoveButton //(only if ownPost)
   showNumVotes
   showDate
   showCategory
   showNumComments
-  - isCurrentUser (T/F: if this post was authored by the currentUser)
+  // - isCurrentUser (T/F: if this post was authored by the currentUser)
 
+/**  NOPE, Specs Say NO USER - so Can't Store USER info in DB
+ **        THEREFORE, No Way to Prevent anyone from Deleting/Editing
+ **                   A Different User's Post!!
+ ***                  Or Voting an UNLIMITED number of times!
 //USER
   -userID
   -userName
@@ -102,4 +106,4 @@ Therefore, I'll also need a *simple*
  changeUser
    when currentUser changes, some boolean feature in each view needs to check against currentUser to see if it''s state needs to be updated. For example, a post may add/remove Edit or Voting Capability. Same for Comments.
 
-
+**/
