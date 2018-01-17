@@ -1,6 +1,0 @@
-const GET_POST = 'GET_POST';
-const ADD_POST = 'ADD_POST';
-const EDIT_POST = 'EDIT_POST';
-const DELETE_POST = 'DELETE_POST';
-const GET_ALL_POSTS = 'GET_ALL_POSTS';
-// const LIST_POSTS = 'LIST_POSTS';
