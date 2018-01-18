@@ -1,7 +1,7 @@
 export { default as categories } from "./categories/reducers";
 export { default as posts } from "./posts/reducers";
 export { default as comments } from "./comments/reducers";
-export { default as user } from "./user";
+export { default as user } from "./user/reducers";
 
 /*
 

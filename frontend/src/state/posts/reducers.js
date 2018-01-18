@@ -7,21 +7,21 @@
   export const DECREMENT_VOTE = 'DECREMENT_VOTE';
 
 // ACTION CREATORS
-  export function getPosts({
+  export function getPosts(){
     // TODO:
     // fetch all posts by ownerID (post)
-  });
+  };
 
-  export function addPost({
+  export function addPost(){
     // TODO:
     // fetch all posts by ownerID (post)
-  });
+  };
 
-  export function editPost({
+  export function editPost(){
     // TODO
-  });
+  };
 
-  export function deletePost({
+  export function deletePost(){
     // TODO:
     // (set in DB and state)
     // doesn't actually DELETE post from database
@@ -30,15 +30,15 @@
 
     // REMEMBER to update deletedParent property on every COMMENT owned by the deletedPost.
     //
-  });
+  };
 
-  export function incrementVote({
+  export function incrementVote(){
     // TODO
-  });
+  };
 
-  export function decrementVote({
+  export function decrementVote(){
       // TODO
-    });
+  };
 
 // SAMPLE DATA
   const samplePost = {
@@ -75,7 +75,10 @@
 
   // state is an object of (multiple) post objects
   function posts(state=samplePost, action) {
+    const { id, timestamp, title, body, author, category } = action;
+
     switch (action.type){
+
       case GET_POSTS:
         // action data should be an object of post objects, ie posts object)
         // when fetch posts from database is successful, add to store
@@ -85,7 +88,7 @@
         });
       case ADD_POST:
         // action data should be a post item with (const) fields
-        const { id, timestamp, title, body, author, category } = action;
+        // const { id, timestamp, title, body, author, category } = action;
         return ({
           ...state,
           // adds a new id and object to the posts object (quasi-list)
@@ -101,9 +104,9 @@
             commentCount: 0,
           }
         });
-      case EDIT_POST
+      case EDIT_POST:
         // action data should be a post item with (see const) fields
-        const {id, title, body, category} = action;
+        // const {id, title, body, category} = action;
         return ({
           ...state,
            [action.id]: {
@@ -117,7 +120,7 @@
             // author: action.author,
            }
         });
-      case DELETE_POST
+      case DELETE_POST:
         // action data should be a post item with an id field
         return ({
           ...state,
@@ -128,7 +131,7 @@
           // Also Need to set `parentDeleted` property for ALL COMMENTS
           //  which are "owned" by this post.
         });
-      case INCREMENT_VOTE
+      case INCREMENT_VOTE:
         // action data should be a post item with an id field
         return ({
           ...state,
@@ -137,7 +140,7 @@
             voteScore: state[action.id].voteScore + 1,
           }
         });
-      case DECREMENT_VOTE
+      case DECREMENT_VOTE:
         // action data should be a post item with an id field
         return ({
           ...state,

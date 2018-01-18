@@ -121,7 +121,7 @@
             parentDeleted: false,
           }
         });
-      case EDIT_COMMENT
+      case EDIT_COMMENT:
         return ({
           ...state,
            [action.id]: {
@@ -132,7 +132,7 @@
             title: action.title,
            }
         });
-      case DELETE_COMMENT
+      case DELETE_COMMENT:
         // needs the comment ID
         return ({
           ...state,
@@ -141,7 +141,7 @@
             deleted: true,
           }
         });
-      case INCREMENT_VOTE
+      case INCREMENT_VOTE:
         // needs the comment ID
         return ({
           ...state,
@@ -150,7 +150,7 @@
             voteScore: state[action.id].voteScore + 1,
           }
         });
-      case DECREMENT_VOTE
+      case DECREMENT_VOTE:
         // needs the comment ID
         return ({
           ...state,

@@ -13,7 +13,7 @@
   };
 
 // SAMPLE DATA
-  const userInitialState = {
+  const sampleUser = {
     username: 'Sheryl',
   };
 
