@@ -4,7 +4,6 @@
   export const DELETE_POST = 'DELETE_POST';
   export const GET_POSTS = 'GET_POSTS';
   export const INCREMENT_VOTE = 'INCREMENT_VOTE';
-  // export const DECREMENT_VOTE = 'DECREMENT_VOTE';
 
 // ACTION CREATORS
   export function getPosts({
@@ -55,22 +54,45 @@
     "8xf0y6ziyjabvozdd253nd": { ...samplePost },
   };
 
-  // store element is samplePosts
-  //    aka an object of post objects, where property name for each (post object) is the id for that post.
+  // store element == samplePosts format
+  //    ie an object of post objects,
+  //    where property name of each (post object) === the id for that post.
 
-  // state (inside the components) would be transformed into an array of samplePost items
+  // state (inside the components) transforms the wrapper object
+  //   into an array of post elements
+  //    where each array element represents <==> 1 [id] property value
+  //  Note [id] is a string value that "happens" to == posts[id].id !
 
+// INITIAL STATE
+  const postsInitialState = {}
+  // const postInitialState = {
+  //     id: null,
+  //     timestamp: null,
+  //     title: 'Untitled',
+  //     body: 'Your Brilliant Prose Awaits..',
+  //     author: null,  // or ''
+  //     category: 'uncategorized',  // or '', or null
+  //     voteScore: 1,
+  //     deleted: false,
+  //     commentCount: 0,
+  // }
 
 // REDUCER(s)
-  function post(state=sampleData, action) {
-    const { id } = action
+// TODO: postInitialState instead of samplePost, once data is hooked up
+  // function post(state=samplePost, action) {
+
+  // state is an object of (multiple) post objects
+  function posts(state=samplePost, action) {
     switch (action.type){
       case GET_POSTS:
+        // action data should be an object of post objects, ie posts object)
+        // when fetch posts from database is successful, add to store
         return ({
           ...state,
           posts: action.posts,
         });
       case ADD_POST:
+        // action data should be a post item with (const) fields
         const { id, timestamp, title, body, author, category } = action;
         return ({
           ...state,
@@ -88,13 +110,15 @@
           }
         });
       case EDIT_POST
+        // action data should be a post item with (see const) fields
+        const {id, title, body, category} = action;
         return ({
           ...state,
            [action.id]: {
             ...[action.id],
-            title: action.title,
-            body: action.body,
-            category: action.category,
+            title,
+            body,
+            category,
             // do I keep the original post time, or update to time of latest edit ?
             // timestamp: action.timestamp,
             // don't allow author to be changed, right?
@@ -102,6 +126,7 @@
            }
         });
       case DELETE_POST
+        // action data should be a post item with an id field
         return ({
           ...state,
           [action.id]: {
@@ -111,8 +136,8 @@
           // Also Need to set `parentDeleted` property for ALL COMMENTS
           //  which are "owned" by this post.
         });
-
       case INCREMENT_VOTE
+        // action data should be a post item with an id field
         return ({
           ...state,
           [action.id]: {
@@ -125,4 +150,20 @@
     }
   }
 
-export default post
+
+// export default combineReducers({
+//   post,
+//   posts,
+// })
+
+// export default post
+export default posts
+
+
+/*
+NOTES: after deletion, if post's page is loaded, then it may show up empty
+  - redirect to home, "all posts" page
+  - or display "This Post has been Deleted, or Never Existed"
+    (also covers the case of an invalid posts URL)
+  - Both
+*/

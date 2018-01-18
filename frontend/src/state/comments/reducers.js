@@ -54,10 +54,12 @@
   // state (inside the components) would be transformed into an array of sampleComment items
 
 // REDUCER(s)
-  function comment(state=sampleData, action) {
+  function comments(state=sampleComments, action) {
+  // function comment(state=sampleData, action) {
     const { id } = action
     switch (action.type){
       case GET_COMMENTS:
+        // when Get Comments API has returned with list of all comments  (hm is this ALL comments, or only comments for a particular post ?)
         return ({
           ...state,
           comments: action.comments,
@@ -108,4 +110,5 @@
     }
   }
 
-export default comment
+// export default comment
+export default comments
