@@ -5,7 +5,7 @@
   export const SET_CURRENT_CATEGORY = 'SET_CURRENT_CATEGORY';
 
 // ACTION CREATORS
-  export function getCategories({ categories=[] }){
+  export function getCategories({ categories={} }){
     return({
       type: GET_CATEGORIES,
       categories
@@ -13,9 +13,17 @@
   }
 
   export function setCurrentCategory({ selectedCategory=null }) {
+    // used to filter all posts by category
+    //   I don't see a need to make an API call to do this.
+    //   -- unless user started on a category page instead of home page
+    //    then, perhaps its quicker to do a category fetch,
+    //    followed by a all/posts fetch later ??
+    //    I'm not convinced, yet.
+    //  Thus, I'll INSTEAD store SELECTED CATEGORY in state/store
+    //    individual component can filter, just as we did in MyReads App
     return({
       type: SET_CURRENT_CATEGORY,
-        selectedCategory
+      selectedCategory
       });
   }
 

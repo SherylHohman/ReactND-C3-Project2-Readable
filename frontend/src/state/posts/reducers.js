@@ -4,6 +4,7 @@
   export const DELETE_POST = 'DELETE_POST';
   export const GET_POSTS = 'GET_POSTS';
   export const INCREMENT_VOTE = 'INCREMENT_VOTE';
+  export const DECREMENT_VOTE = 'DECREMENT_VOTE';
 
 // ACTION CREATORS
   export function getPosts({
@@ -15,6 +16,7 @@
     // TODO:
     // fetch all posts by ownerID (post)
   });
+
   export function editPost({
     // TODO
   });
@@ -33,9 +35,10 @@
   export function incrementVote({
     // TODO
   });
-  // export function decrementVote({
-  //     // TODO
-  //   });
+
+  export function decrementVote({
+      // TODO
+    });
 
 // SAMPLE DATA
   const samplePost = {
@@ -58,24 +61,13 @@
   //    ie an object of post objects,
   //    where property name of each (post object) === the id for that post.
 
-  // state (inside the components) transforms the wrapper object
-  //   into an array of post elements
-  //    where each array element represents <==> 1 [id] property value
+  // state (inside the components) transforms the wrapper object of post objects
+  //   into an array of post objects
+  //   - each array element represents <==> an [id] property value
   //  Note [id] is a string value that "happens" to == posts[id].id !
 
 // INITIAL STATE
   const postsInitialState = {}
-  // const postInitialState = {
-  //     id: null,
-  //     timestamp: null,
-  //     title: 'Untitled',
-  //     body: 'Your Brilliant Prose Awaits..',
-  //     author: null,  // or ''
-  //     category: 'uncategorized',  // or '', or null
-  //     voteScore: 1,
-  //     deleted: false,
-  //     commentCount: 0,
-  // }
 
 // REDUCER(s)
 // TODO: postInitialState instead of samplePost, once data is hooked up
@@ -145,6 +137,16 @@
             voteScore: state[action.id].voteScore + 1,
           }
         });
+      case DECREMENT_VOTE
+        // action data should be a post item with an id field
+        return ({
+          ...state,
+          [action.id]: {
+            ...state[action.id],
+            voteScore: state[action.id].voteScore - 1,
+          }
+        });
+
       default:
         return state;
     }
