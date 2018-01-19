@@ -9,7 +9,6 @@ class App extends Component {
 
     fetchCategories().then((categoryObjects) => {
 
-      // console.log('categories fetched:', categoryObjects);
       const categories = categoryObjects
         .reduce((acc, categoryObject) => {
           return acc.concat(categoryObject.name);
@@ -56,6 +55,7 @@ class App extends Component {
       <div className="app-container">
         <header className="app-header">
           <h1 className="app-title">Readable</h1>
+          {/*temp categories render*/}
           {this.state && this.state.categories &&
               (
                 <ul>
@@ -67,15 +67,15 @@ class App extends Component {
                 </ul>
               )
           }
-          { !this.state &&
-            // !this.state.categories &&
-            <p>No Categories Available</p>
+          { (!this.state || !this.state.categories) &&
+              <p>No Categories Available</p>
           }
         </header>
 
         <div className="app-intro">
           ..an app for posting and viewing posts and comments
           <hr />
+          {/*temp categories render*/}
           {this.state && this.state.posts &&
               (
                 <ul>
@@ -87,8 +87,7 @@ class App extends Component {
                 </ul>
               )
           }
-          { !this.state &&
-            // !this.state.posts &&
+          { (!this.state || !this.state.posts) &&
             <p>No Categories Available</p>
           }
           <hr />
