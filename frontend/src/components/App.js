@@ -22,7 +22,7 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( {  }) {
+function mapStoreToProps ( { TODO }) {
   return {
 
   }

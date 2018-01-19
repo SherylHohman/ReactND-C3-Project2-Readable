@@ -12,14 +12,15 @@
     })
   };
 
-// SAMPLE DATA
-  const sampleUser = {
-    username: 'Sheryl',
-  };
-
 // INITIAL STATE
   const userInitialState = {
     username: '',
+  };
+
+// SAMPLE DATA
+  const sampleUser = {
+    ...userInitialState,
+    username: 'Sheryl',
   };
 
 // REDUCER(s)

@@ -1,5 +1,3 @@
-// import { combineReducers } from 'redux';
-
 // ACTION TYPES
   export const GET_CATEGORIES = 'GET_CATEGORIES';
   export const SET_CURRENT_CATEGORY = 'SET_CURRENT_CATEGORY';
@@ -8,7 +6,7 @@
   export function getCategories({ categories={} }){
     return({
       type: GET_CATEGORIES,
-      categories
+      categories,
     });
   }
 
@@ -23,7 +21,7 @@
     //    individual component can filter, just as we did in MyReads App
     return({
       type: SET_CURRENT_CATEGORY,
-      selectedCategory
+      selectedCategory,
       });
   }
 
@@ -38,14 +36,14 @@
   function category(state=sampleData, action){
     switch (action.type){
       case GET_CATEGORIES:
-      return ({
-        ...state,
-        categories: action.categories,
-      });
+        return ({
+          ...state,
+          categories: action.categories
+        });
       case SET_CURRENT_CATEGORY:
         return({
           ...state,
-          selectedCategory: action.selectedCategory
+          selectedCategory: action.selectedCategory,
         });
       default:
         return state;
@@ -53,9 +51,7 @@
   }
 
 export default category;
-// export default combineReducers({
-//   category,
-// })
+
 
 
 /* TODO: ?

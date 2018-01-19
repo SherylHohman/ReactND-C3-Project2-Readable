@@ -111,7 +111,7 @@
         return ({
           ...state,
           [action.comment]: {
-            id: action.id,
+            id,
             parentId: action.parentId,
             timestamp: action.timestamp,
             body: action.body,
@@ -124,8 +124,8 @@
       case EDIT_COMMENT:
         return ({
           ...state,
-           [action.id]: {
-            ...[action.id],
+           [id]: {
+            ...[id],
             // do I keep the original post time, or update to time of latest edit ?
             // timestamp: action.timestamp,
             body: action.body,
@@ -136,8 +136,8 @@
         // needs the comment ID
         return ({
           ...state,
-          [action.id]: {
-            ...state[action.id],
+          [id]: {
+            ...state[id],
             deleted: true,
           }
         });
@@ -145,18 +145,18 @@
         // needs the comment ID
         return ({
           ...state,
-          [action.id]: {
-            ...state[action.id],
-            voteScore: state[action.id].voteScore + 1,
+          [id]: {
+            ...state[id],
+            voteScore: state[id].voteScore + 1,
           }
         });
       case DECREMENT_VOTE:
         // needs the comment ID
         return ({
           ...state,
-          [action.id]: {
-            ...state[action.id],
-            voteScore: state[action.id].voteScore - 1,
+          [id]: {
+            ...state[id],
+            voteScore: state[id].voteScore - 1,
           }
         });
       default:
