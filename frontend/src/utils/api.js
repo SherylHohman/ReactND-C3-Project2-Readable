@@ -21,6 +21,6 @@ export const fetchPosts = () =>
     return res.json();
   })
   .then((data) => {
-     console.log('posts data :', data);
+     // console.log('posts data :', data);
      return data;
   })

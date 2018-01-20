@@ -4,41 +4,32 @@ import { fetchCategories } from '../utils/api';
 
 export class Categories extends Component {
 
-  state: {
-    categories: "fetching categories..",
-  }
-
   componentWillMount() {
-    console.log("in Categories componentWillMount");
+    // console.log("in Categories componentWillMount");
 
-    fetchCategories().then((categoryObjects) => {
-
-      const categories = categoryObjects
-        .reduce((acc, categoryObject) => {
-          return acc.concat(categoryObject.name);
-        }, []);
-      console.log('categories as array;', categories);
-
-      this.setState({ categories });
+    fetchCategories().then((categories) => {
+      // console.log('cDM|fetchCategories: categories as array of objects, with extraneous getRequest properties: ', categories)
+      // this.setState({ categories });
     });
+    // console.log('cDM, leaving fetchCategories:', `${this.state||this.props||'no state or props'}`);
   }
 
   render() {
 
-    if ((this.state) && (this.state.categories)) {
-      console.log('this.state.categories', this.state.categories);
+    if ((this.props) && (this.props.categories)) {
+      console.log('...this.PROPS.categories', this.props.categories);
     }
     else{
-      console.log('Categories: no state! - use setStoreToProps, or setState');
+      console.log('...Categories: no props! - use setStoreToProps, or setState');
     }
 
     return (
       <div>
         {/*temp categories render*/}
-        {this.state && this.state.categories &&
+        {this.props && this.props.categories &&
             (
               <ul>
-                {this.state.categories.map(category => {
+                {this.props.categories.map(category => {
                   return (
                     <li key={category}>{category}</li>
                   )
@@ -46,7 +37,7 @@ export class Categories extends Component {
               </ul>
             )
         }
-        { (!this.state || !this.state.categories) &&
+        { (!this.props || !this.props.categories) &&
             <p>No Categories Available</p>
         }
       </div>
@@ -63,8 +54,12 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( { categories }) {
-  return {
 
+  // console.log('mSTP: categories as enter mapStoreToProps;', categories);
+  // console.log('mSTPcategories.categories as enter mapStoreToProps;', categories.categories);
+
+  return {
+      categories: categories.categories,
   }
 };
 

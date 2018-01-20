@@ -7,38 +7,62 @@ export class Posts extends Component {
   componentWillMount() {
     console.log("in Posts componentWillMount");
 
-    fetchPosts().then((postObjects) => {
-      console.log('posts fetched:', postObjects);
+    fetchPosts().then((postsArray) => {
+      // console.log('cDM posts fetched as objects:', posts);
+      // // return posts;
+      // // console.log('posts as array;', posts);
 
-      const posts = postObjects
-        .reduce((acc, postObject) => {
-          return acc.concat(postObject);
-        }, []);
-      console.log('posts as array;', posts);
+      // // this.setState({ posts });
 
+      console.log('cDM|fetchPosts: postsArray as array of objects, where EACH POST has extraneous getRequest properties: ', postsArray)
+      const posts = postsArray.reduce((acc, arrItem) => {
+        const { id, title, body, category, timestamp,
+          commentCount, deleted, voteScore } = arrItem;
+        return ({
+          ...acc,
+           [id]: {
+             id,
+             title,
+             body,
+             category,
+             timestamp,
+             commentCount,
+             deleted,
+             voteScore,
+           }
+        }
+      )}, {});
       this.setState({ posts });
+
+      console.log('cDM, leaving fetchPosts:', posts);
     });
+
+    console.log('cDM, leaving:', `${this.state||this.props||'no state or props'}`);
+
+    // });
+
   }
 
   state: {
-    posts: "fetching posts.."
+    posts: 'No posts in Posts state object';
   }
 
+
   render() {
-    console.log('rendering..');
-    if ((this.state) && (this.state.posts)) {
-      console.log('this.state.posts', this.state.posts);
+    // console.log('rendering..');
+    if ((this.props) && (this.props.posts)) {
+       console.log('this.props.posts', this.props.posts);
     }
     else{
-      console.log('Posts: no state! - use setStoreToProps, or setState');
+       console.log('Posts: no props! - use setStoreToProps, or setState');
     }
 
     return (
       <div>
-          {this.state && this.state.posts &&
+          {this.props && this.props.posts &&
               (
                 <ul>
-                  {this.state.posts.map(post => {
+                  {this.props.posts.map(post => {
                     return (
                       <li key={post.id}>title:{post.title}</li>
                     )
@@ -46,12 +70,13 @@ export class Posts extends Component {
                 </ul>
               )
           }
-          { (!this.state || !this.state.posts) &&
-            <p>No Categories Available</p>
+          { (!this.props || !this.props.posts) &&
+            <p>No Posts Available</p>
           }
       </div>
     );
   }
+
 }
 
 function mapDispatchToProps(dispatch){
@@ -61,9 +86,23 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( { posts }) {
-  return {
 
-  }
+  // console.log('mSTP: posts as enter mapStoreToProps;', posts);
+
+  // const postsProperties = Object.keys(posts);  // only has key of 1 post
+  // console.log('properties', postsProperties);
+
+  // let postsArray = [];
+  // for (let postObject in posts) {
+  //   console.log('postObject', postObject);
+  //   postsArray.push(postObject);
+  // }
+  // console.log('postsArray:', postsArray);
+
+  // return postsArray;
+
+  return posts;
+
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Posts);
