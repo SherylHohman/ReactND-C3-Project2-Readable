@@ -25,6 +25,8 @@ import * as ReaderAPI from '../../utils/api';
     dispatch({
       type: FETCH_CATEGORIES,
     });
+    console.log('dispatched FETCH_CATEGORIES from fetchCategories reducer');
+
     ReaderAPI.fetchCategories()
       .then(categories =>
         dispatch({

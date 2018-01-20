@@ -7,9 +7,14 @@ import { fetchCategories } from '../state/categories/reducers';
 
 export class Categories extends Component {
 
-  componentWillMount() {
-    // console.log("in Categories componentWillMount");
+  // getCategories() {
+  //   console.log('hi');
+  // }
 
+
+  componentWillMount() {
+    console.log("in Categories componentWillMount");
+    this.props.getCategories();
 
 
     // fetchCategories().then((categories) => {
@@ -47,19 +52,21 @@ export class Categories extends Component {
         }
       </div>
     );
-}
+  }
 
 }
 
 // export default Categories
 function mapDispatchToProps(dispatch){
+  console.log("in Categories mapDispatchToProps");
+
   return ({
     getCategories: () => dispatch(fetchCategories()),
   })
 }
 
 function mapStoreToProps ( { categories }) {
-
+  console.log("in Categories mapStoreToProps, categories IN:", categories);
   // console.log('mSTP: categories as enter mapStoreToProps;', categories);
   // console.log('mSTPcategories.categories as enter mapStoreToProps;', categories.categories);
 
