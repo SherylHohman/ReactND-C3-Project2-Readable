@@ -1,42 +1,107 @@
+import * as ReaderAPI from '../../utils/api';
+
 // ACTION TYPES
-  //TODO: change GET to FETCH, indicating it's an asynch API network
-  //  request, not simply a setter
-  export const GET_POSTS = 'GET_POSTS';
-  export const GET_POSTS_SUCCESS = 'GET_POSTS_SUCCESS';
-  export const GET_POST_DETAILS = 'GET_POST_DETAILS';
-  export const GET_POST_DETAILS_SUCCESS = 'GET_POST_DETAILS_SUCCESS';
+  export const FETCH_POSTS = 'FETCH_POSTS';
+  export const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
+  export const FETCH_POSTS_FAILURE = 'FETCH_POSTS_FAILURE';
+
+  export const FETCH_POST_DETAILS = 'FETCH_POST_DETAILS';
+  export const FETCH_POST_DETAILS_SUCCESS = 'FETCH_POST_DETAILS_SUCCESS';
   export const ADD_POST = 'ADD_POST';
   export const EDIT_POST = 'EDIT_POST';
   export const DELETE_POST = 'DELETE_POST';
   export const INCREMENT_VOTE = 'INCREMENT_VOTE';
   export const DECREMENT_VOTE = 'DECREMENT_VOTE';
 
+
+// FAT ACTION CREATORS
+  //  (business logic decides which action(s) to create/dispatch)
+  //  if need access to more state, refactor to use redux-thunk
+  //    (Thunk Action Creators)
+  export function fetchPosts(dispatch){
+    dispatch({
+      type: FETCH_POSTS,
+    });
+    ReaderAPI.fetchPosts()
+      .then(postsArray => {
+
+        console.log('postsArray from fetchPosts', postsArray);
+
+        //  1) API returns array of posts; store needs object of posts
+        //  2) inner post objects have extra [function], and __proto__ properties
+        //     try to remove them before sending to state/store/ or anywhere else
+
+        //   console.log('cDM|fetchPosts: postsArray as array of objects, where EACH POST has extraneous getRequest properties: ', postsArray)
+          const posts = postsArray.reduce((acc, arrItem) => {
+            const { id, title, body, category, timestamp,
+              commentCount, deleted, voteScore } = arrItem;
+            return ({
+              ...acc,
+               [id]: {
+                 id,
+                 title,
+                 body,
+                 category,
+                 timestamp,
+                 commentCount,
+                 deleted,
+                 voteScore,
+               }
+            }
+          )}, {});
+
+        return (
+          dispatch({
+            type: FETCH_POSTS_SUCCESS,
+            posts,
+          })
+        )}
+      )
+      .catch(err => {
+        console.error(err);  //  in case of render error
+        dispatch({
+          type: FETCH_POSTS_FAILURE,
+          err,
+          error: true,
+        })
+      });
+  };
+
+
+
 // ACTION CREATORS
-  export function getPosts(TODO){
+  // export function fetchPosts(TODO){
+  //   // fetch all posts by ownerID (post)
+  //   return ({
+  //     type: FETCH_POSTS,
+  //     // TODO:
+  //   });
+  // };
+  // export function fetchPostsSuccess(TODO){
+  //   // fetch all posts by ownerID (post)
+  //   return ({
+  //     type: FETCH_POSTS_SUCCESS,
+  //     // TODO:
+  //   });
+  // };
+  // export function fetchPostsFailure(TODO){
+  //   // fetch all posts by ownerID (post)
+  //   return ({
+  //     type: FETCH_POSTS_FAILURE,
+  //     // TODO:
+  //   });
+  // };
+  export function fetchPostDetails(TODO){
     // fetch all posts by ownerID (post)
     return ({
-      type: GET_POSTS,
+      type: FETCH_POST_DETAILS,
       // TODO:
     });
   };
-  export function getPostsSuccess(TODO){
+  export function fetchPostDetailsSuccess(TODO){
     // fetch all posts by ownerID (post)
     return ({
-      type: GET_POSTS_SUCCESS,
-      // TODO:
-    });
-  };
-  export function getPostDetails(TODO){
-    // fetch all posts by ownerID (post)
-    return ({
-      type: GET_POST_DETAILS,
-      // TODO:
-    });
-  };
-  export function getPostDetailsSuccess(TODO){
-    // fetch all posts by ownerID (post)
-    return ({
-      type: GET_POST_DETAILS_SUCCESS,
+      type: FETCH_POST_DETAILS_SUCCESS,
       // TODO:
     });
   };
@@ -121,18 +186,18 @@
   function posts(state=samplePosts, action) {
     const { id, timestamp, title, body, author, category } = action;
     switch (action.type){
-      case GET_POSTS:
+      case FETCH_POSTS:
         // action data should be an object of post objects, ie posts object)
         // when fetch posts from database is successful, add to store
         return ({
           ...state,
           posts: action.posts,
         });
-      case GET_POST_DETAILS:
+      case FETCH_POST_DETAILS:
         // Hmm... in this case should "state" be a single post
         // ..or the list of all posts.  Do I need a new action reducer
         // `post` or `postDetails` for actions requiring only a single post?
-        // I guess it'll help when I see th eresults of 'GET posts API"
+        // I guess it'll help when I see th eresults of 'FETCH posts API"
         //.. really not a Lot more I can do without either a UI,
 
         // action data should be a post item with all fields
