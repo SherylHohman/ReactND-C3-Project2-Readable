@@ -12,7 +12,17 @@ export class Posts extends Component {
 
   componentWillMount() {
     console.log("in Posts componentWillMount");
-    this.props.getPosts();
+
+  // https://redux.js.org/docs/api/bindActionCreators.html
+  // ??
+  // let { dispatch } = this.props;
+  // let action =
+
+
+    // ??
+    // const { getPosts } = this.props;
+
+    // this.props.getPosts();
 
     // fetchPosts().then((postsArray) => {
     //   // console.log('cDM posts fetched as objects:', posts);
@@ -44,18 +54,22 @@ export class Posts extends Component {
       // console.log('cDM, leaving fetchPosts:', posts);
     // });
 
-    console.log('cDM, leaving:', `${this.state||this.props||'no state or props'}`);
+    console.log('Posts cDM, leaving:', `${this.state||this.props||'no state or props'}`);
 
     // });
 
   }
 
-  state: {
-    posts: 'No posts in Posts state object';
-  }
+  // state: {
+  //   posts: 'No posts in Posts state object';
+  // }
 
 
   render() {
+
+    // ??
+    // const { getPosts } = this.props;
+
     // console.log('rendering..');
     if ((this.props) && (this.props.posts)) {
        console.log('this.props.posts', this.props.posts);
@@ -69,11 +83,12 @@ export class Posts extends Component {
           {this.props && this.props.posts &&
               (
                 <ul>
-                  {this.props.posts.map(post => {
+                hello..can't get your posts!
+                  {/*this.props.posts.map(post => {
                     return (
                       <li key={post.id}>title:{post.title}</li>
                     )
-                  })}
+                  })*/}
                 </ul>
               )
           }
@@ -93,14 +108,15 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( { posts }) {
-  console.log("in Posts mapStoreToProps");
-  console.log('mSTP: posts as enter mapStoreToProps;', posts);
+function mapStoreToProps ( state ) {
+  console.log("in Posts mapStoreToProps, state:", state);
+  console.log('mSTP: posts as enter mapStoreToProps:', state.posts);
 
-  const postsProperties = Object.keys(posts);  // only has key of 1 post
-  console.log('properties', postsProperties);
+  // const postsProperties = Object.keys(posts);  // only has key of 1 post
+  // console.log('properties', postsProperties);
 
-  let postsArray = [];
+
+  // let postsArray = [];
   // for (let postObject in posts) {
   //   console.log('postObject', postObject);
   //   postsArray.push(postObject);
@@ -116,7 +132,7 @@ function mapStoreToProps ( { posts }) {
   // return postsArray;
 
   return {
-    // posts: postsArray,
+    posts: state.posts,
   }
 
 };

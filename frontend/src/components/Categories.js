@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchCategories } from '../state/categories/reducers';
   // TODO:
-  //  `reducers.js` is improperly named. Im actually importing an action creator, normally in an actions file. I have a quasi duck file, that should be named 'ducks' or 'actionsReducers', or segregated into actions and reducers files.
+  //  `reducers.js` is improperly named. I'm actually importing an ACTION CREATOR, normally in an ACTIONS file.
+  //  This is *actually* have a quasi duck file, that should be named 'ducks' or 'actionsReducers', or segregated into actions and reducers files.
 // import { fetchCategories } from '../utils/api';
 
 export class Categories extends Component {
@@ -14,6 +15,9 @@ export class Categories extends Component {
 
   componentWillMount() {
     console.log("in Categories componentWillMount");
+
+    // ??
+    // const { getCategories } = this.props;
     this.props.getCategories();
 
 
@@ -21,10 +25,13 @@ export class Categories extends Component {
     //   // console.log('cDM|fetchCategories: categories as array of objects, with extraneous getRequest properties: ', categories)
     //   // this.setState({ categories });
     // });
-    // // console.log('cDM, leaving fetchCategories:', `${this.state||this.props||'no state or props'}`);
+    console.log('Categories cDM, leaving fetchCategories:', `${this.state||this.props||'no state or props'}`);
   }
 
   render() {
+
+    // ??
+    const { dispatch } = this.props;
 
     if ((this.props) && (this.props.categories)) {
       console.log('...this.PROPS.categories', this.props.categories);

@@ -9,10 +9,10 @@ class App extends Component {
     console.log("in App componentWillMount");
   }
 
-  state: {
-    // categories: "fetching categories..",
-    // posts: "fetching posts.."
-  }
+  // state: {
+  //   // categories: "fetching categories..",
+  //   // posts: "fetching posts.."
+  // }
 
   render() {
 
@@ -33,17 +33,18 @@ class App extends Component {
   }
 }
 
-function mapDispatchToProps(dispatch){
-  return ({
+// function mapDispatchToProps(dispatch){
+//   return ({
 
-  })
-}
+//   })
+// }
 
-function mapStoreToProps ( { posts }) {
-  return {
+// function mapStoreToProps ( { posts }) {
+//   return {
 
-  }
-};
+//   }
+// };
 
-export default connect(mapStoreToProps, mapDispatchToProps)(App);
+// export default connect(mapStoreToProps, mapDispatchToProps)(App);
 
+ export default App;

@@ -19,13 +19,14 @@ import * as ReaderAPI from '../../utils/api';
   //  if need access to more state, refactor to use redux-thunk
   //    (Thunk Action Creators)
   export function fetchPosts(dispatch){
+    console.log('--in posts action creator, fetchPosts');
     dispatch({
       type: FETCH_POSTS,
     });
     ReaderAPI.fetchPosts()
       .then(postsArray => {
 
-        console.log('postsArray from fetchPosts', postsArray);
+        console.log('--postsArray from fetchPosts', postsArray);
 
         //  1) API returns array of posts; store needs object of posts
         //  2) inner post objects have extra [function], and __proto__ properties
@@ -50,13 +51,15 @@ import * as ReaderAPI from '../../utils/api';
             }
           )}, {});
 
+          console.log('--posts reducer, posts after transformation', posts);
+
         return (
           dispatch({
             type: FETCH_POSTS_SUCCESS,
             posts,
-          })
-        )}
-      )
+          }) // dispatch success
+        )} // return
+      ) // then
       .catch(err => {
         console.error(err);  //  in case of render error
         dispatch({
@@ -183,7 +186,10 @@ import * as ReaderAPI from '../../utils/api';
   // function post(state=samplePost, action) {
 
   // state is an object of (multiple) post objects
-  function posts(state=samplePosts, action) {
+  function posts(state=postsInitialState, action) {
+
+    console.log('--in posts reducer, action:', action);
+
     const { id, timestamp, title, body, author, category } = action;
     switch (action.type){
       case FETCH_POSTS:

@@ -1,3 +1,4 @@
+// import { combineReducers } from "redux";
 import * as ReaderAPI from '../../utils/api';
 
 // ACTION TYPES
@@ -44,6 +45,28 @@ import * as ReaderAPI from '../../utils/api';
       });
   };
 
+  //   dispatch({
+  //     type: FETCH_CATEGORIES,
+  //   });
+  //   console.log('dispatched FETCH_CATEGORIES from fetchCategories reducer');
+
+  //   ReaderAPI.fetchCategories()
+  //     .then(categories =>
+  //       dispatch({
+  //         type: FETCH_CATEGORIES_SUCCESS,
+  //         categories,
+  //       })
+  //     )
+  //     .catch(err => {
+  //       console.error(err);  //  in case of render error
+  //       dispatch({
+  //         type: FETCH_CATEGORIES_FAILURE,
+  //         err,
+  //         error: true,
+  //       })
+  //     });
+  // };
+
 
 // ACTION CREATORS
   // export function fetchCategories({ categories={} }){
@@ -82,8 +105,12 @@ import * as ReaderAPI from '../../utils/api';
     // use null to display *ALL* categories
   };
 
+// INITIAL STATES
+  const categoryInitialState = {};
+  const categoriesInitialState = {};
+
 // REDUCER(s)
-  function category(state=sampleData, action){
+  function categories(state=categoriesInitialState, action){
     switch (action.type){
       case FETCH_CATEGORIES_SUCCESS:
         // update state with list of category names
@@ -101,6 +128,15 @@ import * as ReaderAPI from '../../utils/api';
           ...state,
           //  could set an error message on some state to handle errors
         });
+
+      default:
+        return state;
+    }
+  }
+
+  // not exported - may not use
+  function category(state=categoryInitialState, action){
+    switch (action.type){
       case SET_CURRENT_CATEGORY:
         return({
           ...state,
@@ -111,5 +147,9 @@ import * as ReaderAPI from '../../utils/api';
     }
   }
 
-export default category;
+export default categories;
 
+// export default combineReducers( {
+//     categories,
+//     category,
+// } );

@@ -19,15 +19,15 @@ export const fetchCategories = () => {
 }
 
 export const fetchPosts = () => {
-  console.log('.. in fetchPosts API');
+  console.log('++ in fetchPosts API');
 
   fetch(`${api}/posts`, { headers })
   .then((res) => {
-    console.log('..got response from fetchPosts API, res:', res);
+    console.log('++ got response from fetchPosts API, res:', res);
     return res.json();
   })
   .then((data) => {
-     console.log('..leaving fetchPosts API, posts data :', data);
+     console.log('++ leaving fetchPosts API, posts data :', data);
      return data;
   })
 }
