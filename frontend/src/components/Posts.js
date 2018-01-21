@@ -76,25 +76,25 @@ export class Posts extends Component {
 
     return (
       <div>
-          {this.props && this.props.posts &&
-              (
-                <ul>
                 hello..can't show your posts! <br />
                 They are contained in an object. <br />
-                I need them transformd into an array, so I can map over them! :-)
+                I need them transformd into an array, so I can map over them! :-/
                   {/* TODO: turn obj data into array so can map over */}
+{/*          {this.props && this.props.posts &&
+              (
+                <ul>
                   {/*this.props.posts.map(post => {
                     return (
                       <li key={post.id}>title:{post.title}</li>
                     )
-                  })*/}
+                  })
                 </ul>
               )
           }
           { (!this.props || !this.props.posts) &&
             <p>No Posts Available</p>
           }
-      </div>
+*/}      </div>
     );
   }
 
@@ -108,10 +108,11 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( state ) {
+  const posts = state.posts;
   console.log("in Posts mapStoreToProps, state:", state);
   console.log('mSTP: posts as enter mapStoreToProps:', state.posts);
 
-  // const postsProperties = Object.keys(posts);  // only has key of 1 post
+  const postsProperties = Object.keys(posts);  // only has key of 1 post
   // console.log('properties', postsProperties);
 
 
