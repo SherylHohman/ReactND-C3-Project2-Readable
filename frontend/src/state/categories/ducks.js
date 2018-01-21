@@ -49,24 +49,23 @@ import { fetchCategoriesAPI } from '../../utils/api';
     return (dispatch) => {
 
       dispatch({ type: FETCH_CATEGORIES });
-      console.log('__dispatched FETCH_CATEGORIES from fetchCategories reducer');
+      // TODO: show loading spinner
 
       // ReaderAPI.fetchCategories()
         fetchCategoriesAPI()
           .then((response) => {
-            console.log('__got response');
 
             if (!response.ok) {
-              console.log('__response NOT OK');
+              console.log('__response NOT OK, fetchCategories');
               throw Error(response.statusText);
             }
 
+            // TODO
             // dispatch({
             //   type: IS_LOADING_FALSE,
             //   showLoadingSpinner: false,
             // });
 
-            console.log('__response OK');
             return response;
 
           })
@@ -86,28 +85,6 @@ import { fetchCategoriesAPI } from '../../utils/api';
           });
     };
 }
-  // export function fetchCategories(dispatch){
-  //   dispatch({
-  //     type: FETCH_CATEGORIES,
-  //   });
-  //   console.log('dispatched FETCH_CATEGORIES from fetchCategories reducer');
-
-  //   ReaderAPI.fetchCategories()
-  //     .then(categories =>
-  //       dispatch({
-  //         type: FETCH_CATEGORIES_SUCCESS,
-  //         categories,
-  //       })
-  //     )
-  //     .catch(err => {
-  //       console.error(err);  //  in case of render error
-  //       dispatch({
-  //         type: FETCH_CATEGORIES_FAILURE,
-  //         err,
-  //         error: true,
-  //       })
-  //     });
-  // };
 
 
 // ACTION CREATORS  (traditional)
@@ -156,20 +133,21 @@ import { fetchCategoriesAPI } from '../../utils/api';
   function categories(state=categoriesInitialState, action){
     switch (action.type){
       case FETCH_CATEGORIES_SUCCESS:
-        // update state with list of category names
         return ({
           ...state,
           categories: action.categories
+          // TODO: turn loading spinner off
         });
       case FETCH_CATEGORIES:
         return ({
           ...state,
-          //  could set an loading (boolean flag) to some state that would show a loading message
+          //  TODO: turn loading spinner on
         });
       case FETCH_CATEGORIES_FAILURE:
         return ({
           ...state,
-          //  could set an error message on some state to handle errors
+          // TODO: turn loading spinner off
+          // TODO: could set an error message on some state to handle errors
         });
 
       default:

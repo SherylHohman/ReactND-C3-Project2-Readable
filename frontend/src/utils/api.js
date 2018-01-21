@@ -19,7 +19,6 @@ const headers = {
 // }
 
 export const fetchCategoriesAPI = () => {
-  console.log('.. in fetchCategories API');
   return fetch(`${api}/categories`, { headers })
 }
 
