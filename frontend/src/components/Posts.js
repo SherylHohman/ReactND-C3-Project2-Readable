@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// TODO: (fetcjPosts below)
-//  `reducers.js` is improperly named.
-//  I'm actually importing an action creator, normally in an actions file.
-//  I have a quasi duck file, that should be named 'ducks' or 'actionsReducers',
-//  or segregated into actions and reducers files.
-import { fetchPosts } from '../state/posts/reducers';
-// import { fetchPosts } from '../utils/api';
+import { fetchPosts } from '../state/posts/ducks';
+  //  fetchPosts is a "Fat Action Creator"
+  //    It dispatches FetchPosts action, Handles ajax, then dispatches
+  //    a resolution (success, failure) action.
+  //  "ducks" *file* has actions, action creators, and reducers.
+  //    As expand app, may separate these into actions and reducers
+  //    in a ducks **folder** (the proper design)
 
 export class Posts extends Component {
 

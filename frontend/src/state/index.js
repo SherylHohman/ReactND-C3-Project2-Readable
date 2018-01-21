@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import categories from "./categories/reducers";
-import posts from "./posts/reducers";
-import comments from "./comments/reducers";
-import user from "./user/reducers";
+import categories from "./categories/ducks";
+import posts from "./posts/ducks";
+import comments from "./comments/ducks";
+import user from "./user/ducks";
 
 // export { default as categories } from "./categories/reducers";
 // export { default as posts } from "./posts/reducers";
