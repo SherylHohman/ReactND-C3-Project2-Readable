@@ -71,9 +71,9 @@ import { fetchCategoriesAPI } from '../../utils/api';
 
           })
           .then((response) => response.json())
-          .then((categories) => dispatch({
+          .then((data) => dispatch({
               type: FETCH_CATEGORIES_SUCCESS,
-              categories,
+              categories: data.categories,
             })
           )
           .catch(err => {
