@@ -79,7 +79,9 @@ export class Posts extends Component {
           {this.props && this.props.posts &&
               (
                 <ul>
-                hello..can't get your posts!
+                hello..can't show your posts! <br />
+                They are contained in an object. <br />
+                I need them transformd into an array, so I can map over them! :-)
                   {/* TODO: turn obj data into array so can map over */}
                   {/*this.props.posts.map(post => {
                     return (
