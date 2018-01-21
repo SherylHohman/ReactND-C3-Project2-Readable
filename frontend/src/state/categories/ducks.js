@@ -1,5 +1,6 @@
 // import { combineReducers } from "redux";
-import * as ReaderAPI from '../../utils/api';
+// import * as ReaderAPI from '../../utils/api';
+import { fetchCategoriesAPI } from '../../utils/api';
 
 // ACTION TYPES
   export const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
@@ -23,28 +24,90 @@ import * as ReaderAPI from '../../utils/api';
   //    components)
   //  in that case: refactor to use redux-thunks instead (THUNK ACTION CREATOR)
 
-  export function fetchCategories(dispatch){
-    dispatch({
-      type: FETCH_CATEGORIES,
-    });
-    console.log('dispatched FETCH_CATEGORIES from fetchCategories reducer');
+// const requestCategories = () => ({ type: REQUEST_CATEGORIES })
+// // issue #1
+// export function fetchCategories() {
+//   return function (dispatch) {
+//   // issue #2
+//     dispatch(requestCategories)
+//   ...
+//   };
+// };
 
-    ReaderAPI.fetchCategories()
-      .then(categories =>
-        dispatch({
-          type: FETCH_CATEGORIES_SUCCESS,
-          categories,
-        })
-      )
-      .catch(err => {
-        console.error(err);  //  in case of render error
-        dispatch({
-          type: FETCH_CATEGORIES_FAILURE,
-          err,
-          error: true,
-        })
-      });
-  };
+  // const requestCategories = () => ({
+  //   type: REQUEST_CATEGORIES
+  // })
+  // const requestCategories_fail = () => ({
+  //   type: REQUEST_CATEGORIES_SUCCESS
+  // })
+  // const requestCategories_success = () => ({
+  //   type: REQUEST_CATEGORIES_FAIL,
+  //   categories
+  // })
+
+  export function fetchCategories(dispatch){
+    return (dispatch) => {
+
+      dispatch({ type: FETCH_CATEGORIES });
+      console.log('__dispatched FETCH_CATEGORIES from fetchCategories reducer');
+
+      // ReaderAPI.fetchCategories()
+        fetchCategoriesAPI()
+          .then((response) => {
+            console.log('__got response');
+
+            if (!response.ok) {
+              console.log('__response NOT OK');
+              throw Error(response.statusText);
+            }
+
+            // dispatch({
+            //   type: IS_LOADING_FALSE,
+            //   showLoadingSpinner: false,
+            // });
+
+            console.log('__response OK');
+            return response;
+
+          })
+          .then((response) => response.json())
+          .then((categories) => dispatch({
+              type: FETCH_CATEGORIES_SUCCESS,
+              categories,
+            })
+          )
+          .catch(err => {
+            console.error(err);  //  in case of render error
+            dispatch({
+              type: FETCH_CATEGORIES_FAILURE,
+              err,
+              error: true,
+            })
+          });
+    };
+}
+  // export function fetchCategories(dispatch){
+  //   dispatch({
+  //     type: FETCH_CATEGORIES,
+  //   });
+  //   console.log('dispatched FETCH_CATEGORIES from fetchCategories reducer');
+
+  //   ReaderAPI.fetchCategories()
+  //     .then(categories =>
+  //       dispatch({
+  //         type: FETCH_CATEGORIES_SUCCESS,
+  //         categories,
+  //       })
+  //     )
+  //     .catch(err => {
+  //       console.error(err);  //  in case of render error
+  //       dispatch({
+  //         type: FETCH_CATEGORIES_FAILURE,
+  //         err,
+  //         error: true,
+  //       })
+  //     });
+  // };
 
 
 // ACTION CREATORS  (traditional)

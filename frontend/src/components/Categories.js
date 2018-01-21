@@ -44,8 +44,10 @@ export class Categories extends Component {
 
     return (
       <div>
-        {/*temp categories render*/}
-        {this.props && this.props.categories &&
+  Objects are not valid as a React child (found: object with keys `categories`). If you meant to render a collection of children, use an array instead.
+  {/* TODO: turn API/Store obj data into react array so can map over */}
+
+{/*        {this.props && this.props.categories &&
             (
               <ul>
                 {this.props.categories.map(category => {
@@ -59,7 +61,7 @@ export class Categories extends Component {
         { (!this.props || !this.props.categories) &&
             <p>No Categories Available</p>
         }
-      </div>
+*/}      </div>
     );
   }
 
