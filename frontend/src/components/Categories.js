@@ -44,15 +44,12 @@ export class Categories extends Component {
 
     return (
       <div>
-  Objects are not valid as a React child (found: object with keys `categories`). If you meant to render a collection of children, use an array instead.
-  {/* TODO: turn API/Store obj data into react array so can map over */}
-
-{/*        {this.props && this.props.categories &&
+        {this.props && this.props.categories &&
             (
               <ul>
                 {this.props.categories.map(category => {
                   return (
-                    <li key={category}>{category}</li>
+                    <li key={category.name}>{category.name}</li>
                   )
                 })}
               </ul>
@@ -61,7 +58,7 @@ export class Categories extends Component {
         { (!this.props || !this.props.categories) &&
             <p>No Categories Available</p>
         }
-*/}      </div>
+    </div>
     );
   }
 
@@ -81,9 +78,14 @@ function mapStoreToProps ( { categories }) {
 
   // console.log('mSTP: categories as enter mapStoreToProps;', categories);
   // console.log('mSTPcategories.categories as enter mapStoreToProps;', categories.categories);
-
+  //  I "fixed" nesting in reducer for setting categories from API call
+  //    but in store it *still* gets nested.
+  //  The only way I can seem to "fix" this to have an array in props
+  //    is to unnest it as below ! PUZZLING!! But Works!
+  //    this.props.categories is nor an ARRAY!
+  const categoriesArray = categories.categories
   return {
-      categories: categories.categories,
+      categories: categoriesArray,
   }
 };
 
