@@ -18,6 +18,7 @@ import * as ReaderAPI from '../../utils/api';
   //  (business logic decides which action(s) to create/dispatch)
   //  if need access to more state, refactor to use redux-thunk
   //    (Thunk Action Creators)
+
   export function fetchPosts(dispatch){
     console.log('--in posts action creator, fetchPosts');
     dispatch({
@@ -33,6 +34,7 @@ import * as ReaderAPI from '../../utils/api';
         //     try to remove them before sending to state/store/ or anywhere else
 
         //   console.log('cDM|fetchPosts: postsArray as array of objects, where EACH POST has extraneous getRequest properties: ', postsArray)
+
           const posts = postsArray.reduce((acc, arrItem) => {
             const { id, title, body, category, timestamp,
               commentCount, deleted, voteScore } = arrItem;
@@ -181,9 +183,7 @@ import * as ReaderAPI from '../../utils/api';
     //   - each array element represents <==> an [id] property value
     //  Note [id] is a string value that "happens" to == posts[id].id !
 
-// REDUCER(s)
-// TODO: postInitialState instead of samplePost, once data is hooked up
-  // function post(state=samplePost, action) {
+// REDUCERS
 
   // state is an object of (multiple) post objects
   function posts(state=postsInitialState, action) {
@@ -193,7 +193,7 @@ import * as ReaderAPI from '../../utils/api';
     const { id, timestamp, title, body, author, category } = action;
     switch (action.type){
       case FETCH_POSTS:
-        // action data should be an object of post objects, ie posts object)
+        // action data should be an object of post objects
         // when fetch posts from database is successful, add to store
         return ({
           ...state,

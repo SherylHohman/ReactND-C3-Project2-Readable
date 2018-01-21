@@ -22,6 +22,7 @@ import * as ReaderAPI from '../../utils/api';
   //  it needs to be passed through components (including intermediary
   //    components)
   //  in that case: refactor to use redux-thunks instead (THUNK ACTION CREATOR)
+
   export function fetchCategories(dispatch){
     dispatch({
       type: FETCH_CATEGORIES,
@@ -45,30 +46,9 @@ import * as ReaderAPI from '../../utils/api';
       });
   };
 
-  //   dispatch({
-  //     type: FETCH_CATEGORIES,
-  //   });
-  //   console.log('dispatched FETCH_CATEGORIES from fetchCategories reducer');
 
-  //   ReaderAPI.fetchCategories()
-  //     .then(categories =>
-  //       dispatch({
-  //         type: FETCH_CATEGORIES_SUCCESS,
-  //         categories,
-  //       })
-  //     )
-  //     .catch(err => {
-  //       console.error(err);  //  in case of render error
-  //       dispatch({
-  //         type: FETCH_CATEGORIES_FAILURE,
-  //         err,
-  //         error: true,
-  //       })
-  //     });
-  // };
+// ACTION CREATORS  (traditional)
 
-
-// ACTION CREATORS
   // export function fetchCategories({ categories={} }){
   //   return({
   //     type: FETCH_CATEGORIES,

@@ -22,11 +22,11 @@ export class Categories extends Component {
     // const { getCategories } = this.props;
     this.props.getCategories();
 
-
     // fetchCategories().then((categories) => {
     //   // console.log('cDM|fetchCategories: categories as array of objects, with extraneous getRequest properties: ', categories)
     //   // this.setState({ categories });
     // });
+
     console.log('Categories cDM, leaving fetchCategories:', `${this.state||this.props||'no state or props'}`);
   }
 
@@ -76,6 +76,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps ( { categories }) {
   console.log("in Categories mapStoreToProps, categories IN:", categories);
+
   // console.log('mSTP: categories as enter mapStoreToProps;', categories);
   // console.log('mSTPcategories.categories as enter mapStoreToProps;', categories.categories);
 

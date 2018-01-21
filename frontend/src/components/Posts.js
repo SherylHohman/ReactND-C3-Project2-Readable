@@ -13,16 +13,16 @@ export class Posts extends Component {
   componentWillMount() {
     console.log("in Posts componentWillMount");
 
-  // https://redux.js.org/docs/api/bindActionCreators.html
   // ??
+  // https://redux.js.org/docs/api/bindActionCreators.html
   // let { dispatch } = this.props;
   // let action =
 
 
     // ??
     // const { getPosts } = this.props;
-
     // this.props.getPosts();
+
 
     // fetchPosts().then((postsArray) => {
     //   // console.log('cDM posts fetched as objects:', posts);
@@ -30,6 +30,7 @@ export class Posts extends Component {
     //   // // console.log('posts as array;', posts);
 
     //   // // this.setState({ posts });
+
 
     //   console.log('cDM|fetchPosts: postsArray as array of objects, where EACH POST has extraneous getRequest properties: ', postsArray)
     //   const posts = postsArray.reduce((acc, arrItem) => {
@@ -60,11 +61,6 @@ export class Posts extends Component {
 
   }
 
-  // state: {
-  //   posts: 'No posts in Posts state object';
-  // }
-
-
   render() {
 
     // ??
@@ -84,6 +80,7 @@ export class Posts extends Component {
               (
                 <ul>
                 hello..can't get your posts!
+                  {/* TODO: turn obj data into array so can map over */}
                   {/*this.props.posts.map(post => {
                     return (
                       <li key={post.id}>title:{post.title}</li>
