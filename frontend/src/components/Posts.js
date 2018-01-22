@@ -35,7 +35,12 @@ export class Posts extends Component {
 
     return (
       <div>
-          <div>
+          <div> {/*sort by*/}
+          <ul className="nav"><li>Sort Posts By:</li> <li>Most Recent</li><li>Highest Votes</li></ul>
+          </div>
+          <hr />
+          <div><h1>Add New Post</h1><hr /></div>
+          <div> {/*post heading*/}
             {this.props.posts.map(post => {
               const {id, title, category, voteScore, commentCount} = post;
               const {author, timestamp, body} = post;
