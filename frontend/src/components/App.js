@@ -9,15 +9,15 @@ class App extends Component {
     console.log("in App componentWillMount");
   }
 
-  // state: {
-  //   // categories: "fetching categories..",
-  //   // posts: "fetching posts.."
-  // }
+  state: {
+    username: '',   // controlled input
+  }
 
   render() {
 
     return (
       <div className="app-container">
+        <input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />
         <header className="app-header">
           <h1 className="app-title">Readable</h1>
           <Categories />
@@ -25,9 +25,9 @@ class App extends Component {
         <div className="app-intro">
           ..an app for posting and viewing posts and comments
           <hr />
-          <Posts />
-          <hr />
         </div>
+        <Posts />
+        <hr />
       </div>
     );
   }
