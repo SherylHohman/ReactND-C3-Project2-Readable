@@ -1,12 +1,16 @@
 import * as ReaderAPI from '../../utils/api';
 
 // ACTION TYPES
-  export const FETCH_POSTS = 'FETCH_POSTS';
+  export const REQUEST_POSTS = 'REQUEST_POSTS';
   export const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
   export const FETCH_POSTS_FAILURE = 'FETCH_POSTS_FAILURE';
 
-  export const FETCH_POST_DETAILS = 'FETCH_POST_DETAILS';
-  export const FETCH_POST_DETAILS_SUCCESS = 'FETCH_POST_DETAILS_SUCCESS';
+  // export const SELECTED_CATEGORY = 'SELECTED_CATEGORY';
+
+  // export const SELECTED_POST = 'SELECTED_POST'
+  // export const FETCH_POST_DETAILS = 'FETCH_POST_DETAILS';
+  // export const FETCH_POST_DETAILS_SUCCESS = 'FETCH_POST_DETAILS_SUCCESS';
+
   export const ADD_POST = 'ADD_POST';
   export const EDIT_POST = 'EDIT_POST';
   export const DELETE_POST = 'DELETE_POST';
@@ -19,57 +23,59 @@ import * as ReaderAPI from '../../utils/api';
   //  if need access to more state, refactor to use redux-thunk
   //    (Thunk Action Creators)
 
+  const requestPosts = () => ({
+    type: REQUEST_POSTS
+  });
+  const fetchPosts_fail = () => ({
+    type: FETCH_POSTS_SUCCESS
+  });
+  const fetchPosts_success = (posts) => ({
+    type: FETCH_POSTS_FAILURE,
+    posts
+  });
+
   export function fetchPosts(dispatch){
-    console.log('--in posts action creator, fetchPosts');
-    dispatch({
-      type: FETCH_POSTS,
-    });
-    ReaderAPI.fetchPosts()
-      .then(postsArray => {
+    return (dispatch) => {
+      console.log('--in posts action creator, fetchPosts');
 
-        console.log('--postsArray from fetchPosts', postsArray);
+      dispatch(requestPosts);
 
-        //  1) API returns array of posts; store needs object of posts
-        //  2) inner post objects have extra [function], and __proto__ properties
-        //     try to remove them before sending to state/store/ or anywhere else
+      ReaderAPI.fetchPosts()
 
-        //   console.log('cDM|fetchPosts: postsArray as array of objects, where EACH POST has extraneous getRequest properties: ', postsArray)
-
-          const posts = postsArray.reduce((acc, arrItem) => {
-            const { id, title, body, category, timestamp,
-              commentCount, deleted, voteScore } = arrItem;
-            return ({
-              ...acc,
-               [id]: {
-                 id,
-                 title,
-                 body,
-                 category,
-                 timestamp,
-                 commentCount,
-                 deleted,
-                 voteScore,
-               }
-            }
-          )}, {});
-
-          console.log('--posts reducer, posts after transformation', posts);
-
-        return (
-          dispatch({
-            type: FETCH_POSTS_SUCCESS,
-            posts,
-          }) // dispatch success
-        )} // return
-      ) // then
-      .catch(err => {
-        console.error(err);  //  in case of render error
-        dispatch({
-          type: FETCH_POSTS_FAILURE,
-          err,
-          error: true,
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, fetchPosts');
+            throw Error(response.statusText);
+          }
+          else {
+            console.log('__response OK, fetchPosts');
+            // return response.json();
+          }
+          return response;
         })
-      });
+
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('____response OK, fetchPosts, data:', data);
+
+          return (
+            dispatch({
+              type: FETCH_POSTS_SUCCESS,
+              posts: data
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: FETCH_POSTS_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
   };
 
 
@@ -96,20 +102,21 @@ import * as ReaderAPI from '../../utils/api';
   //     // TODO:
   //   });
   // };
-  export function fetchPostDetails(TODO){
-    // fetch all posts by ownerID (post)
-    return ({
-      type: FETCH_POST_DETAILS,
-      // TODO:
-    });
-  };
-  export function fetchPostDetailsSuccess(TODO){
-    // fetch all posts by ownerID (post)
-    return ({
-      type: FETCH_POST_DETAILS_SUCCESS,
-      // TODO:
-    });
-  };
+
+  // export function fetchPostDetails(TODO){
+  //   // fetch all posts by ownerID (post)
+  //   return ({
+  //     type: FETCH_POST_DETAILS,
+  //     // TODO:
+  //   });
+  // };
+  // export function fetchPostDetailsSuccess(TODO){
+  //   // fetch all posts by ownerID (post)
+  //   return ({
+  //     type: FETCH_POST_DETAILS_SUCCESS,
+  //     // TODO:
+  //   });
+  // };
   export function addPost(TODO){
     // fetch all posts by ownerID (post)
     return ({
@@ -173,56 +180,57 @@ import * as ReaderAPI from '../../utils/api';
   };
 
 
-  //
-    // store element == samplePosts format
-    //    ie an object of post objects,
-    //    where property name of each (post object) === the id for that post.
-
-    // state (inside the components) transforms the wrapper object of post objects
-    //   into an array of post objects
-    //   - each array element represents <==> an [id] property value
-    //  Note [id] is a string value that "happens" to == posts[id].id !
-
 // REDUCERS
 
   // state is an object of (multiple) post objects
   function posts(state=postsInitialState, action) {
 
-    console.log('--in posts reducer, action:', action);
+    // console.log('----in posts reducer, action:', action);
 
     const { id, timestamp, title, body, author, category } = action;
     switch (action.type){
-      case FETCH_POSTS:
+
+      case REQUEST_POSTS:
+        // TODO set loading spinner on
+        return state;
+
+      case FETCH_POSTS_SUCCESS:
         // action data should be an object of post objects
         // when fetch posts from database is successful, add to store
         return ({
           ...state,
           posts: action.posts,
+          // TODO: set loading spinner off
         });
-      case FETCH_POST_DETAILS:
-        // Hmm... in this case should "state" be a single post
-        // ..or the list of all posts.  Do I need a new action reducer
-        // `post` or `postDetails` for actions requiring only a single post?
-        // I guess it'll help when I see th eresults of 'FETCH posts API"
-        //.. really not a Lot more I can do without either a UI,
 
-        // action data should be a post item with all fields
-        // const { id, timestamp, title, body, author, category } = action;
-        const { voteScore, deleted, commentCount } = action
-        return ({
-          ...state,
-          // ?? am I inserting to a list of posts?,
-          //  or is this post the entire thing?
-            id,
-            timestamp,
-            title,
-            body,
-            author,
-            category,
-            voteScore,
-            deleted,
-            commentCount,
-        });
+      case FETCH_POSTS_FAILURE:
+          // TODO: UI error message
+          return state;
+
+      // case FETCH_POST_DETAILS:
+        //   // Hmm... in this case should "state" be a single post
+        //   // ..or the list of all posts.  Do I need a new action reducer
+        //   // `post` or `postDetails` for actions requiring only a single post?
+        //   // I guess it'll help when I see th eresults of 'FETCH posts API"
+        //   //.. really not a Lot more I can do without either a UI,
+
+        //   // action data should be a post item with all fields
+        //   // const { id, timestamp, title, body, author, category } = action;
+        //   const { voteScore, deleted, commentCount } = action
+        //   return ({
+        //     ...state,
+        //     // ?? am I inserting to a list of posts?,
+        //     //  or is this post the entire thing?
+        //       id,
+        //       timestamp,
+        //       title,
+        //       body,
+        //       author,
+        //       category,
+        //       voteScore,
+        //       deleted,
+        //       commentCount,
+        //   });
       case ADD_POST:
         // action data should be a post item with (const) fields
         // const { id, timestamp, title, body, author, category } = action;

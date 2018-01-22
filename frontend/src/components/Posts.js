@@ -1,103 +1,50 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchPosts } from '../state/posts/ducks';
-  //  fetchPosts is a "Fat Action Creator"
-  //    It dispatches FetchPosts action, Handles ajax, then dispatches
-  //    a resolution (success, failure) action.
-  //  "ducks" *file* has actions, action creators, and reducers.
-  //    As expand app, may separate these into actions and reducers
-  //    in a ducks **folder** (the proper design)
 
 export class Posts extends Component {
 
   componentWillMount() {
-    console.log("in Posts componentWillMount");
-
-  // ??
-  // https://redux.js.org/docs/api/bindActionCreators.html
-  // let { dispatch } = this.props;
-  // let action =
-
-
-    // ??
-    // const { getPosts } = this.props;
-    // this.props.getPosts();
-
-
-    // fetchPosts().then((postsArray) => {
-    //   // console.log('cDM posts fetched as objects:', posts);
-    //   // // return posts;
-    //   // // console.log('posts as array;', posts);
-
-    //   // // this.setState({ posts });
-
-
-    //   console.log('cDM|fetchPosts: postsArray as array of objects, where EACH POST has extraneous getRequest properties: ', postsArray)
-    //   const posts = postsArray.reduce((acc, arrItem) => {
-    //     const { id, title, body, category, timestamp,
-    //       commentCount, deleted, voteScore } = arrItem;
-    //     return ({
-    //       ...acc,
-    //        [id]: {
-    //          id,
-    //          title,
-    //          body,
-    //          category,
-    //          timestamp,
-    //          commentCount,
-    //          deleted,
-    //          voteScore,
-    //        }
-    //     }
-    //   )}, {});
-    //   this.setState({ posts });
-
-      // console.log('cDM, leaving fetchPosts:', posts);
-    // });
+    this.props.getPosts();
 
     console.log('Posts cDM, leaving:', `${this.state||this.props||'no state or props'}`);
-
-    // });
-
   }
 
   render() {
 
-    // ??
-    // const { getPosts } = this.props;
+    const propsValue = this.props||this.state||'no props or state'
+    console.log('Posts render:', propsValue);
 
-    // console.log('rendering..');
-    if ((this.props) && (this.props.posts)) {
-       console.log('this.props.posts', this.props.posts);
+    const havePosts = (this.props && this.props.posts && Array.isArray(this.props.posts)) ? true : false;
+
+    // set status message to display TODO: state.statusMessage
+    let statusMessage = ''
+    if (this.props) {
+      statusMessage = 'No Posts Data';
+      if (this.props.posts) {
+        statusMessage = 'No Posts Available';
+          if (!Array.isArray(this.props.posts)) {
+            statusMessage = 'Posts are contained in an object. I need them transformed into an array, so I can map over them!';
+          }
+      }
     }
-    else{
-       console.log('Posts: no props! - use setStoreToProps, or setState');
+
+    if (!havePosts){
+      return (<div><p>{statusMessage}</p></div>);
     }
 
     return (
       <div>
-                hello..can't show your posts! <br />
-                They are contained in an object. <br />
-                I need them transformd into an array, so I can map over them! :-/
-                  {/* TODO: turn obj data into array so can map over */}
-{/*          {this.props && this.props.posts &&
-              (
-                <ul>
-                  {/*this.props.posts.map(post => {
-                    return (
-                      <li key={post.id}>title:{post.title}</li>
-                    )
-                  })
-                </ul>
+          <div>
+            {this.props.posts.map(post => {
+              return (
+                <h3 key={post.id}>{post.title}</h3>
               )
-          }
-          { (!this.props || !this.props.posts) &&
-            <p>No Posts Available</p>
-          }
-*/}      </div>
+            })}
+          </div>
+      </div>
     );
   }
-
 }
 
 function mapDispatchToProps(dispatch){
@@ -108,33 +55,13 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( state ) {
-  const posts = state.posts;
-  console.log("in Posts mapStoreToProps, state:", state);
-  console.log('mSTP: posts as enter mapStoreToProps:', state.posts);
-
-  const postsProperties = Object.keys(posts);  // only has key of 1 post
-  // console.log('properties', postsProperties);
-
-
-  // let postsArray = [];
-  // for (let postObject in posts) {
-  //   console.log('postObject', postObject);
-  //   postsArray.push(postObject);
-  // }
-
-  // posts.forEach((post) => {
-  //   console.log('in Posts, mapStoreToProps, forEach, post:', post);
-  //   postsArray.push(post);
-  //   console.log('in Posts, mapStoreToProps, forEach, postsArray:', postsArray);
-  // });
-  //   console.log('in Posts, mapStoreToProps, AFTER forEach, postsArray:', postsArray);
-
-  // return postsArray;
+  // const posts = state.posts;
+  // console.log("__in Posts mapStoreToProps, state:", state);
+  // console.log('__mSTP: posts as enter mapStoreToProps:', state.posts);
 
   return {
-    posts: state.posts,
+    posts: state.posts.posts,
   }
-
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Posts)
