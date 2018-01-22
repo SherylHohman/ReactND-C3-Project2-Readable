@@ -21,6 +21,7 @@ export class Categories extends Component {
         {this.props && this.props.categories &&
             (
               <ul className="nav">
+                <li className="selected" key="l;asjd9f87q23j;lksa">All Categories</li>
                 {this.props.categories.map(category => {
                   return (
                     <li key={category.name}>{category.name}</li>

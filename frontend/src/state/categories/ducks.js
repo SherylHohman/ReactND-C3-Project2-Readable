@@ -83,8 +83,9 @@ import { fetchCategoriesAPI } from '../../utils/api';
               error: true,
             })
           });
-    };
-}
+
+    }; // dispatch wrapper
+};
 
 
 // ACTION CREATORS  (traditional)
