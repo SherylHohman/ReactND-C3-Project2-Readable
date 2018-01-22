@@ -37,8 +37,20 @@ export class Posts extends Component {
       <div>
           <div>
             {this.props.posts.map(post => {
+              const {id, title, category, voteScore, commentCount} = post;
+              const {author, timestamp, body} = post;
+              const {deleted} = post;
+              if (deleted) return;
+              // TODO: better if remove before it gets to store
+
               return (
-                <h2 key={post.id}>{post.title}</h2>
+                <div key={id}>
+                  <h2>{title}</h2>
+                  <div>votes: {voteScore} increment decrement</div>
+                  <p>{category}</p>
+                  <div>number of comments: {commentCount}</div>
+                  <hr />
+                </div>
               )
             })}
           </div>
