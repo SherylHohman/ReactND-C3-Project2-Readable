@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
+import { Route } from 'react-router-dom';  // remove or combine (see Notes)
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk';
+import thunk from 'redux-thunk';    // not using..yet anyway (see Notes) below
 import rootReducer from './state/index.js';
 import App from './components/App';
 import './index.css';
@@ -21,7 +22,10 @@ const store = createStore(
 
 ReactDOM.render(
   <Provider store={store}>
+
     <BrowserRouter><App/></BrowserRouter>
+    {/*<BrowserRouter><Route path="/:filter?" component={App}/></BrowserRouter>*/}
+
   </Provider>,
   document.getElementById('root')
 )
@@ -29,5 +33,12 @@ ReactDOM.render(
 registerServiceWorker();
 
 
-// TODO: not using thunk: refactor without useing:
-// DEVTOOLS...COMPOSE, composeEnhancers, compose, or applyMiddleware
+// Notes:
+
+//  TODO: not using thunk: refactor without using:
+//    DEVTOOLS...COMPOSE, composeEnhancers, compose, or applyMiddleware
+//    ..or refactor app to use thunks
+
+//  TODO: testing (or learning) see if other version of `BrowserRouter..`
+//    line of code is equivalent. Then remove one version, and edit/remove
+//    the import statement(s) as appropriate.
