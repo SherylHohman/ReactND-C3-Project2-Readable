@@ -20,7 +20,7 @@ export class Categories extends Component {
       <div>
         {this.props && this.props.categories &&
             (
-              <ul>
+              <ul className="nav">
                 {this.props.categories.map(category => {
                   return (
                     <li key={category.name}>{category.name}</li>

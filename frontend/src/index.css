@@ -4,6 +4,14 @@ body {
   font-family: sans-serif;
 }
 
+ul {
+  padding-left: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
 .app-container {
   text-align: center;
 }
@@ -23,3 +31,12 @@ body {
   font-size: large;
 }
 
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.selected {
+  color: yellow;
+}

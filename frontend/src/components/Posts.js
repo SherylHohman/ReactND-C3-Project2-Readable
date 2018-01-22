@@ -38,7 +38,7 @@ export class Posts extends Component {
           <div>
             {this.props.posts.map(post => {
               return (
-                <h3 key={post.id}>{post.title}</h3>
+                <h2 key={post.id}>{post.title}</h2>
               )
             })}
           </div>
