@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { fetchPosts } from '../state/posts/ducks';
+import PropTypes from 'prop-types';
 
 const PostHeader = function(props) {
-  // const postId = props.postId;  // if turn into "smart" connect component
   const post = props.post;
 
   //  required to display (see project requirements) Ok, don't show id.
@@ -22,10 +22,33 @@ const PostHeader = function(props) {
     )
   };
 
+  // may want the path to be in this format: `path="/task/?:taskId?"`
+  const toURLaAndPostId = {
+            pathname: `/post/?:${post.id}`,
+            query: {id: post.id},
+            state: { post: props.post }
+          }
+
+  // const toURLaAndPostId = {
+  //           pathname: '/post',
+  //           query: {id: post.id},
+  //           state: { post: props.post }
+  //         }
+  // https://github.com/ReactTraining/react-router/issues/4036
+
+  // const toURLaAndPostId = {
+  //           pathname: `/post/${post.id}/`,
+  //           state: { post: props.post }
+  //         }
+
   return  (
     <div>
       <div key={post.id}>
-        <h2>{title}</h2>
+
+        <Link to={`/post/${post.id}/`} >
+          <h2>{title}</h2>
+        </Link>
+
         <div>votes: {voteScore} increment decrement</div>
         <p>{category}</p>
         <div>number of comments: {commentCount}</div>
@@ -36,7 +59,7 @@ const PostHeader = function(props) {
 };
 
 PostHeader.propTypes = {
-  post: PropTypes.object.isRequired,       // if keep as a "dump" component
+  // post: PropTypes.object.isRequired,       // if keep as a "dump" component
   // postId: PropTypes.string.isRequired,  // if turn into a connected comp
 }
 
