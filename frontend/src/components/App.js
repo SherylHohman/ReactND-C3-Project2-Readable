@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
+import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Categories from './Categories';
 import Posts from './Posts';
+import PostDetail from './PostDetail';
+import NewPost from './NewPost';
+import EditPost from './EditPost';
 
 class App extends Component {
 
@@ -17,16 +21,39 @@ class App extends Component {
 
     return (
       <div className="app-container">
+
         <input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />
+
         <header className="app-header">
           <h1 className="app-title">Readable</h1>
           <Categories />
         </header>
+
         <div className="app-intro">
           ..an app for posting and viewing posts and comments
           <hr />
         </div>
-        <Posts />
+
+        <Route exact path="/" render={({ history }) => (
+          <Posts />
+        )}/>
+
+        <Route path="/category" render={({ history }) => (
+          <Posts />
+        )}/>
+
+        <Route path="/post" render={({ history }) => (
+          <PostDetail />
+        )}/>
+
+        <Route path="/edit" render={({ history }) => (
+          <EditPost />
+        )}/>
+
+        <Route path="/new" render={({ history }) => (
+          <NewPost />
+        )}/>
+
         <hr />
       </div>
     );
@@ -39,7 +66,7 @@ class App extends Component {
 //   })
 // }
 
-// function mapStoreToProps ( { posts }) {
+// function mapStoreToProps ( store ) {
 //   return {
 
 //   }
