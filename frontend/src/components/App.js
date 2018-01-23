@@ -42,8 +42,8 @@ class App extends Component {
           <Posts />
         )}/>
 
-        <Route path="/post" render={({ history }) => (
-          <PostDetail />
+        <Route path="/post" render={(props) => (
+          <PostDetail {...props}/>
         )}/>
 
         <Route path="/edit" render={({ history }) => (
