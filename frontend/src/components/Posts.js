@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchPosts } from '../state/posts/ducks';
+import PostHeader from './PostHeader';
 
 export class Posts extends Component {
 
@@ -38,27 +39,23 @@ export class Posts extends Component {
           <div> {/*sort by*/}
           <ul className="nav"><li>Sort Posts By:</li> <li>Most Recent</li><li>Highest Votes</li></ul>
           </div>
-          <hr />
-          <div><h1>Add New Post</h1><hr /></div>
-          <div> {/*post heading*/}
-            {this.props.posts.map(post => {
-              const {id, title, category, voteScore, commentCount} = post;
-              const {author, timestamp, body} = post;
-              const {deleted} = post;
-              if (deleted) return;
-              // TODO: better if remove before it gets to store
 
-              return (
-                <div key={id}>
-                  <h2>{title}</h2>
-                  <div>votes: {voteScore} increment decrement</div>
-                  <p>{category}</p>
-                  <div>number of comments: {commentCount}</div>
-                  <hr />
-                </div>
-              )
-            })}
+          <hr />
+
+          <div><h1>Add New Post</h1><hr /></div>
+
+          <div> {/*post heading*/}
+            <ol>
+              {this.props.posts.map(post => {
+                return (
+                  <li key={post.id}>
+                    <PostHeader post={post} />
+                  </li>
+                )
+              })}
+            </ol>
           </div>
+
       </div>
     );
   }
