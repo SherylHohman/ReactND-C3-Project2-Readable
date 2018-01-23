@@ -27,7 +27,10 @@ const PostHeader = function(props) {
 
   // may want the path to be in this format: `path="/task/?:taskId?"`
   const location = {
-            pathname: `/post/?:${post.id}`,
+            // pathname: `/post/?:${post.id}`,
+            // pathname: `/post/${post.id}`,
+            // pathname: `/post/id=${post.id}`,
+            pathname: `/post/${post.id}`,
             query: {id: post.id},
             state: { post: props.post }
           }
