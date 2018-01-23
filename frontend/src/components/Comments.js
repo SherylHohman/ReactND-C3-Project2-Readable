@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 // import { fetchPosts } from '../state/posts/ducks';
 
 const Comments = function(props) {
-  const { post } = props.post;
+  const { post } = props;
   console.log('props:', props, 'in Comments Component');
 
   //  TODO: need to know if post was deleted or not.
