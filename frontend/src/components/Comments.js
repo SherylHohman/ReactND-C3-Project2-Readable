@@ -8,24 +8,33 @@ import PropTypes from 'prop-types';
 export class Comments extends Component {
 
   static propTypes = {
-    post:PropTypes.object.isRequired,
+    // post:PropTypes.object.isRequired,
+    post:PropTypes.string.isRequired,
+  }
+
+
+  ComponentDidMount(){
+    console.log('this.props:', this.props.location.state, 'in Comments ComponentDidMount');
+
   }
 
   render(){
-    const { post } = this.props;
-    console.log('this.props:', this.props, 'in Comments Component');
+    // const { post } = this.props;
+    // console.log('this.props:', this.props, 'in Comments Component');ps;
+    const { postId } = this.props;
+    console.log('this.props.postId:', this.props.postId, 'in Comments Component');
 
     //  TODO: need to know if post was deleted or not.
     //    do I pass in the entire post, or just post.id and post.deleted
 
-    if (post.deleted) {
-      return (
-        <div>
-          <h3> ..Oops! This post has been deleted.</h3>
-          <p>No comments to show.</p>
-        </div>
-      )
-    }
+    // if (post.deleted) {
+    //   return (
+    //     <div>
+    //       <h3> ..Oops! This post has been deleted.</h3>
+    //       <p>No comments to show.</p>
+    //     </div>
+    //   )
+    // }
 
     return  (
 

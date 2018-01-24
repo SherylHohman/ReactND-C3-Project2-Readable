@@ -93,7 +93,7 @@ export class PostDetail extends Component {
     return (
       <div>
               <div> -- Post (Detail) Page: {post.body} -- </div>
-              <Comments post={post} />
+              <Comments postId={post.id} />
       </div>
     );
 
