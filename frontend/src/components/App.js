@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Categories from './Categories';
-import Posts from './Posts';
-import PostDetail from './PostDetail';
+import ListPosts from './ListPosts';
+import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
 
@@ -35,15 +35,15 @@ class App extends Component {
         </div>
 
         <Route exact path="/" render={({ history }) => (
-          <Posts />
+          <ListPosts />
         )}/>
 
         <Route path="/category" render={({ history }) => (
-          <Posts />
+          <ListPosts />
         )}/>
 
         <Route path="/post" render={(props) => (
-          <PostDetail {...props}/>
+          <Post {...props}/>
         )}/>
 
         <Route path="/edit" render={({ history }) => (
