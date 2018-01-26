@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../state/posts/ducks';
 import PostHeader from './PostHeader';
-// import changeView from '../state/viewData/ducks';
 import { changeView } from '../state/viewData/ducks';
 
 export class Posts extends Component {
@@ -12,7 +11,9 @@ export class Posts extends Component {
   componentDidMount() {
     if(!this.props.posts || this.props.posts.length < 1) {
       this.props.getPosts();
-    } //else {console.log('POSTS IS TRUTHY, posts:', this.props.posts);}
+    }
+    else {console.log('Posts componentDidMount ..not refetching, posts:', this.props.posts);}
+    // may need to move this to App.js
 
     // console.log('Posts cDM, leaving:', `${this.state||this.props||'no state or props'}`);
   }
@@ -20,7 +21,7 @@ export class Posts extends Component {
   render() {
 
     const propsValue = this.props||this.state||'no props or state'
-    console.log('in Posts render, Props:', propsValue);
+    // console.log('in Posts render, Props:', propsValue);
 
     const havePosts = (this.props && this.props.posts && Array.isArray(this.props.posts)) ? true : false;
 
@@ -57,9 +58,9 @@ export class Posts extends Component {
                   <li key={post.id}>
                     {/*<PostHeader post={post} />*/}
                     {/*<PostHeader onclick= {() => {
-                                          this.props.showPost(`/post/${post.id}`, post.id)
-                                        }}/>*/}
-
+                          this.props.showPost(`/post/${post.id}`, post.id)
+                       }}/>
+                     */}
                     {/*copy Postheader code into here*/}
                     <div>
                       <div key={post.id}>
@@ -91,11 +92,10 @@ export class Posts extends Component {
 }
 
 function mapDispatchToProps(dispatch){
-  console.log("in Posts mapDispatchToProps");
+  // console.log("in Posts mapDispatchToProps");
   return ({
     getPosts: () => dispatch(fetchPosts()),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
-    // onChangeView: (url, selected) => dispatch(changeView()),
   })
 }
 
@@ -104,10 +104,8 @@ function mapStoreToProps ( state ) {
   // console.log("__in Posts mapStoreToProps, state:", state);
   // console.log('__mSTP: posts as enter mapStoreToProps:', state.posts);
 
-const postIds = Object.keys(state.posts);
-  console.log('-------------post object keys (ids)', postIds);
-
   // turn object of post objects into array of post objects (for react mapping)
+  const postIds = Object.keys(state.posts);
   const posts = postIds.reduce((acc, postId) => {
     return acc.concat([state.posts[postId]]);
   }, []);

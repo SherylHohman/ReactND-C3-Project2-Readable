@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
 // import { connect } from 'react-redux';
 // import { fetchPosts } from '../state/posts/ducks';
 
@@ -14,13 +13,15 @@ export class Comments extends Component {
 
 
   ComponentDidMount(){
-    console.log('this.props:', this.props.location.state, 'in Comments ComponentDidMount');
+    // console.log('this.props:', this.props.location.state, 'in Comments ComponentDidMount');
 
+    // TODO: fetch comments for this post
   }
 
   render(){
     // const { post } = this.props;
     // console.log('this.props:', this.props, 'in Comments Component');ps;
+
     const { postId } = this.props;
     console.log('this.props.postId:', this.props.postId, 'in Comments Component');
 

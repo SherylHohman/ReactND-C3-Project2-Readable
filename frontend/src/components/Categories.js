@@ -8,15 +8,17 @@ export class Categories extends Component {
     if (!this.props.categories) {
       this.props.getCategories();
     }
+    else {console.log('Categories componentDidMount ..not refetching, categories:', this.props.categories);}
+    // may need to move this to App.js
+
   }
 
   render() {
 
-    const { dispatch } = this.props;
+    // const { dispatch } = this.props;
 
-    const propsValue = this.props||this.state||'no props or state'
-    console.log('Categories render:', propsValue);
-
+    // const propsValue = this.props||this.state||'no props or state'
+    // console.log('Categories render:', propsValue);
 
     return (
       <div>
@@ -53,11 +55,6 @@ function mapStoreToProps ( { categories }) {
   return {
       categories: categoriesArray,
   }
-  //  I "fixed" nesting in reducer for setting categories from API call
-  //    but in store it *still* gets nested.
-  //  The only way I can seem to "fix" this to have an array in props
-  //    is to unnest it as below ! PUZZLING!! But Works!
-  //    this.props.categories is nor an ARRAY!
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Categories);

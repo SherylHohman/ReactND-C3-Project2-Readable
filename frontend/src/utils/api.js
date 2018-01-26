@@ -37,7 +37,7 @@ export const fetchCategoriesAPI = () => {
 // }
 
 export const fetchPosts = () => {
-  console.log('++ in fetchPosts API');
+  // console.log('++ in fetchPosts API');
   return fetch(`${api}/posts`, { headers })
 }
 

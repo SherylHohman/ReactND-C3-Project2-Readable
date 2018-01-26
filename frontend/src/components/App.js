@@ -13,10 +13,6 @@ class App extends Component {
     console.log("in App componentDidMount");
   }
 
-  state: {
-    username: '',   // controlled input
-  }
-
   render() {
 
     return (
@@ -43,11 +39,8 @@ class App extends Component {
           <Posts />
         )}/>
 
-        {/*<Route path="/post" render={({ history }) => (
+        <Route path="/post" render={({ history }) => (
           <Post/>
-        )}/>*/}
-        <Route path="/post" render={(props) => (
-          <Post {...props}/>
         )}/>
 
         <Route path="/edit" render={({ history }) => (

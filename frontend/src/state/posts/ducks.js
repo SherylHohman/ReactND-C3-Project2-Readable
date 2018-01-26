@@ -5,9 +5,6 @@ import * as ReaderAPI from '../../utils/api';
   const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
   const FETCH_POSTS_FAILURE = 'FETCH_POSTS_FAILURE';
 
-  // export const SELECTED_CATEGORY = 'SELECTED_CATEGORY';
-
-  // export const SELECTED_POST = 'SELECTED_POST'
   // export const FETCH_POST_DETAILS = 'FETCH_POST_DETAILS';
   // export const FETCH_POST_DETAILS_SUCCESS = 'FETCH_POST_DETAILS_SUCCESS';
 
@@ -36,38 +33,30 @@ import * as ReaderAPI from '../../utils/api';
 
   export function fetchPosts(dispatch){
     return (dispatch) => {
-      console.log('--in posts action creator, fetchPosts');
 
       dispatch(requestPosts);
 
       ReaderAPI.fetchPosts()
-
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, fetchPosts');
             throw Error(response.statusText);
-          }
-          else {
-            console.log('__response OK, fetchPosts');
-            // return response.json();
           }
           return response;
         })
 
         .then((response) => response.json())
         .then((data) => {
-          console.log('____response OK, fetchPosts, data:', data);
-          // posts are returned as an array
-          //  change them to Post objects with key===post.id
-          //  NO array in posts object
 
+          // posts are returned as an array
+          //  change them to Post objects where key===post.id
+          //  NO arrays in store
           const postsAsObjects = data.reduce((acc, postData)=>{
             return {
               ...acc,
               [postData.id]: postData,
             }
           }, {})
-          console.log('------postsAsObjects', postsAsObjects);
 
           return (
             dispatch({
@@ -195,11 +184,9 @@ import * as ReaderAPI from '../../utils/api';
 
   // state is an object of (multiple) post objects
   function posts(state=postsInitialState, action) {
-
-    // console.log('----in posts reducer, action:', action);
+    // console.log('posts reducer, action', action)
 
     const { id, timestamp, title, body, author, category } = action;
-    console.log('posts reducer, action', action)
     switch (action.type){
 
       case REQUEST_POSTS:
@@ -207,23 +194,18 @@ import * as ReaderAPI from '../../utils/api';
         return state;
 
       case FETCH_POSTS_SUCCESS:
-        // action data should be an object of post objects
-        // when fetch posts from database is successful, add to store
         return ({
           ...state,
           ...action.posts,
-          // when do `posts: action.posts` I get
-          //  `posts: {posts: {postid1: {..}, postid2: {..}}}`
-          // proper way is to just return ...actoin.posts to get
-          //  posts: {postid1: {..}, postid2: {..}}
-
-          // TODO: set loading spinner off
+          // TODO: turn loading spinner off
         });
 
       case FETCH_POSTS_FAILURE:
           // TODO: UI error message
           return state;
+
       case ADD_POST:
+        // TODO:
         // action data should be a post item with (const) fields
         // const { id, timestamp, title, body, author, category } = action;
         return ({
@@ -242,6 +224,7 @@ import * as ReaderAPI from '../../utils/api';
           }
         });
       case EDIT_POST:
+        // TODO:
         // action data should be a post item with (see const) fields
         // const {id, title, body, category} = action;
         return ({
@@ -258,6 +241,7 @@ import * as ReaderAPI from '../../utils/api';
            }
         });
       case DELETE_POST:
+        // TODO:
         // action data should be a post item with an id field
         return ({
           ...state,
@@ -269,6 +253,7 @@ import * as ReaderAPI from '../../utils/api';
           //  which are "owned" by this post.
         });
       case INCREMENT_VOTE:
+        // TODO:
         // action data should be a post item with an id field
         return ({
           ...state,
@@ -278,6 +263,7 @@ import * as ReaderAPI from '../../utils/api';
           }
         });
       case DECREMENT_VOTE:
+        // TODO:
         // action data should be a post item with an id field
         return ({
           ...state,

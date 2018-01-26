@@ -24,12 +24,6 @@ const PostHeader = function(props) {
   //   )
   // };
 
-  // const showPost = function(){
-  //   const url = `/post/${post.id}`;
-  //   const selected = post.id;
-  //   props.dispatch(props.changeView(url, selected))
-  // }
-
   // may want the path to be in this format: `path="/task/?:taskId?"`
   const location = {
             // pathname: `/post/?:${post.id}`,
@@ -43,7 +37,6 @@ const PostHeader = function(props) {
   return  (
     <div>
       <div key={post.id}>
-        {/*<Link to={location} >*/}
         <Link to={`/post/${post.id}`} onClick={() => {
           props.changeView(`/post/${post.id}`, post.id)
         }}>
@@ -58,48 +51,14 @@ const PostHeader = function(props) {
     </div>
   )
 
-
-    // return  (
-  //   <div>
-  //     <div key={post.id}>
-
-  //       <Link to={`/post/${post.id}/`} >
-  //         <h2>{title}</h2>
-  //       </Link>
-
-  //       <div>votes: {voteScore} increment decrement</div>
-  //       <p>{category}</p>
-  //       <div>number of comments: {commentCount}</div>
-  //       <hr />
-  //     </div>
-  //   </div>
-  // )
-
-
-  // return  (
-  //   <div>
-  //     <div key={post.id}>
-
-  //       <Link to={`/post/${post.id}/`} >
-  //         <h2>{title}</h2>
-  //       </Link>
-
-  //       <div>votes: {voteScore} increment decrement</div>
-  //       <p>{category}</p>
-  //       <div>number of comments: {commentCount}</div>
-  //       <hr />
-  //     </div>
-  //   </div>
-  // )
-
 };
 
-{/*PostHeader.propTypes = {
+/*
+PostHeader.propTypes = {
   post: PropTypes.object.isRequired,       // if keep as a "dumb" component
   // postId: PropTypes.string.isRequired,  // if turn into a connected comp
 }
-
-*/}
+*/
 
 
 // -----------------------

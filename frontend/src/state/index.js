@@ -5,12 +5,6 @@ import comments from "./comments/ducks";
 import user from "./user/ducks";
 import viewData from '../state/viewData/ducks';
 
-
-// export { default as categories } from "./categories/reducers";
-// export { default as posts } from "./posts/reducers";
-// export { default as comments } from "./comments/reducers";
-// export { default as user } from "./user/reducers";
-
 const rootReducer = combineReducers({
   categories,
   posts,
@@ -21,24 +15,15 @@ const rootReducer = combineReducers({
 
 export default rootReducer;
 
-/*
 
-  OR Maybe do this here instead, and just import rootReducer into src/index.js
+// IF combine reducers in index.js instead of here, change to:
 
-------------
+// export { default as categories } from "./categories/reducers";
+// export { default as posts } from "./posts/reducers";
+// export { default as comments } from "./comments/reducers";
+// export { default as user } from "./user/reducers";
 
-import { combineReducers } from 'redux';
-
-export default combineReducers({
-  categories,
-  posts,
-  comments,
-  user
-})
-
--------------
-*/
-
+// ---------------------------------
 
 //  collects the reducers from the named folders
 //  imported by src/index.js  (`import * as reducers from './state'`)

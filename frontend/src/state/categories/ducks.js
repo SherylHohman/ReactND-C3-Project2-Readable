@@ -1,5 +1,3 @@
-// import { combineReducers } from "redux";
-// import * as ReaderAPI from '../../utils/api';
 import { fetchCategoriesAPI } from '../../utils/api';
 
 // ACTION TYPES
@@ -24,15 +22,6 @@ import { fetchCategoriesAPI } from '../../utils/api';
   //    components)
   //  in that case: refactor to use redux-thunks instead (THUNK ACTION CREATOR)
 
-// const requestCategories = () => ({ type: REQUEST_CATEGORIES })
-// // issue #1
-// export function fetchCategories() {
-//   return function (dispatch) {
-//   // issue #2
-//     dispatch(requestCategories)
-//   ...
-//   };
-// };
 
   // const requestCategories = () => ({
   //   type: REQUEST_CATEGORIES
@@ -105,6 +94,7 @@ import { fetchCategoriesAPI } from '../../utils/api';
   // }
 
   export function setCurrentCategory({ selectedCategory=null }) {
+
     // used to filter all posts by category
     //   I don't see a need to make an API call to do this.
     //   -- unless user started on a category page instead of home page
@@ -113,6 +103,7 @@ import { fetchCategoriesAPI } from '../../utils/api';
     //    I'm not convinced, yet.
     //  Thus, I'll INSTEAD store SELECTED CATEGORY in state/store
     //    individual component can filter, just as we did in MyReads App
+
     return({
       type: SET_CURRENT_CATEGORY,
       selectedCategory,
@@ -129,6 +120,7 @@ import { fetchCategoriesAPI } from '../../utils/api';
 // INITIAL STATES
   const categoryInitialState = {};
   const categoriesInitialState = {};
+
 
 // REDUCER(s)
   function categories(state=categoriesInitialState, action){
