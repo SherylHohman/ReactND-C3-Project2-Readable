@@ -60,7 +60,8 @@ componentDidMount() {
               {/*<h2>{post.title}</h2>*/}
               <div> {post.body} </div>
               <div> Edit Post </div>
-              <Comments postId={post.id} />
+              <Comments />
+              {/*<Comments postId={post.id} />*/}
       </div>
     );
 
