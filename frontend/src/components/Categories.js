@@ -4,8 +4,10 @@ import { fetchCategories } from '../state/categories/ducks';
 
 export class Categories extends Component {
 
-  componentWillMount() {
-    this.props.getCategories();
+  componentDidMount() {
+    if (!this.props.categories) {
+      this.props.getCategories();
+    }
   }
 
   render() {

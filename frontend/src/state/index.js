@@ -3,6 +3,8 @@ import categories from "./categories/ducks";
 import posts from "./posts/ducks";
 import comments from "./comments/ducks";
 import user from "./user/ducks";
+import viewData from '../state/viewData/ducks';
+
 
 // export { default as categories } from "./categories/reducers";
 // export { default as posts } from "./posts/reducers";
@@ -13,7 +15,8 @@ const rootReducer = combineReducers({
   categories,
   posts,
   comments,
-  user
+  user,
+  viewData,
 });
 
 export default rootReducer;

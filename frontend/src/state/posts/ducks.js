@@ -2,8 +2,8 @@ import * as ReaderAPI from '../../utils/api';
 
 // ACTION TYPES
   export const REQUEST_POSTS = 'REQUEST_POSTS';
-  export const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
-  export const FETCH_POSTS_FAILURE = 'FETCH_POSTS_FAILURE';
+  const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
+  const FETCH_POSTS_FAILURE = 'FETCH_POSTS_FAILURE';
 
   // export const SELECTED_CATEGORY = 'SELECTED_CATEGORY';
 
@@ -26,13 +26,13 @@ import * as ReaderAPI from '../../utils/api';
   const requestPosts = () => ({
     type: REQUEST_POSTS
   });
-  const fetchPosts_fail = () => ({
-    type: FETCH_POSTS_SUCCESS
-  });
-  const fetchPosts_success = (posts) => ({
-    type: FETCH_POSTS_FAILURE,
-    posts
-  });
+  // const fetchPosts_fail = () => ({
+  //   type: FETCH_POSTS_FAILURE
+  // });
+  // const fetchPosts_success = (posts) => ({
+  //   type: FETCH_POSTS_SUCCESS,
+  //   posts
+  // });
 
   export function fetchPosts(dispatch){
     return (dispatch) => {
@@ -57,11 +57,22 @@ import * as ReaderAPI from '../../utils/api';
         .then((response) => response.json())
         .then((data) => {
           console.log('____response OK, fetchPosts, data:', data);
+          // posts are returned as an array
+          //  change them to Post objects with key===post.id
+          //  NO array in posts object
+
+          const postsAsObjects = data.reduce((acc, postData)=>{
+            return {
+              ...acc,
+              [postData.id]: postData,
+            }
+          }, {})
+          console.log('------postsAsObjects', postsAsObjects);
 
           return (
             dispatch({
               type: FETCH_POSTS_SUCCESS,
-              posts: data
+              posts: postsAsObjects,
             })
           )}
         )
@@ -80,7 +91,7 @@ import * as ReaderAPI from '../../utils/api';
 
 
 
-// ACTION CREATORS
+// ACTION CREATORS (regular)
   // export function fetchPosts(TODO){
   //   // fetch all posts by ownerID (post)
   //   return ({
@@ -188,6 +199,7 @@ import * as ReaderAPI from '../../utils/api';
     // console.log('----in posts reducer, action:', action);
 
     const { id, timestamp, title, body, author, category } = action;
+    console.log('posts reducer, action', action)
     switch (action.type){
 
       case REQUEST_POSTS:
@@ -199,38 +211,18 @@ import * as ReaderAPI from '../../utils/api';
         // when fetch posts from database is successful, add to store
         return ({
           ...state,
-          posts: action.posts,
+          ...action.posts,
+          // when do `posts: action.posts` I get
+          //  `posts: {posts: {postid1: {..}, postid2: {..}}}`
+          // proper way is to just return ...actoin.posts to get
+          //  posts: {postid1: {..}, postid2: {..}}
+
           // TODO: set loading spinner off
         });
 
       case FETCH_POSTS_FAILURE:
           // TODO: UI error message
           return state;
-
-      // case FETCH_POST_DETAILS:
-        //   // Hmm... in this case should "state" be a single post
-        //   // ..or the list of all posts.  Do I need a new action reducer
-        //   // `post` or `postDetails` for actions requiring only a single post?
-        //   // I guess it'll help when I see th eresults of 'FETCH posts API"
-        //   //.. really not a Lot more I can do without either a UI,
-
-        //   // action data should be a post item with all fields
-        //   // const { id, timestamp, title, body, author, category } = action;
-        //   const { voteScore, deleted, commentCount } = action
-        //   return ({
-        //     ...state,
-        //     // ?? am I inserting to a list of posts?,
-        //     //  or is this post the entire thing?
-        //       id,
-        //       timestamp,
-        //       title,
-        //       body,
-        //       author,
-        //       category,
-        //       voteScore,
-        //       deleted,
-        //       commentCount,
-        //   });
       case ADD_POST:
         // action data should be a post item with (const) fields
         // const { id, timestamp, title, body, author, category } = action;

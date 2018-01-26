@@ -7,10 +7,10 @@ import PropTypes from 'prop-types';
 
 export class Comments extends Component {
 
-  static propTypes = {
-    // post:PropTypes.object.isRequired,
-    post:PropTypes.string.isRequired,
-  }
+  // static propTypes = {
+  //   // post:PropTypes.object.isRequired,
+  //   post:PropTypes.string.isRequired,
+  // }
 
 
   ComponentDidMount(){

@@ -1,13 +1,45 @@
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 
-export const changeView = function({ url, selected }){
-  return {
+// ACTION CREATORS
+export const changeView = ({ url, selected }) => ({
     type: CHANGE_VIEW,
     url,
     selected,
-  }
-}
+  })
 
+// export const changeView = () => ({
+//     type: CHANGE_VIEW,
+//     url: '/post/wtf',
+//     selected: 'somePostid',
+//   })
+
+// export const changeView = (url, selected) => {
+// export const changeView = (dispatch, { url, selected }) => {
+// export const changeView = () => {
+  // console.log('...changeView action creator, url:, selected:')//, url, selected);
+  // const obj = {
+  //   type: CHANGE_VIEW,
+  //   url: 'wtf',
+  //   selected: 'somePostid',
+  // }
+  // console.log('.....obj', obj);
+  // return obj;
+  // return ({
+  //   type: CHANGE_VIEW,
+  //   url: 'wtf',
+  //   selected: 'somePostid',
+  // })
+// };
+
+// DATA, INITIAL, SAMPLE
+const sampleData0 = {
+  // probably a bad idea to assume user starts on the home page
+  url: '/',      // home page
+  selected: '',  // all posts (no category filter)
+  // should probably check the loaded url.
+  // When app first loads, need to read user's starting URL. Otherwise
+  // opening up a saved link sends the user to the home page instead.
+}
 const sampleData1 = {
   url: '/post',   // also for edit/new comment or post
   filter: '8xf0y6ziyjabvozdd253nd', // post.id; also use for comment.id
@@ -19,14 +51,10 @@ const sampleData2 = {
     sortBy: 'votes'
   },
 }
-const sampleData3 = {
-  url: '/',   // probably a bad idea to assume user starts on the home page
-  filter: '', // this represents all posts, home page
-  // should probably check the loaded url.
-  // When app first loads, need to read user's starting URL. Otherwise
-  // opening up a saved link sends the user to the home page instead.
-}
-const initialState = {};
+const initialState = {
+  ...sampleData0
+};
+
 //  NOTE, I only need either url OR filter.  I'm experimenting to see
 //    which I prefer. URL prpbably better long term or in a more complex app.
 //    in this simple app, selected requires less code to reach the data
@@ -45,15 +73,19 @@ const initialState = {};
 
 
 function viewData(state=initialState, action){
+  console.log('_in viewData reducer, \nstate:', state, '\naction:', action, );
   switch (action.type) {
     case CHANGE_VIEW:
-    return {
-      url: action.url,
-      selected: action.selected,
-    }
-
+      console.log('____CHANGE_VIEW, action:', action.url, action.selected);
+      return ({
+              ...state,
+              url: action.url,
+              selected: action.selected,
+            });
+    default:
+      console.log('returning default state');
+      return state;
   }
-
 };
 
 export default viewData

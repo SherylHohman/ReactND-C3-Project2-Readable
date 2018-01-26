@@ -1,17 +1,16 @@
 import React, { Component } from 'react';
-// import { connect } from 'react-redux';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../state/posts/ducks';
-import { Route } from 'react-router-dom';  // TODO: DELETE - TEMP for
-import PostDetail from './PostDetail';  // TODO: DELETE - TEMP for debugging.
+import viewData from '../state/viewData/ducks';
 import PropTypes from 'prop-types';
 
-
 const PostHeader = function(props) {
+  console.log('PostHeader props:', props);
   const post = props.post;
 
   //  required to display (see project requirements) Ok, don't show id.
-  const {title, category, voteScore, commentCount} = post;
+  const {id, title, category, voteScore, commentCount} = props.post;
 
   //  not required, but may like to include (at least on PostDetails),
   //  (maybe, maybe not on Home Page, listing of all posts)
@@ -25,6 +24,12 @@ const PostHeader = function(props) {
   //   )
   // };
 
+  // const showPost = function(){
+  //   const url = `/post/${post.id}`;
+  //   const selected = post.id;
+  //   props.dispatch(props.changeView(url, selected))
+  // }
+
   // may want the path to be in this format: `path="/task/?:taskId?"`
   const location = {
             // pathname: `/post/?:${post.id}`,
@@ -35,41 +40,13 @@ const PostHeader = function(props) {
             state: { post: props.post }
           }
 
-  // const location = {
-  //           pathname: '/post',
-  //           query: {id: post.id},
-  //           state: { post: props.post }
-  //         }
-  // https://github.com/ReactTraining/react-router/issues/4036
-
-  // const location = {
-  //           pathname: `/post/${post.id}/`,
-  //           state: { post: props.post }
-  //         }
-
-  // return  (
-  //       /*temp insert PostDetail component directly*/
-  //       <div>
-  //         <PostDetail post={post} />
-  //       </div>
-  //       /*end temp insert PostDetail component directly*/
-  // )
-
-  // return  (
-  //       /*temp insert PostDetail component directly*/
-  //       <div>
-  //         <h2>{title}</h2>
-  //         <PostDetail post={post} />
-  //       </div>
-  //       /*end temp insert PostDetail component directly*/
-  // )
-
-
   return  (
     <div>
       <div key={post.id}>
-
-        <Link to={location} >
+        {/*<Link to={location} >*/}
+        <Link to={`/post/${post.id}`} onClick={() => {
+          props.changeView(`/post/${post.id}`, post.id)
+        }}>
           <h2>{title}</h2>
         </Link>
 
@@ -125,6 +102,7 @@ const PostHeader = function(props) {
 */}
 
 
+// -----------------------
 // export class PostHeader extends Component {
 
 //   render(){
@@ -132,18 +110,26 @@ const PostHeader = function(props) {
 //   }
 // }
 
-// function mapDispatchToProps(dispatch){
-//   return ({
+// -----------------------
 
-//   })
-// }
+function mapDispatchToProps(dispatch){
+  console.log("in PostHeader mapDispatchToProps");
+  return ({
+    changeView: (url, selected) => dispatch(viewData(url, selected))
+  })
+}
 
-// function mapStoreToProps ( store, ownProps ) {
-//   return {
-//     post: ownProps.postId,
-//   }
-// };
+function mapStoreToProps ( store, ownProps ) {
+  console.log('PostHeader, mapStoreToProps, ownProps', ownProps);
+  console.log('PostHeader, mapStoreToProps, store', store);
+  const postId = store.viewData.selected;
+  return {
+    ...ownProps,
+    post: ownProps.post,
+    // post: store.posts[postId],
+  }
+};
 
-// export default connect(mapStoreToProps, mapDispatchToProps)(PostHeader);
+export default connect(mapStoreToProps, mapDispatchToProps)(PostHeader);
 
- export default PostHeader;
+ // export default PostHeader;

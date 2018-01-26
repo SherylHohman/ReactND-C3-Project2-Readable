@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Categories from './Categories';
-import ListPosts from './ListPosts';
+import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
 
 class App extends Component {
 
-  componentWillMount() {
-    console.log("in App componentWillMount");
+  componentDidMount() {
+    console.log("in App componentDidMount");
   }
 
   state: {
@@ -34,14 +34,18 @@ class App extends Component {
           <hr />
         </div>
 
+      {/* Routes */}
         <Route exact path="/" render={({ history }) => (
-          <ListPosts />
+          <Posts />
         )}/>
 
         <Route path="/category" render={({ history }) => (
-          <ListPosts />
+          <Posts />
         )}/>
 
+        {/*<Route path="/post" render={({ history }) => (
+          <Post/>
+        )}/>*/}
         <Route path="/post" render={(props) => (
           <Post {...props}/>
         )}/>
