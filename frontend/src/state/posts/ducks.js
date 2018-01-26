@@ -20,9 +20,9 @@ import * as ReaderAPI from '../../utils/api';
   //  if need access to more state, refactor to use redux-thunk
   //    (Thunk Action Creators)
 
-  const requestPosts = () => ({
-    type: REQUEST_POSTS
-  });
+  // const requestPosts = () => ({
+  //   type: REQUEST_POSTS
+  // });
   // const fetchPosts_fail = () => ({
   //   type: FETCH_POSTS_FAILURE
   // });
@@ -34,7 +34,9 @@ import * as ReaderAPI from '../../utils/api';
   export function fetchPosts(dispatch){
     return (dispatch) => {
 
-      dispatch(requestPosts);
+      dispatch({
+        type: REQUEST_POSTS
+      });
 
       ReaderAPI.fetchPosts()
         .then((response) => {
