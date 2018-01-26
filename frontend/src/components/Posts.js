@@ -56,12 +56,12 @@ export class Posts extends Component {
               {this.props.posts.map(post => {
                 return (
                   <li key={post.id}>
-                    {/*<PostHeader post={post} />*/}
+                    <PostHeader post={post} />
                     {/*<PostHeader onclick= {() => {
-                          this.props.showPost(`/post/${post.id}`, post.id)
+                        this.props.onChangeView(`/post/${post.id}`, post.id)
                        }}/>
                      */}
-                    {/*copy Postheader code into here*/}
+                    {/*copy Postheader code into here* /}
                     <div>
                       <div key={post.id}>
                         <Link to={`/post/${post.id}`} onClick={(e) => {
