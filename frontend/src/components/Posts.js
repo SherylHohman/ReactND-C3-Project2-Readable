@@ -64,9 +64,7 @@ export class Posts extends Component {
                     {/*copy Postheader code into here*/}
                     <div>
                       <div key={post.id}>
-                        {/*<Link to={location} >*/}
                         <Link to={`/post/${post.id}`} onClick={(e) => {
-                          /*this.props.dispatch(changeView(`/post/${post.id}`, post.id))*/
                             this.props.onChangeView(`/post/${post.id}`, post.id)
                         }}>
                           <h2>{post.title}</h2>
