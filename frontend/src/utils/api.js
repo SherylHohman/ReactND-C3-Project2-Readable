@@ -10,40 +10,19 @@ const headers = {
   'Accept': 'application/json',  // for response!
 }
 
-// export const fetchCategoriesAPI = () => {
-//   console.log('.. in fetchCategories API');
-
-//   fetch(`${api}/categories`, { headers })
-//   .then((res) => res.json())
-//   .then((data) => data.categories);
-// }
-
 export const fetchCategoriesAPI = () => {
-  return fetch(`${api}/categories`, { headers })
+  return fetch(`${api}/categories`, { method: 'GET', headers })
 }
-
-// export const fetchPosts = () => {
-//   console.log('++ in fetchPosts API');
-
-//   fetch(`${api}/posts`, { headers })
-//   .then((res) => {
-//     console.log('++ got response from server, res:', res);
-//     return res.json();
-//   })
-//   .then((data) => {
-//      console.log('++ leaving fetchPosts API, posts data :', data);
-//      return data;
-//   })
-// }
 
 export const fetchPosts = () => {
-  // console.log('++ in fetchPosts API');
-  return fetch(`${api}/posts`, { headers })
+  return fetch(`${api}/posts`, { method: 'GET', headers })
 }
 
-export const fetchComments = (id) => {
-  // console.log('++ in fetchComments API');
-  return fetch(`${api}/posts/:${id}/comments`, { headers })
+export const fetchCommentsAPI = (postId) => {
+  return fetch(`${api}/posts/${postId}/comments`, {
+    method: 'GET',
+    headers
+  })
 }
 
 
