@@ -1,4 +1,10 @@
+import * as ReaderAPI from '../../utils/api';
+
 // ACTION TYPES
+  export const REQUEST_COMMENTS = 'REQUEST_COMMENTS';
+  export const FETCH_COMMENTS_SUCCESS = 'FETCH_COMMENTS_SUCCESS';
+  export const FETCH_COMMENTS_FAILURE = 'FETCH_COMMENTS_FAILURE';
+
   export const ADD_COMMENT = 'ADD_COMMENT';
   export const EDIT_COMMENT = 'EDIT_COMMENT';
   export const DELETE_COMMENT = 'DELETE_COMMENT';
@@ -7,17 +13,53 @@
   export const DECREMENT_VOTE = 'DECREMENT_VOTE';
 
 // ACTION CREATORS
-  export function getComments(postID){
-    // TODO: ? accepts postID or comments object of comments
-    return ({
-      type: GET_COMMENTS,
-      // TODO: ? sends out postID or a comments object of comments
-      // is this part of the middleware thing ?
-      id: postID
-    });
-    // API fetches of all comments for current post
-    //  API needs ID of current post
-    //  API returns comments for that post
+  export function fetchComments(dispatch){
+    return (dispatch) => {
+
+      dispatch({
+        type: FETCH_COMMENTS_SUCCESS,
+      });
+
+      ReaderAPI.fetchComments()
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, fetchComments');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+
+          // Comments are returned as an array
+          //  change them to Comment objects where key===comment.id
+          //  NO arrays in store
+          const commentsAsObjects = data.reduce((acc, commentData)=>{
+            return {
+              ...acc,
+              [commentData.id]: commentData,
+            }
+          }, {})
+
+          return (
+            dispatch({
+              type: FETCH_COMMENTS_SUCCESS,
+              comments: commentsAsObjects,
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: FETCH_COMMENTS_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
   };
 
   export function editComment({ id, title, body }){
@@ -95,18 +137,19 @@
   // function comment(state=sampleData, action) {
     const { id } = action
     switch (action.type){
-      case GET_COMMENTS:
-        // when Get Comments API has returned with list of all comments  (hm is this ALL comments, or only comments for a particular post ?)
+      case REQUEST_COMMENTS:
+        // TODO set loading spinner on
+        return state;
+      case FETCH_COMMENTS_SUCCESS:
         return ({
           ...state,
-          comments: action.comments,
-          // TODO:
-          // UH Oh, actionCreator took in an postID
-          // but here, I need object of comments objects.
-          // now I'm confused. API needs id, I need comment objects.
-          //  is this where middleware comes in ?
-          //   bit more clarification.  Head still doesn't understand fully.
+          ...action.comments,
+          // TODO: turn loading spinner off
         });
+      case FETCH_COMMENTS_FAILURE:
+          // TODO: UI error message
+          return state;
+
       case ADD_COMMENT:
         return ({
           ...state,
@@ -126,7 +169,7 @@
           ...state,
            [id]: {
             ...[id],
-            // do I keep the original post time, or update to time of latest edit ?
+            // do I keep the original comment time, or update to time of latest edit ?
             // timestamp: action.timestamp,
             body: action.body,
             title: action.title,

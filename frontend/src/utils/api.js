@@ -41,6 +41,11 @@ export const fetchPosts = () => {
   return fetch(`${api}/posts`, { headers })
 }
 
+export const fetchComments = (id) => {
+  // console.log('++ in fetchComments API');
+  return fetch(`${api}/posts/:${id}/comments`, { headers })
+}
+
 
 // Business logic of handling the response is now in the actionCreator.
 //  Not sure I'm happy with it there, but it works Now!!
