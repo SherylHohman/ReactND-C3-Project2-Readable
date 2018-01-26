@@ -13,25 +13,27 @@ import * as ReaderAPI from '../../utils/api';
   export const DECREMENT_VOTE = 'DECREMENT_VOTE';
 
 // ACTION CREATORS
-  export function fetchComments(dispatch){
+  export function fetchComments(dispatch, postId){
     return (dispatch) => {
 
       dispatch({
         type: FETCH_COMMENTS_SUCCESS,
       });
 
-      ReaderAPI.fetchComments()
+      ReaderAPI.fetchCommentsAPI(postId)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, fetchComments');
             throw Error(response.statusText);
           }
+          // console.log('__response OK, fetchComments', response);
           return response;
         })
 
         .then((response) => response.json())
         .then((data) => {
 
+          console.log('___data from comments API', data);
           // Comments are returned as an array
           //  change them to Comment objects where key===comment.id
           //  NO arrays in store
@@ -133,14 +135,16 @@ import * as ReaderAPI from '../../utils/api';
   // state (inside the components) would be transformed into an array of sampleComment items
 
 // REDUCER(s)
-  function comments(state=sampleComments, action) {
+  function comments(state={}, action) {
   // function comment(state=sampleData, action) {
     const { id } = action
+
     switch (action.type){
       case REQUEST_COMMENTS:
         // TODO set loading spinner on
         return state;
       case FETCH_COMMENTS_SUCCESS:
+        console.log('api, action', action);
         return ({
           ...state,
           ...action.comments,
