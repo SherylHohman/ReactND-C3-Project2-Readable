@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import Categories from './Categories';
 import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
@@ -22,7 +21,6 @@ class App extends Component {
 
         <header className="app-header">
           <h1 className="app-title">Readable</h1>
-          <Categories />
         </header>
 
         <div className="app-intro">
