@@ -10,28 +10,30 @@ export const changeView = ({ url, selected }) => ({
 
 
 // DATA, INITIAL, SAMPLE
-const sampleData0 = {
-  // probably a bad idea to assume user starts on the home page
-  url: '/',      // home page
-  selected: '',  // all posts (no category filter)
-  // should probably check the loaded url.
-  // When app first loads, need to read user's starting URL. Otherwise
-  // opening up a saved link sends the user to the home page instead.
-}
-const sampleData1 = {
-  url: '/post',   // also for edit/new comment or post
-  filter: '8xf0y6ziyjabvozdd253nd', // post.id; also use for comment.id
-}
-const sampleData2 = {
-  url: '/category',
-  filter: {
-    category: 'react',
-    sortBy: 'votes'
-  },
-}
-const initialState = {
-  ...sampleData0
-};
+  const sampleHomePage = {
+    // probably a bad idea to assume user starts on the home page
+    url: '/',      // home page
+    selected: '',  // all posts (no category filter)
+    // should probably check the loaded url.
+    // When app first loads, need to read user's starting URL. Otherwise
+    // opening up a saved link sends the user to the home page instead.
+  }
+
+  // const samplePostOrCommentPage = {
+  //   url: '/post',   // also format for edit/new comment or post
+  //   filter: '8xf0y6ziyjabvozdd253nd', // post.id; also use for comment.id
+  // }
+  // const sampleCategoryPage = {
+  //   url: '/category',
+  //   filter: {
+  //     category: 'react',
+  //     sortBy: 'votes'
+  //   },
+  // }
+  const initialState = {
+    // TODO: set this with data from browser URL
+    ...sampleHomePage
+  };
 
 
 function viewData(state=initialState, action){
