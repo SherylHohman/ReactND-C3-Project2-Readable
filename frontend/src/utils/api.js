@@ -1,3 +1,6 @@
+export const upVote = "upVote";
+export const downVote = "downVote";
+
 const api = "http://localhost:3001"
 
 let token = localStorage.token
@@ -36,6 +39,7 @@ const headers = {
   export const fetchCommentsAPI = (postId) => {
     return fetch(`${api}/posts/${postId}/comments`, { method: 'GET', headers })
   }
+
   // Gets specified comment
   export const fetchCommentAPI = (commentId) => {
     return fetch(`${api}/comments/${commentId}`, { method: 'GET', headers })
@@ -44,37 +48,67 @@ const headers = {
 //  DELETING
   //  sets comment's `deleted` flag to `true`
     export const deleteCommentAPI = (commentId) => {
-      return fetch(`${api}/comments/${commentId}`, { method: 'DELETE', headers })
+      return fetch(`${api}/comments/${commentId}`, {
+        method: 'DELETE',
+        headers
+      })
     }
   //  sets posts's `deleted` flag to `true` AND
   //    all child comment's `parentDeleted` flag to `true`
     export const deletePostAPI = (postId) => {
-      return fetch(`${api}/posts/${postId}`, { method: 'DELETE', headers })
+      return fetch(`${api}/posts/${postId}`, {
+        method: 'DELETE',
+        headers
+      })
     }
 
 // ADDING
   // Adds a post:
   //  {id, timestap, title, body, author, category===existingCategory}
-  export const addPostAPI = (TODO) => {
-    return fetch(`${api}/posts`, { method: 'POST', headers })
+  export const addPostAPI = (addPostData) => {
+    return fetch(`${api}/posts`, {
+      method: 'POST',
+      headers,
+      ...addPostData,
+       })
   }
 
   // Adds a comment to a post:
   //  {id, timestap, body, author, parentId===existingPostId}
-  export const addCommentAPI = (TODO) => {
-    return fetch(`${api}/comments`, { method: 'POST', headers })
+  export const addCommentAPI = (addCommentData) => {
+    return fetch(`${api}/comments`, {
+      method: 'POST',
+      headers,
+      ...addCommentData,
+    })
+
   }
 
 // MODIFYING/ EDITING
   // Vote on a post
-  //  {option=="upVote" OR option=="downVote"}
-  export const votePostAPI = (postId, TODO) => {
-    return fetch(`${api}/posts/${postId}`, { method: 'POST', headers })
+  //  {option=="upVote" OR option=="downVote" see export at top of file}
+  export const votePostAPI = (postId, vote) => {
+    if (vote !== 'upVote' AND vote !== 'downVote') {
+      console.log('api.js, votePostAPI, "vote" must a string containing either: "upVote" or "downVote"');
+    }
+    return fetch(`${api}/posts/${postId}`, {
+      method: 'POST',
+      headers,
+      body: {
+        option: vote
+      }
+     });
   }
   // Vote on a comment
-  //  {option=="upVote" OR option=="downVote"}
-  export const voteCommentAPI = (commentId, TODO) => {
-    return fetch(`${api}/comments/${commentId}`, { method: 'POST', headers })
+  //  {option=="upVote" OR option=="downVote" see export at top of file}
+  export const voteCommentAPI = (commentId, vote) => {
+    return fetch(`${api}/comments/${commentId}`, {
+      method: 'POST',
+      headers,
+      body: {
+        option: vote
+      }
+    });
   }
 
 
@@ -84,14 +118,27 @@ const headers = {
 
   // Edit a post
   //  {title, body}
-  export const editPostAPI = (postId, TODO) => {
-    return fetch(`${api}/posts/${postId}`, { method: 'PUT', headers })
+  export const editPostAPI = (postId, editPostData) => {
+    return fetch(`${api}/posts/${postId}`, {
+      method: 'PUT',
+      headers,
+      body: {
+        ...editPostData,
+      }
+    })
   }
   // Edit a comment
   //   QUESTION: editing a comment, we *change* the timestamp ?
   //  {timestamp, body}
-  export const editCommentAPI = (commentId, TODO) => {
-    return fetch(`${api}/comments/${commentId}`, { method: 'PUT', headers })
+  export const editCommentAPI = (commentId, editCommentData) => {
+    return fetch(`${api}/comments/${commentId}`, {
+      method: 'PUT',
+      headers,
+      body: {
+        ...editCommentData,
+      }
+    })
+
   }
 
 
