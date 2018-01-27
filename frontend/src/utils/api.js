@@ -46,6 +46,7 @@ const headers = {
   }
 
 //  DELETING
+
   //  sets comment's `deleted` flag to `true`
     export const deleteComment = (commentId) => {
       return fetch(`${api}/comments/${commentId}`, {
@@ -63,6 +64,7 @@ const headers = {
     }
 
 // ADDING
+
   // Adds a post:
   //  {id, timestap, title, body, author, category===existingCategory}
   export const addPost = (addPostData) => {
@@ -85,10 +87,11 @@ const headers = {
   }
 
 // MODIFYING/ EDITING
+
   // Vote on a post
   //  {option=="upVote" OR option=="downVote" see export at top of file}
   export const voteOnPost = (postId, vote) => {
-    if (vote !== 'upVote' && vote !== 'downVote') {
+    if (vote !== upVote && vote !== downVote) {
       console.log('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
     }
     return fetch(`${api}/posts/${postId}`, {
@@ -110,7 +113,6 @@ const headers = {
       }
     });
   }
-
 
   // TODO:
   // QUESTION: editing a comment, we *change* the timestamp ?
@@ -142,19 +144,14 @@ const headers = {
   }
 
 
-
-
-
-
-
-
-
-
 // NOTES:
-  // Business logic of handling the response is now in the actionCreator.
-  //  Not sure I'm happy with it there, but it works Now!!
-  // thing is that since all the "thenning" was happened here,
-  // "cannot then on undefined" or something ike that
-  // -- there were no more "then"s to be had.
-  // Can "then" HERE or THERE. Not both.  Not Even *1* of them!
-  // *EITHER RETURN, OR  THEN*
+  // Business logic of handling the responses are now in the (fat) action creators.
+  //  Not sure I'm happy with it there, but it works!!
+  //  Basically, I need to check response.ok to know whether to send out
+  //    a _SUCCESS action or a _FAILURE action
+  //    and that must happen before res.json()
+  //  So, *all* the "thenning" must happen in 1 location.
+  //    Essentiallly, it seems better to dispatch actions there than here,
+  //    so I just return the raw response from here.
+  //  This may change, if I learn a better pattern for handling the combo of:
+  //    dispatch success/failure, unwrap the api res, parsing data from api
