@@ -17,7 +17,7 @@ import * as ReaderAPI from '../../utils/api';
     return (dispatch) => {
 
       dispatch({
-        type: FETCH_COMMENTS_SUCCESS,
+        type: REQUEST_COMMENTS,
       });
 
       ReaderAPI.fetchComments(postId)
