@@ -13,6 +13,10 @@ const PostHeader = function(props) {
   //  not required; may like to include (on Post, maybe not Home),
   const {author, timestamp} = post;
 
+  const d = new Date(timestamp);
+  const months = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+  const publishedDate = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
   return  (
     <div>
       <div key={id}>
@@ -23,7 +27,7 @@ const PostHeader = function(props) {
         </Link>
 
         <div><button>increment</button> | votes: {voteScore} | <button>decrement</button></div>
-        <p>{category} | {author} | {timestamp}</p>
+        <p>Category: {category} | By: {author} | On: {publishedDate}</p>
         <div>number of comments: {commentCount}</div>
         <hr />
       </div>
