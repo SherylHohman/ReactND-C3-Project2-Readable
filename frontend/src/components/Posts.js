@@ -49,35 +49,24 @@ export class Posts extends Component {
 
           <hr />
 
-          <div><h1>Add New Post</h1><hr /></div>
+          <div><h2>Add New Post</h2><hr /></div>
 
           <div> {/*post heading*/}
             <ol>
               {this.props.posts.map(post => {
                 return (
                   <li key={post.id}>
-                    <PostHeader post={post} />
-                    {/*<PostHeader onclick= {() => {
-                        this.props.onChangeView(`/post/${post.id}`, post.id)
-                       }}/>
-                     */}
-                    {/*copy Postheader code into here* /}
                     <div>
-                      <div key={post.id}>
-                        <Link to={`/post/${post.id}`} onClick={(e) => {
-                            this.props.onChangeView(`/post/${post.id}`, post.id)
-                        }}>
-                          <h2>{post.title}</h2>
-                        </Link>
-
-                        <div>votes: {post.voteScore} increment decrement</div>
-                        <p>{post.category}</p>
-                        <div>number of comments: {post.commentCount}</div>
-                        <hr />
-                      </div>
-                    </div>
-                    {/*end copy Postheader code into here*/}
-
+                      <Link to={`/post/${post.id}`} onClick={() => {
+                        this.props.onChangeView(`/post/${post.id}`, post.id)
+                      }}>
+                        <h1>{post.title}</h1>
+                      </Link>
+                      <div>{post.voteScore} Votes | {post.commentCount} Comments</div>
+                      <p>{post.category}</p>
+                      <div></div>
+                      <hr />
+                   </div>
                   </li>
                 )
               })}
