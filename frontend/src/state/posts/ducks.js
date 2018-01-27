@@ -98,10 +98,10 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
-            return {
-              // TODO
-              // [postData.id]: data,
-            }
+            // return {
+            //   // TODO
+            //   // [postData.id]: data,
+            // }
 
           return (
             dispatch({
@@ -372,22 +372,22 @@ import * as ReaderAPI from '../../utils/api';
   const postsInitialState = {}
 
 // SAMPLE DATA
-  const samplePost = {
-      id: '8xf0y6ziyjabvozdd253nd',
-      timestamp: 1467166872634,
-      title: 'Udacity is the best place to learn React',
-      body: 'Everyone says so after all.',
-      author: 'thingtwo',
-      category: 'react',
-      voteScore: 6,
-      deleted: false,
-      commentCount: 2
-    }
+  // const samplePost = {
+  //     id: '8xf0y6ziyjabvozdd253nd',
+  //     timestamp: 1467166872634,
+  //     title: 'Udacity is the best place to learn React',
+  //     body: 'Everyone says so after all.',
+  //     author: 'thingtwo',
+  //     category: 'react',
+  //     voteScore: 6,
+  //     deleted: false,
+  //     commentCount: 2
+  //   }
 
-  const samplePosts = {
-    ...postsInitialState,
-    "8xf0y6ziyjabvozdd253nd": { ...samplePost },
-  };
+  // const samplePosts = {
+  //   ...postsInitialState,
+  //   "8xf0y6ziyjabvozdd253nd": { ...samplePost },
+  // };
 
 
 // REDUCERS
