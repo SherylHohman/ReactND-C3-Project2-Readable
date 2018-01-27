@@ -5,31 +5,31 @@ import * as ReaderAPI from '../../utils/api';
   const FETCH_POSTS_SUCCESS = 'FETCH_POSTS_SUCCESS';
   const FETCH_POSTS_FAILURE = 'FETCH_POSTS_FAILURE';
 
-  // export const FETCH_POST_DETAILS = 'FETCH_POST_DETAILS';
-  // export const FETCH_POST_DETAILS_SUCCESS = 'FETCH_POST_DETAILS_SUCCESS';
+  export const REQUEST_POST = 'REQUEST_POST';
+  const FETCH_POST_SUCCESS = 'FETCH_POST_SUCCESS';
+  const FETCH_POST_FAILURE = 'FETCH_POST_FAILURE';
 
-  export const ADD_POST = 'ADD_POST';
-  export const EDIT_POST = 'EDIT_POST';
-  export const DELETE_POST = 'DELETE_POST';
-  export const INCREMENT_VOTE = 'INCREMENT_VOTE';
-  export const DECREMENT_VOTE = 'DECREMENT_VOTE';
+  export const REQUEST_ADD_POST = 'REQUEST_ADD_POST';
+   const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
+   const ADD_POST_FAILURE = 'ADD_POST_FAILURE';
+
+  export const REQUEST_EDIT_POST = 'REQUEST_EDIT_POST';
+   const EDIT_POST_SUCCESS = 'EDIT_POST_SUCCESS';
+   const EDIT_POST_FAILURE = 'EDIT_POST_FAILURE';
+
+  export const REQUEST_DELETE_POST = 'REQUEST_DELETE_POST';
+   const DELETE_POST_SUCCESS = 'DELETE_POST_SUCCESS';
+   const DELETE_POST_FAILURE = 'DELETE_POST_FAILURE';
+
+  export const REQUEST_VOTE_POST = 'REQUEST_VOTE_POST';
+   const VOTE_POST_FAILURE = 'VOTE_POST_FAILURE';
+   const VOTE_POST_SUCCESS = 'VOTE_POST_SUCCESS';
 
 
 // FAT ACTION CREATORS
   //  (business logic decides which action(s) to create/dispatch)
   //  if need access to more state, refactor to use redux-thunk
   //    (Thunk Action Creators)
-
-  // const requestPosts = () => ({
-  //   type: REQUEST_POSTS
-  // });
-  // const fetchPosts_fail = () => ({
-  //   type: FETCH_POSTS_FAILURE
-  // });
-  // const fetchPosts_success = (posts) => ({
-  //   type: FETCH_POSTS_SUCCESS,
-  //   posts
-  // });
 
   export function fetchPosts(dispatch){
     return (dispatch) => {
@@ -80,6 +80,214 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
+  export function fetchPost(dispatch){
+    return (dispatch) => {
+
+      dispatch({
+        type: REQUEST_POST
+      });
+
+      ReaderAPI.fetchPost()
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, fetchPosts');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+            return {
+              // TODO
+              // [postData.id]: data,
+            }
+
+          return (
+            dispatch({
+              type: FETCH_POST_SUCCESS,
+              // post: post, // TODO
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: FETCH_POSTS_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
+  };
+
+  export function addPost(dispatch){
+    return (dispatch) => {
+
+      dispatch({
+        type: REQUEST_ADD_POST
+      });
+
+      ReaderAPI.addPost()
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, addPost');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+
+          return (
+            dispatch({
+              type: ADD_POST_SUCCESS,
+              // TODO
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: ADD_POST_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
+  };
+
+  export function editPost(dispatch){
+    return (dispatch) => {
+
+      dispatch({
+        type: REQUEST_EDIT_POST
+      });
+
+      ReaderAPI.editPost()
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, editPost');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+
+          return (
+            dispatch({
+              type: EDIT_POST_SUCCESS,
+              // TODO
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: EDIT_POST_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
+  };
+
+  export function deletePost(dispatch){
+    return (dispatch) => {
+
+      dispatch({
+        type: REQUEST_DELETE_POST
+      });
+
+      ReaderAPI.deletePost()
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, deletePost');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+
+          return (
+            dispatch({
+              type: DELETE_POST_SUCCESS,
+              // TODO
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: DELETE_POST_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
+  };
+
+  export function votePost(dispatch){
+    return (dispatch) => {
+
+      dispatch({
+        type: REQUEST_VOTE_POST
+      });
+
+      ReaderAPI.votePost()
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, votePost');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+
+          // posts are returned as an array
+          //  change them to Post objects where key===post.id
+          //  NO arrays in store
+          const postsAsObjects = data.reduce((acc, postData)=>{
+            return {
+              ...acc,
+              [postData.id]: postData,
+            }
+          }, {})
+
+          return (
+            dispatch({
+              type: VOTE_POST_SUCCESS,
+              posts: postsAsObjects,
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: VOTE_POST_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
+  };
 
 
 // ACTION CREATORS (regular)
@@ -119,46 +327,46 @@ import * as ReaderAPI from '../../utils/api';
   //     // TODO:
   //   });
   // };
-  export function addPost(TODO){
-    // fetch all posts by ownerID (post)
-    return ({
-      type: ADD_POST,
-      // TODO:
-    });
-  };
-  export function editPost(TODOTODO){
-    return ({
-      type: EDIT_POST,
-      // TODO
-    });
-  };
-  export function deletePost(TODO){
-    // (set in DB and state)
-    // doesn't actually DELETE post from database
-    // it sets it's and it's "deletedPost" flag to True, hence it won't be returned by an SPI query ?
-    //  OR, I need to check the returned Query, and Only Display posts where its "deletedPost" is false.
+  // export function addPost(TODO){
+  //   // fetch all posts by ownerID (post)
+  //   return ({
+  //     type: ADD_POST,
+  //     // TODO:
+  //   });
+  // };
+  // export function editPost(TODO){
+  //   return ({
+  //     type: EDIT_POST,
+  //     // TODO
+  //   });
+  // };
+  // export function deletePost(TODO){
+  //   // (set in DB and state)
+  //   // doesn't actually DELETE post from database
+  //   // it sets it's and it's "deletedPost" flag to True, hence it won't be returned by an SPI query ?
+  //   //  OR, I need to check the returned Query, and Only Display posts where its "deletedPost" is false.
 
-    // REMEMBER to update deletedParent property on every COMMENT owned by the deletedPost.
-    //
-    return ({
-      type: DELETE_POST,
-      // TODO:
-    });
-  };
-  export function incrementVote(id){
-    // need id, or id and voteScore ?
-    return ({
-      type: INCREMENT_VOTE,
-      id,
-    });
-  };
-  export function decrementVote(id){
-    // need id, or id and voteScore ?
-    return ({
-      type: DECREMENT_VOTE,
-      id,
-    });
-  };
+  //   // REMEMBER to update deletedParent property on every COMMENT owned by the deletedPost.
+  //   //
+  //   return ({
+  //     type: DELETE_POST,
+  //     // TODO:
+  //   });
+  // };
+  // export function incrementVote(id){
+  //   // need id, or id and voteScore ?
+  //   return ({
+  //     type: VOTE_POST,
+  //     id,
+  //   });
+  // };
+  // export function decrementVote(id){
+  //   // need id, or id and voteScore ?
+  //   return ({
+  //     type: VOTE_POST_SUCCESS,
+  //     id,
+  //   });
+  // };
 
 // INITIAL STATE
   const postsInitialState = {}
@@ -194,19 +402,39 @@ import * as ReaderAPI from '../../utils/api';
       case REQUEST_POSTS:
         // TODO set loading spinner on
         return state;
-
       case FETCH_POSTS_SUCCESS:
         return ({
           ...state,
           ...action.posts,
           // TODO: turn loading spinner off
         });
-
       case FETCH_POSTS_FAILURE:
           // TODO: UI error message
           return state;
 
-      case ADD_POST:
+      case REQUEST_POST:
+        // TODO set loading spinner on
+        return state;
+      case FETCH_POST_SUCCESS:
+        return ({
+          ...state,
+          ...action.post,
+          // TODO: turn loading spinner off
+        });
+      case FETCH_POST_FAILURE:
+          // TODO: UI error message
+          return state;
+
+
+      case REQUEST_ADD_POST:
+        // TODO:
+        return state;
+      case ADD_POST_FAILURE:
+        // TODO error message
+        return ({
+          ...state,
+        });
+      case ADD_POST_SUCCESS:
         // TODO:
         // action data should be a post item with (const) fields
         // const { id, timestamp, title, body, author, category } = action;
@@ -225,7 +453,13 @@ import * as ReaderAPI from '../../utils/api';
             commentCount: 0,
           }
         });
-      case EDIT_POST:
+
+      case REQUEST_EDIT_POST:
+        // TODO:
+        return ({
+          ...state,
+        });
+      case EDIT_POST_SUCCESS:
         // TODO:
         // action data should be a post item with (see const) fields
         // const {id, title, body, category} = action;
@@ -242,7 +476,14 @@ import * as ReaderAPI from '../../utils/api';
             // author: action.author,
            }
         });
-      case DELETE_POST:
+      case EDIT_POST_FAILURE:
+        // TODO: UI error message
+        return state;
+
+      case REQUEST_DELETE_POST:
+        // TODO:
+        return state;
+      case DELETE_POST_SUCCESS:
         // TODO:
         // action data should be a post item with an id field
         return ({
@@ -254,37 +495,29 @@ import * as ReaderAPI from '../../utils/api';
           // Also Need to set `parentDeleted` property for ALL COMMENTS
           //  which are "owned" by this post.
         });
-      case INCREMENT_VOTE:
+      case DELETE_POST_FAILURE:
+        // TODO: UI error message
+        return state;
+
+      case REQUEST_VOTE_POST:
         // TODO:
-        // action data should be a post item with an id field
+        return state;
+      case VOTE_POST_SUCCESS:
+        // TODO:
         return ({
           ...state,
-          [action.id]: {
-            ...state[action.id],
-            voteScore: state[action.id].voteScore + 1,
+          // TODO:
           }
-        });
-      case DECREMENT_VOTE:
-        // TODO:
-        // action data should be a post item with an id field
-        return ({
-          ...state,
-          [action.id]: {
-            ...state[action.id],
-            voteScore: state[action.id].voteScore - 1,
-          }
-        });
+        );
+      case VOTE_POST_FAILURE:
+          // TODO: UI error message
+          return state;
 
       default:
         return state;
     }
   }
 
-
-// export default combineReducers({
-//   post,
-//   posts,
-// })
 
 // export default post
 export default posts
