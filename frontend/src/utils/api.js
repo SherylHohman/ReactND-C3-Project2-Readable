@@ -87,7 +87,7 @@ const headers = {
 // MODIFYING/ EDITING
   // Vote on a post
   //  {option=="upVote" OR option=="downVote" see export at top of file}
-  export const votePost = (postId, vote) => {
+  export const voteOnPost = (postId, vote) => {
     if (vote !== 'upVote' && vote !== 'downVote') {
       console.log('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
     }

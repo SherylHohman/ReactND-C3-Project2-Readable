@@ -21,9 +21,9 @@ import * as ReaderAPI from '../../utils/api';
    const DELETE_POST_SUCCESS = 'DELETE_POST_SUCCESS';
    const DELETE_POST_FAILURE = 'DELETE_POST_FAILURE';
 
-  export const REQUEST_VOTE_POST = 'REQUEST_VOTE_POST';
-   const VOTE_POST_FAILURE = 'VOTE_POST_FAILURE';
-   const VOTE_POST_SUCCESS = 'VOTE_POST_SUCCESS';
+  export const REQUEST_VOTE_ON_POST = 'REQUEST_VOTE_ON_POST';
+   const VOTE_ON_POST_FAILURE = 'VOTE_ON_POST_FAILURE';
+   const VOTE_ON_POST_SUCCESS = 'VOTE_ON_POST_SUCCESS';
 
 
 // FAT ACTION CREATORS
@@ -240,14 +240,14 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function votePost(dispatch){
+  function voteOnPost(dispatch){
     return (dispatch) => {
 
       dispatch({
-        type: REQUEST_VOTE_POST
+        type: REQUEST_VOTE_ON_POST
       });
 
-      ReaderAPI.votePost()
+      ReaderAPI.voteOnPost()
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, votePost');
@@ -258,21 +258,11 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
-
-          // posts are returned as an array
-          //  change them to Post objects where key===post.id
-          //  NO arrays in store
-          const postsAsObjects = data.reduce((acc, postData)=>{
-            return {
-              ...acc,
-              [postData.id]: postData,
-            }
-          }, {})
-
+            // TODO: see what data is returned; determine how to proceed
           return (
             dispatch({
-              type: VOTE_POST_SUCCESS,
-              posts: postsAsObjects,
+              type: VOTE_ON_POST_SUCCESS,
+              // TODO: determine how to update post's vote score in store
             })
           )}
         )
@@ -280,13 +270,19 @@ import * as ReaderAPI from '../../utils/api';
         .catch(err => {
           console.error(err);  //  in case of render error
           dispatch({
-            type: VOTE_POST_FAILURE,
+            type: VOTE_ON_POST_FAILURE,
             err,
             error: true,
           })
         });
 
     };  // anon function(dispatch) wrapper
+  };
+  export function incrementPostVote(id){
+    voteOnPost(id, ReaderAPI.upVote)
+  };
+  export function decrementPostVote(id){
+    voteOnPost(id, ReaderAPI.downVote)
   };
 
 
@@ -356,14 +352,14 @@ import * as ReaderAPI from '../../utils/api';
   // export function incrementVote(id){
   //   // need id, or id and voteScore ?
   //   return ({
-  //     type: VOTE_POST,
+  //     type: VOTE_ON_POST,
   //     id,
   //   });
   // };
   // export function decrementVote(id){
   //   // need id, or id and voteScore ?
   //   return ({
-  //     type: VOTE_POST_SUCCESS,
+  //     type: VOTE_ON_POST_SUCCESS,
   //     id,
   //   });
   // };
@@ -499,17 +495,17 @@ import * as ReaderAPI from '../../utils/api';
         // TODO: UI error message
         return state;
 
-      case REQUEST_VOTE_POST:
+      case REQUEST_VOTE_ON_POST:
         // TODO:
         return state;
-      case VOTE_POST_SUCCESS:
-        // TODO:
+      case VOTE_ON_POST_SUCCESS:
+        // TODO:  see data returned
         return ({
           ...state,
-          // TODO:
+          // TODO: determine how to update Pots's voteScore in store
           }
         );
-      case VOTE_POST_FAILURE:
+      case VOTE_ON_POST_FAILURE:
           // TODO: UI error message
           return state;
 
