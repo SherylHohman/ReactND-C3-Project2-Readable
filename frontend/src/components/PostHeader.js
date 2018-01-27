@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchPosts } from '../state/posts/ducks';
 import { changeView } from '../state/viewData/ducks';
 import PropTypes from 'prop-types';
 
@@ -16,15 +15,15 @@ const PostHeader = function(props) {
 
   return  (
     <div>
-      <div key={post.id}>
-        <Link to={`/post/${post.id}`} onClick={() => {
-          props.onChangeView(`/post/${post.id}`, post.id)
+      <div key={id}>
+        <Link to={`/post/${id}`} onClick={() => {
+          props.onChangeView(`/post/${id}`, id)
         }}>
           <h2>{title}</h2>
         </Link>
 
         <div><button>increment</button> | votes: {voteScore} | <button>decrement</button></div>
-        <p>{category}</p>
+        <p>{category} | {author} | {timestamp}</p>
         <div>number of comments: {commentCount}</div>
         <hr />
       </div>
@@ -49,9 +48,9 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps ( store, ownProps ) {
   const postId = store.viewData.selected;
   return {
-    ...ownProps,
-    post: ownProps.post,
-    // post: store.posts[postId],
+    // ...ownProps,
+    // post: ownProps.post,
+    post: store.posts[postId],
   }
 };
 
