@@ -9,8 +9,10 @@ import * as ReaderAPI from '../../utils/api';
   export const EDIT_COMMENT = 'EDIT_COMMENT';
   export const DELETE_COMMENT = 'DELETE_COMMENT';
   export const GET_COMMENTS = 'GET_COMMENTS';
-  export const INCREMENT_VOTE = 'INCREMENT_VOTE';
-  export const DECREMENT_VOTE = 'DECREMENT_VOTE';
+
+  export const REQUEST_UPDATE_VOTE = 'REQUEST_UPDATE_VOTE';
+  export const UPDATE_VOTE_SUCCESS = 'UPDATE_VOTE_SUCCESS';
+  export const UPDATE_VOTE_FAILURE = 'UPDATE_VOTE_FAILURE';
 
 // ACTION CREATORS
   export function fetchComments(dispatch, postId){
@@ -91,24 +93,52 @@ import * as ReaderAPI from '../../utils/api';
     //
   };
 
-  export function incrementVote(id){
-    // needs commentID, and current voteScore, OR a comment Object
-    // actually, with just the commentID, the STORE has access
-    //  to the voteScore for this comment
-    return ({
-      type: INCREMENT_VOTE,
-      id,
-      // I don't need voteScore, do I?
-    });
-  };
+  function updateVote(dispatch, commentId, voteValue){
+    return (dispatch) => {
 
+      dispatch({
+        type: REQUEST_UPDATE_VOTE,
+      });
+
+      ReaderAPI.voteOnComment(commentId, voteValue)
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, fetchComments');
+            throw Error(response.statusText);
+          }
+          // console.log('__response OK, fetchComments', response);
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+
+          console.log('___data from comments API', data);
+          // TODO: see data, determine how to update comment's voteScore in store
+          return (
+            dispatch({
+              type: UPDATE_VOTE_SUCCESS,
+              // TODO: update voteScore for this comment
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: UPDATE_VOTE_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
+  };
+  export function incrementVote(id){
+    updateVote(id, ReaderAPI.upVote)
+  };
   export function decrementVote(id){
-    // needs commentID, and current voteScore, OR a comment Object
-    return ({
-      type: DECREMENT_VOTE,
-      id,
-      // I don't need voteScore, do I?
-    });
+    updateVote(id, ReaderAPI.downVote)
   };
 
 // SAMPLE DATA
@@ -188,24 +218,26 @@ import * as ReaderAPI from '../../utils/api';
             deleted: true,
           }
         });
-      case INCREMENT_VOTE:
+
+      case REQUEST_UPDATE_VOTE:
+        // TODO: do I need a spinner ?
+        return state;
+      case UPDATE_VOTE_SUCCESS:
         // needs the comment ID
         return ({
           ...state,
-          [id]: {
-            ...state[id],
-            voteScore: state[id].voteScore + 1,
-          }
+          // [id]: {
+          //   ...state[id],
+            //voteScore: state[id].voteScore + 1,
+            // TODO: how do I update the score: is it returned from the api?
+            //  do I need to refetch the post?
+            //  di manually +1 or -1 (would need to keep access to voteValue if so)
+          // }
         });
-      case DECREMENT_VOTE:
-        // needs the comment ID
-        return ({
-          ...state,
-          [id]: {
-            ...state[id],
-            voteScore: state[id].voteScore - 1,
-          }
-        });
+      case UPDATE_VOTE_FAILURE:
+        // TODO: error messate
+        return state;
+
       default:
         return state;
     }

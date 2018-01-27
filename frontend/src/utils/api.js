@@ -101,12 +101,12 @@ const headers = {
   }
   // Vote on a comment
   //  {option=="upVote" OR option=="downVote" see export at top of file}
-  export const voteComment = (commentId, vote) => {
+  export const voteOnComment = (commentId, voteValue) => {
     return fetch(`${api}/comments/${commentId}`, {
       method: 'POST',
       headers,
       body: {
-        option: vote
+        option: voteValue
       }
     });
   }
