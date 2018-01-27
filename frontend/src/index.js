@@ -23,8 +23,9 @@ const store = createStore(
 ReactDOM.render(
   <Provider store={store}>
 
-    <BrowserRouter><App/></BrowserRouter>
-    {/*<BrowserRouter><Route path="/:filter?" component={App}/></BrowserRouter>*/}
+    <BrowserRouter>
+      <Route path="/:filter?" component={App}/>
+    </BrowserRouter>
 
   </Provider>,
   document.getElementById('root')
@@ -34,11 +35,5 @@ registerServiceWorker();
 
 
 // Notes:
-
-//  TODO: not using thunk: refactor without using:
-//    DEVTOOLS...COMPOSE, composeEnhancers, compose, or applyMiddleware
-//    ..or refactor app to use thunks
-
-//  TODO: testing (or learning) see if other version of `BrowserRouter..`
-//    line of code is equivalent. Then remove one version, and edit/remove
-//    the import statement(s) as appropriate.
+// *MUST* use `<Route path="/:filter?" component={App}/>`
+//   re: `<App />`` breaks app when using a `<Link>` on the Home Page/Route!
