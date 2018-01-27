@@ -16,7 +16,7 @@ const headers = {
 //FETCHING
 
   // Gets all categories listed in categories.js (modify that file as desired)
-  export const fetchCategoriesAPI = () => {
+  export const fetchCategories = () => {
     return fetch(`${api}/categories`, { method: 'GET', headers })
   }
 
@@ -26,28 +26,28 @@ const headers = {
   }
   // TODO: refactor to combine posts and postsCategory into a wrapper function
   // Gets all (ok 10) posts from specified category
-  export const fetchPostsCategoryAPI = (category) => {
+  export const fetchPostsCategory = (category) => {
     return fetch(`${api}/${category}/posts`, { method: 'GET', headers })
   }
 
   // Gets specified post
-  export const fetchPostAPI = (postId) => {
+  export const fetchPost = (postId) => {
     return fetch(`${api}/posts/${postId}`, {method: 'GET', headers })
   }
 
   // Gets all comments associated with specified post
-  export const fetchCommentsAPI = (postId) => {
+  export const fetchComments = (postId) => {
     return fetch(`${api}/posts/${postId}/comments`, { method: 'GET', headers })
   }
 
   // Gets specified comment
-  export const fetchCommentAPI = (commentId) => {
+  export const fetchComment = (commentId) => {
     return fetch(`${api}/comments/${commentId}`, { method: 'GET', headers })
   }
 
 //  DELETING
   //  sets comment's `deleted` flag to `true`
-    export const deleteCommentAPI = (commentId) => {
+    export const deleteComment = (commentId) => {
       return fetch(`${api}/comments/${commentId}`, {
         method: 'DELETE',
         headers
@@ -55,7 +55,7 @@ const headers = {
     }
   //  sets posts's `deleted` flag to `true` AND
   //    all child comment's `parentDeleted` flag to `true`
-    export const deletePostAPI = (postId) => {
+    export const deletePost = (postId) => {
       return fetch(`${api}/posts/${postId}`, {
         method: 'DELETE',
         headers
@@ -65,7 +65,7 @@ const headers = {
 // ADDING
   // Adds a post:
   //  {id, timestap, title, body, author, category===existingCategory}
-  export const addPostAPI = (addPostData) => {
+  export const addPost = (addPostData) => {
     return fetch(`${api}/posts`, {
       method: 'POST',
       headers,
@@ -75,7 +75,7 @@ const headers = {
 
   // Adds a comment to a post:
   //  {id, timestap, body, author, parentId===existingPostId}
-  export const addCommentAPI = (addCommentData) => {
+  export const addComment = (addCommentData) => {
     return fetch(`${api}/comments`, {
       method: 'POST',
       headers,
@@ -87,9 +87,9 @@ const headers = {
 // MODIFYING/ EDITING
   // Vote on a post
   //  {option=="upVote" OR option=="downVote" see export at top of file}
-  export const votePostAPI = (postId, vote) => {
+  export const votePost = (postId, vote) => {
     if (vote !== 'upVote' && vote !== 'downVote') {
-      console.log('api.js, votePostAPI, "vote" must a string containing either: "upVote" or "downVote"');
+      console.log('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
     }
     return fetch(`${api}/posts/${postId}`, {
       method: 'POST',
@@ -101,7 +101,7 @@ const headers = {
   }
   // Vote on a comment
   //  {option=="upVote" OR option=="downVote" see export at top of file}
-  export const voteCommentAPI = (commentId, vote) => {
+  export const voteComment = (commentId, vote) => {
     return fetch(`${api}/comments/${commentId}`, {
       method: 'POST',
       headers,
@@ -118,7 +118,7 @@ const headers = {
 
   // Edit a post
   //  {title, body}
-  export const editPostAPI = (postId, editPostData) => {
+  export const editPost = (postId, editPostData) => {
     return fetch(`${api}/posts/${postId}`, {
       method: 'PUT',
       headers,
@@ -130,7 +130,7 @@ const headers = {
   // Edit a comment
   //   QUESTION: editing a comment, we *change* the timestamp ?
   //  {timestamp, body}
-  export const editCommentAPI = (commentId, editCommentData) => {
+  export const editComment = (commentId, editCommentData) => {
     return fetch(`${api}/comments/${commentId}`, {
       method: 'PUT',
       headers,

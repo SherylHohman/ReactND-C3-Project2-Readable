@@ -1,4 +1,4 @@
-import { fetchCategoriesAPI } from '../../utils/api';
+import * as ReaderAPI from '../../utils/api';
 
 // ACTION TYPES
   export const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
@@ -40,8 +40,8 @@ import { fetchCategoriesAPI } from '../../utils/api';
       dispatch({ type: FETCH_CATEGORIES });
       // TODO: show loading spinner
 
-      // ReaderAPI.fetchCategories()
-        fetchCategoriesAPI()
+        ReaderAPI.fetchCategories()
+        // fetchCategoriesAPI()
           .then((response) => {
 
             if (!response.ok) {

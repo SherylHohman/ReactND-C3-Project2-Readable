@@ -20,7 +20,7 @@ import * as ReaderAPI from '../../utils/api';
         type: FETCH_COMMENTS_SUCCESS,
       });
 
-      ReaderAPI.fetchCommentsAPI(postId)
+      ReaderAPI.fetchComments(postId)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, fetchComments');
