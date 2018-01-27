@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
+import { changeView } from '../state/viewData/ducks';
 
 class App extends Component {
 
@@ -17,16 +19,19 @@ class App extends Component {
     return (
       <div className="app-container">
 
-        <input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />
 
         <header className="app-header">
+        <Link to="/" onClick={() => {
+          this.props.onChangeView("/", "")}}>
           <h1 className="app-title">Readable</h1>
+        </Link>
+            <hr />
+          <div className="app-intro">
+            <small>..an app for posting and viewing posts and comments</small>
+          </div>
+        <input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />
         </header>
 
-        <div className="app-intro">
-          ..an app for posting and viewing posts and comments
-          <hr />
-        </div>
 
       {/* Routes */}
         <Route exact path="/" render={({ history }) => (
@@ -55,18 +60,20 @@ class App extends Component {
   }
 }
 
-// function mapDispatchToProps(dispatch){
-//   return ({
+function mapDispatchToProps(dispatch){
+  // console.log("in App mapDispatchToProps");
+  return ({
+    onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
+  })
 
-//   })
-// }
+}
 
-// function mapStoreToProps ( store ) {
-//   return {
+function mapStoreToProps ( store ) {
+  return {
 
-//   }
-// };
+  }
+};
 
-// export default connect(mapStoreToProps, mapDispatchToProps)(App);
+export default connect(mapStoreToProps, mapDispatchToProps)(App);
 
- export default App;
+ // export default App;
