@@ -93,32 +93,14 @@ import * as ReaderAPI from '../../utils/api';
   //   });
   // }
 
-  export function setCurrentCategory({ selectedCategory=null }) {
-
-    // used to filter all posts by category
-    //   I don't see a need to make an API call to do this.
-    //   -- unless user started on a category page instead of home page
-    //    then, perhaps its quicker to do a category fetch,
-    //    followed by a all/posts fetch later ??
-    //    I'm not convinced, yet.
-    //  Thus, I'll INSTEAD store SELECTED CATEGORY in state/store
-    //    individual component can filter, just as we did in MyReads App
-
-    return({
-      type: SET_CURRENT_CATEGORY,
-      selectedCategory,
-      });
-  }
-
 // SAMPLE DATA
-  const sampleData = {
-    categories: ['redux', 'react', 'javaScript'],
-    selectedCategory: null,
-    // use null to display *ALL* categories
-  };
+  // const sampleData = {
+  //   categories: ['redux', 'react', 'javaScript'],
+  //   selectedCategory: null,
+  //   // use null to display *ALL* categories
+  // };
 
 // INITIAL STATES
-  const categoryInitialState = {};
   const categoriesInitialState = {};
 
 
@@ -143,19 +125,6 @@ import * as ReaderAPI from '../../utils/api';
           // TODO: could set an error message on some state to handle errors
         });
 
-      default:
-        return state;
-    }
-  }
-
-  // not exported - may not use
-  function category(state=categoryInitialState, action){
-    switch (action.type){
-      case SET_CURRENT_CATEGORY:
-        return({
-          ...state,
-          // selectedCategory: action.selectedCategory,
-        });
       default:
         return state;
     }

@@ -112,22 +112,22 @@ import * as ReaderAPI from '../../utils/api';
   };
 
 // SAMPLE DATA
-  const sampleComment = {
-      id: '894tuq4ut84ut8v4t8wun89g',
-      parentId: "8xf0y6ziyjabvozdd253nd",
-      timestamp: 1468166872634,
-      body: 'Hi there! I am a COMMENT.',
-      author: 'thingtwo',
-      voteScore: 6,
-      deleted: false,
-      parentDeleted: false
-    }
+  // const sampleComment = {
+  //     id: '894tuq4ut84ut8v4t8wun89g',
+  //     parentId: "8xf0y6ziyjabvozdd253nd",
+  //     timestamp: 1468166872634,
+  //     body: 'Hi there! I am a COMMENT.',
+  //     author: 'thingtwo',
+  //     voteScore: 6,
+  //     deleted: false,
+  //     parentDeleted: false
+  //   }
 
-  const sampleComments = {
-    "894tuq4ut84ut8v4t8wun89g": { ...sampleComment },
-    // "andAnother [id] string": {..anotherSampleComment},
-    // etc
-  };
+  // const sampleComments = {
+  //   "894tuq4ut84ut8v4t8wun89g": { ...sampleComment },
+  //   // "andAnother [id] string": {..anotherSampleComment},
+  //   // etc
+  // };
 
   // store element is sampleComments
   //    aka an object of comment objects, where property name for each (comment object) is the id for that comment.

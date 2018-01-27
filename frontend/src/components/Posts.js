@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+// import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../state/posts/ducks';
 import Categories from './Categories';
@@ -20,7 +20,7 @@ export class Posts extends Component {
 
   render() {
 
-    const propsValue = this.props||this.state||'no props or state'
+    // const propsValue = this.props||this.state||'no props or state'
     // console.log('in Posts render, Props:', propsValue);
 
     const havePosts = (this.props && this.props.posts && Array.isArray(this.props.posts)) ? true : false;
