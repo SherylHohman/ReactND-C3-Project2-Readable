@@ -27,9 +27,9 @@ import * as ReaderAPI from '../../utils/api';
 
 
 // FAT ACTION CREATORS
-  //  (business logic decides which action(s) to create/dispatch)
-  //  if need access to more state, refactor to use redux-thunk
-  //    (Thunk Action Creators)
+  //  (include business logic to decides which action(s) to create/dispatch)
+  //  (if need access to more state, refactor to use redux-thunk,
+  //    aka Thunk Action Creators)
 
   export function fetchPosts(dispatch){
     return (dispatch) => {
@@ -98,6 +98,7 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
+          // TODO: see data, determine how to proceed
             // return {
             //   // TODO
             //   // [postData.id]: data,
@@ -141,6 +142,7 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
+          // TODO: see data, determine how to proceed
 
           return (
             dispatch({
@@ -180,6 +182,7 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
+          // TODO: see data, determine how to proceed
 
           return (
             dispatch({
@@ -219,6 +222,7 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
+          // TODO: see data, determine how to proceed
 
           return (
             dispatch({
@@ -259,6 +263,7 @@ import * as ReaderAPI from '../../utils/api';
         .then((response) => response.json())
         .then((data) => {
             // TODO: see what data is returned; determine how to proceed
+
           return (
             dispatch({
               type: VOTE_ON_POST_SUCCESS,
@@ -287,82 +292,6 @@ import * as ReaderAPI from '../../utils/api';
 
 
 // ACTION CREATORS (regular)
-  // export function fetchPosts(TODO){
-  //   // fetch all posts by ownerID (post)
-  //   return ({
-  //     type: FETCH_POSTS,
-  //     // TODO:
-  //   });
-  // };
-  // export function fetchPostsSuccess(TODO){
-  //   // fetch all posts by ownerID (post)
-  //   return ({
-  //     type: FETCH_POSTS_SUCCESS,
-  //     // TODO:
-  //   });
-  // };
-  // export function fetchPostsFailure(TODO){
-  //   // fetch all posts by ownerID (post)
-  //   return ({
-  //     type: FETCH_POSTS_FAILURE,
-  //     // TODO:
-  //   });
-  // };
-
-  // export function fetchPostDetails(TODO){
-  //   // fetch all posts by ownerID (post)
-  //   return ({
-  //     type: FETCH_POST_DETAILS,
-  //     // TODO:
-  //   });
-  // };
-  // export function fetchPostDetailsSuccess(TODO){
-  //   // fetch all posts by ownerID (post)
-  //   return ({
-  //     type: FETCH_POST_DETAILS_SUCCESS,
-  //     // TODO:
-  //   });
-  // };
-  // export function addPost(TODO){
-  //   // fetch all posts by ownerID (post)
-  //   return ({
-  //     type: ADD_POST,
-  //     // TODO:
-  //   });
-  // };
-  // export function editPost(TODO){
-  //   return ({
-  //     type: EDIT_POST,
-  //     // TODO
-  //   });
-  // };
-  // export function deletePost(TODO){
-  //   // (set in DB and state)
-  //   // doesn't actually DELETE post from database
-  //   // it sets it's and it's "deletedPost" flag to True, hence it won't be returned by an SPI query ?
-  //   //  OR, I need to check the returned Query, and Only Display posts where its "deletedPost" is false.
-
-  //   // REMEMBER to update deletedParent property on every COMMENT owned by the deletedPost.
-  //   //
-  //   return ({
-  //     type: DELETE_POST,
-  //     // TODO:
-  //   });
-  // };
-  // export function incrementVote(id){
-  //   // need id, or id and voteScore ?
-  //   return ({
-  //     type: VOTE_ON_POST,
-  //     id,
-  //   });
-  // };
-  // export function decrementVote(id){
-  //   // need id, or id and voteScore ?
-  //   return ({
-  //     type: VOTE_ON_POST_SUCCESS,
-  //     id,
-  //   });
-  // };
 
 // INITIAL STATE
   const postsInitialState = {}
@@ -520,7 +449,8 @@ export default posts
 
 
 /*
-NOTES: after deletion, if post's page is loaded, then it may show up empty
+NOTES:
+  TODO: after deletion, if post's page is loaded, then it may show up empty
   - redirect to home, "all posts" page
   - or display "This Post has been Deleted, or Never Existed"
     (also covers the case of an invalid posts URL)
