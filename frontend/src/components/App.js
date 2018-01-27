@@ -20,6 +20,7 @@ class App extends Component {
       <div className="app-container">
 
         <header className="app-header">
+
           <Link to="/" onClick={() => {
             this.props.onChangeView('/', '')}}>
             <h1 className="app-title">Readable</h1>
@@ -64,7 +65,6 @@ function mapDispatchToProps(dispatch){
   return ({
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
   })
-
 }
 
 function mapStoreToProps ( store ) {
@@ -74,5 +74,6 @@ function mapStoreToProps ( store ) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(App);
+// export default connect(null, mapDispatchToProps)(App);
 
  // export default App;

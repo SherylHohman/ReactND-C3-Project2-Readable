@@ -24,7 +24,7 @@ export class Comments extends Component {
   }
 
   render() {
-    console.log('render comments - this.props.postId:, comments:', this.props.postId, comments, 'in Comments Component');
+    console.log('render comments - this.props.postId:, comments:', this.props.postId, this.props.comments, 'in Comments Component');
     const { comments, postId } = this.props;
 
     if (postId === null) {

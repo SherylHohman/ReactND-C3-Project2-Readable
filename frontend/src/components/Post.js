@@ -68,7 +68,7 @@ componentDidMount() {
   }
 }
 
-const { object, func } = PropTypes;
+// const { object, func } = PropTypes;
 Post.propTypes = {
   post: PropTypes.object//.isRequired,
 }
