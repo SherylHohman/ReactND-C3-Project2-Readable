@@ -8,8 +8,9 @@ import PropTypes from 'prop-types';
 const PostHeader = function(props) {
   const post = props.post;
 
-  //  required to display (see project requirements) Ok, don't show id.
-  const {id, title, category, voteScore, commentCount} = props.post;
+  const { id } = post;
+  //  required to display (see project requirements)
+  const {title, category, voteScore, commentCount} = props.post;
   //  not required; may like to include (on Post, maybe not Home),
   const {author, timestamp} = post;
 
@@ -22,7 +23,7 @@ const PostHeader = function(props) {
           <h2>{title}</h2>
         </Link>
 
-        <div>votes: {voteScore} increment decrement</div>
+        <div><button>increment</button> | votes: {voteScore} | <button>decrement</button></div>
         <p>{category}</p>
         <div>number of comments: {commentCount}</div>
         <hr />

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../state/posts/ducks';
-import PostHeader from './PostHeader';
+import Categories from './Categories';
 import { changeView } from '../state/viewData/ducks';
 
 export class Posts extends Component {
@@ -11,9 +11,9 @@ export class Posts extends Component {
   componentDidMount() {
     if(!this.props.posts || this.props.posts.length < 1) {
       this.props.getPosts();
+      // may need to move fetch to App.js
     }
     else {console.log('Posts componentDidMount ..not refetching, posts:', this.props.posts);}
-    // may need to move this to App.js
 
     // console.log('Posts cDM, leaving:', `${this.state||this.props||'no state or props'}`);
   }
@@ -47,6 +47,7 @@ export class Posts extends Component {
           <ul className="nav"><li>Sort Posts By:</li> <li>Most Recent</li><li>Highest Votes</li></ul>
           </div>
 
+          <Categories />
           <hr />
 
           <div><h2>Add New Post</h2><hr /></div>
@@ -64,6 +65,7 @@ export class Posts extends Component {
                       </Link>
                       <div>{post.voteScore} Votes | {post.commentCount} Comments</div>
                       <p>{post.category}</p>
+                      {/* TODO move Link closing tag to here - after update styles*/}
                       <div></div>
                       <hr />
                    </div>

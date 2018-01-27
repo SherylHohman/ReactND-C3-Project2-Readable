@@ -68,7 +68,7 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
-  console.log('in mapStoreToProps');
+  console.log('in Comments, mapStoreToProps');
 
   const postId = store.viewData.selected || null;
 

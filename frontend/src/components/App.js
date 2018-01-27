@@ -19,17 +19,16 @@ class App extends Component {
     return (
       <div className="app-container">
 
-
         <header className="app-header">
-        <Link to="/" onClick={() => {
-          this.props.onChangeView("/", "")}}>
-          <h1 className="app-title">Readable</h1>
-        </Link>
-            <hr />
+          <Link to="/" onClick={() => {
+            this.props.onChangeView('/', '')}}>
+            <h1 className="app-title">Readable</h1>
+          </Link>
+          <hr />
           <div className="app-intro">
             <small>..an app for posting and viewing posts and comments</small>
           </div>
-        <input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />
+          <input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />
         </header>
 
 
