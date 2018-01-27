@@ -88,7 +88,7 @@ const headers = {
   // Vote on a post
   //  {option=="upVote" OR option=="downVote" see export at top of file}
   export const votePostAPI = (postId, vote) => {
-    if (vote !== 'upVote' AND vote !== 'downVote') {
+    if (vote !== 'upVote' && vote !== 'downVote') {
       console.log('api.js, votePostAPI, "vote" must a string containing either: "upVote" or "downVote"');
     }
     return fetch(`${api}/posts/${postId}`, {
