@@ -10,9 +10,9 @@ import * as ReaderAPI from '../../utils/api';
   export const DELETE_COMMENT = 'DELETE_COMMENT';
   export const GET_COMMENTS = 'GET_COMMENTS';
 
-  export const REQUEST_UPDATE_VOTE = 'REQUEST_UPDATE_VOTE';
-  export const UPDATE_VOTE_SUCCESS = 'UPDATE_VOTE_SUCCESS';
-  export const UPDATE_VOTE_FAILURE = 'UPDATE_VOTE_FAILURE';
+  export const REQUEST_VOTE_ON_COMMENT = 'REQUEST_VOTE_ON_COMMENT';
+  export const VOTE_ON_COMMENT_SUCCESS = 'VOTE_ON_COMMENT_SUCCESS';
+  export const VOTE_ON_COMMENT_FAILURE = 'VOTE_ON_COMMENT_FAILURE';
 
 // ACTION CREATORS
   export function fetchComments(dispatch, postId){
@@ -93,11 +93,11 @@ import * as ReaderAPI from '../../utils/api';
     //
   };
 
-  function updateVote(dispatch, commentId, voteValue){
+  function voteOnComment(dispatch, commentId, voteValue){
     return (dispatch) => {
 
       dispatch({
-        type: REQUEST_UPDATE_VOTE,
+        type: REQUEST_VOTE_ON_COMMENT,
       });
 
       ReaderAPI.voteOnComment(commentId, voteValue)
@@ -117,7 +117,7 @@ import * as ReaderAPI from '../../utils/api';
           // TODO: see data, determine how to update comment's voteScore in store
           return (
             dispatch({
-              type: UPDATE_VOTE_SUCCESS,
+              type: VOTE_ON_COMMENT_SUCCESS,
               // TODO: update voteScore for this comment
             })
           )}
@@ -126,7 +126,7 @@ import * as ReaderAPI from '../../utils/api';
         .catch(err => {
           console.error(err);  //  in case of render error
           dispatch({
-            type: UPDATE_VOTE_FAILURE,
+            type: VOTE_ON_COMMENT_FAILURE,
             err,
             error: true,
           })
@@ -134,11 +134,11 @@ import * as ReaderAPI from '../../utils/api';
 
     };  // anon function(dispatch) wrapper
   };
-  export function incrementVote(id){
-    updateVote(id, ReaderAPI.upVote)
+  export function incrementCommentVote(id){
+    voteOnComment(id, ReaderAPI.upVote)
   };
-  export function decrementVote(id){
-    updateVote(id, ReaderAPI.downVote)
+  export function decrementCommentVote(id){
+    voteOnComment(id, ReaderAPI.downVote)
   };
 
 // SAMPLE DATA
@@ -219,10 +219,10 @@ import * as ReaderAPI from '../../utils/api';
           }
         });
 
-      case REQUEST_UPDATE_VOTE:
+      case REQUEST_VOTE_ON_COMMENT:
         // TODO: do I need a spinner ?
         return state;
-      case UPDATE_VOTE_SUCCESS:
+      case VOTE_ON_COMMENT_SUCCESS:
         // needs the comment ID
         return ({
           ...state,
@@ -234,7 +234,7 @@ import * as ReaderAPI from '../../utils/api';
             //  di manually +1 or -1 (would need to keep access to voteValue if so)
           // }
         });
-      case UPDATE_VOTE_FAILURE:
+      case VOTE_ON_COMMENT_FAILURE:
         // TODO: error messate
         return state;
 
