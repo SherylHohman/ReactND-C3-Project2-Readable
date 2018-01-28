@@ -245,13 +245,14 @@ import * as ReaderAPI from '../../utils/api';
   };
 
   export function voteOnPost(postId, vote){
+    console.log('vote:', vote);
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_VOTE_ON_POST
       });
 
-      ReaderAPI.voteOnPost(postId, vote)
+      ReaderAPI.voteOnPost(postId, vote="upVote")
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, received in voteOnPost');

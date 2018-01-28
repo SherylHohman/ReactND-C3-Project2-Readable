@@ -15,7 +15,11 @@ All requests should use an **Authorization header** to work with your own data:
 fetch(
     url,
     {
-        headers: { 'Authorization': 'whatever-you-want' }
+      	method: 'GET', // 'POST', 'PUT', or 'GET' ('GET' is assumed if left off)
+        headers: { 'Authorization': 'whatever-you-want' },
+     	body: {
+          // params to be sent to the server
+        }
     }
 )
 ```

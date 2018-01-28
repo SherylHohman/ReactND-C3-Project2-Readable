@@ -76,6 +76,7 @@ Post.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     // getPosts: () => dispatch(fetchPosts()),
+    // getPost: () => dispatch(fetchPost()),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected }))
   })
 }
