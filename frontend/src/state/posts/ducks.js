@@ -244,26 +244,31 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  function voteOnPost(dispatch){
+  export function voteOnPost(id, voteAsString){
+  // export function voteOnPost(dispatch, id, voteAsString){
+    console.log('hello -- made it into voteOnPost.. will it dispatch ??');
+    console.log('postId, vote:', id, voteAsString);
     return (dispatch) => {
+      console.log('postId:', id, 'id:', id, 'vote:', voteAsString);
 
       dispatch({
         type: REQUEST_VOTE_ON_POST
       });
 
-      ReaderAPI.voteOnPost()
+      ReaderAPI.voteOnPost(id, voteAsString)//vote)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, votePost');
             throw Error(response.statusText);
           }
+          console.log('response returned from ReaderAPI.voteOnPost', response);
           return response;
         })
 
         .then((response) => response.json())
         .then((data) => {
-            // TODO: see what data is returned; determine how to proceed
-
+          // TODO: see what data is returned; determine how to proceed
+          console.log('___data returned from ReaderAPI.voteOnPost', data);
           return (
             dispatch({
               type: VOTE_ON_POST_SUCCESS,
@@ -283,12 +288,14 @@ import * as ReaderAPI from '../../utils/api';
 
     };  // anon function(dispatch) wrapper
   };
-  export function incrementPostVote(id){
-    voteOnPost(id, ReaderAPI.upVote)
-  };
-  export function decrementPostVote(id){
-    voteOnPost(id, ReaderAPI.downVote)
-  };
+  // export function upVotePost(dispatch, id){
+  //   console.log('hello--upVotePost');
+  //   // return (dispatch, id) => dispatch(voteOnPost(id, ReaderAPI.upVote));
+  //   voteOnPost(dispatch, id, ReaderAPI.upVote);
+  // };
+  // export function downVotePost(dispatch, id){
+  //   voteOnPost(id, ReaderAPI.downVote)
+  // };
 
 
 // ACTION CREATORS (regular)
