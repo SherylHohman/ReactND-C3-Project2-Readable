@@ -244,35 +244,33 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function voteOnPost(id, voteAsString){
-  // export function voteOnPost(dispatch, id, voteAsString){
-    console.log('hello -- made it into voteOnPost.. will it dispatch ??');
-    console.log('postId, vote:', id, voteAsString);
+  export function voteOnPost(postId, vote){
     return (dispatch) => {
-      console.log('postId:', id, 'id:', id, 'vote:', voteAsString);
 
       dispatch({
         type: REQUEST_VOTE_ON_POST
       });
 
-      ReaderAPI.voteOnPost(id, voteAsString)//vote)
+      ReaderAPI.voteOnPost(postId, vote)
         .then((response) => {
           if (!response.ok) {
-            console.log('__response NOT OK, votePost');
+            console.log('__response NOT OK, received in voteOnPost');
             throw Error(response.statusText);
           }
-          console.log('response returned from ReaderAPI.voteOnPost', response);
+
           return response;
         })
-
         .then((response) => response.json())
         .then((data) => {
-          // TODO: see what data is returned; determine how to proceed
-          console.log('___data returned from ReaderAPI.voteOnPost', data);
+          // data returned is the full post object.
+          // TODO: Problem: voteScore was NOT updated !!?? at the server !!??
+          console.log('voteScore after apiCall:', data.voteScore);
           return (
             dispatch({
               type: VOTE_ON_POST_SUCCESS,
-              // TODO: determine how to update post's vote score in store
+              postId: data.id,
+              // TODO: debug why server didn't update voteScore !!
+              voteScore: data.voteScore,
             })
           )}
         )
@@ -435,12 +433,13 @@ import * as ReaderAPI from '../../utils/api';
         // TODO:
         return state;
       case VOTE_ON_POST_SUCCESS:
-        // TODO:  see data returned
         return ({
           ...state,
-          // TODO: determine how to update Pots's voteScore in store
+          [action.postId]: {
+            ...state[action.postId],
+            voteScore: action.voteScore,
           }
-        );
+        });
       case VOTE_ON_POST_FAILURE:
           // TODO: UI error message
           return state;
