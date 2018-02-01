@@ -85,15 +85,12 @@ function add (token, post) {
 }
 
 function vote (token, id, option) {
-  console.log('\nin server..postId:', id, 'vote option:', option);
-
   return new Promise((res) => {
     let posts = getData(token)
     post = posts[id]
     switch(option) {
         case "upVote":
             post.voteScore = post.voteScore + 1
-            console.log('in server.. after upVote:', post.voteScore);
             break
         case "downVote":
             post.voteScore = post.voteScore - 1
