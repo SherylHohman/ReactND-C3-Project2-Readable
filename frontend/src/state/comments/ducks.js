@@ -16,7 +16,6 @@ import * as ReaderAPI from '../../utils/api';
 
 // ACTION CREATORS
   export function fetchComments(postId){
-    console.log('in ducks - fetchComments, postId:', postId);
     return (dispatch) => {
 
       dispatch({
@@ -36,10 +35,8 @@ import * as ReaderAPI from '../../utils/api';
         .then((response) => response.json())
         .then((data) => {
 
-          console.log('___data from comments API', data);
-          // Comments are returned as an array
-          //  change them to Comment objects where key===comment.id
-          //  NO arrays in store
+          // transform db's "array of comments" to "object of comment objects", the
+          // proper storage format for `store`
           const commentsAsObjects = data.reduce((acc, commentData)=>{
             return {
               ...acc,
@@ -107,7 +104,6 @@ import * as ReaderAPI from '../../utils/api';
             console.log('__response NOT OK, fetchComments');
             throw Error(response.statusText);
           }
-          // console.log('__response OK, fetchComments', response);
           return response;
         })
 
@@ -175,7 +171,6 @@ import * as ReaderAPI from '../../utils/api';
         // TODO set loading spinner on
         return state;
       case FETCH_COMMENTS_SUCCESS:
-        console.log('api, action', action);
         return ({
           ...state,
           ...action.comments,

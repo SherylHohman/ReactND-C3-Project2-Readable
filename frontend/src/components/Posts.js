@@ -13,7 +13,7 @@ export class Posts extends Component {
       this.props.getPosts();
       // may need to move fetch to App.js
     }
-    else {console.log('Posts componentDidMount ..not refetching, posts:', this.props.posts);}
+    else {console.log('Posts componentDidMount ..not refetching, posts:');}//, this.props.posts);}
 
     // console.log('Posts cDM, leaving:', `${this.state||this.props||'no state or props'}`);
   }

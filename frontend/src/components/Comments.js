@@ -13,11 +13,10 @@ export class Comments extends Component {
 
   componentDidMount(){
     const postId = this.props.postId;
-    console.log('...in Comments ComponentDidMount, props', this.props);
-    console.log('postId', postId, 'comments', this.props.comments);
+    // console.log('...in Comments ComponentDidMount, props', this.props);
+    // console.log('postId', postId, 'comments', this.props.comments);
 
     // if (postId !== null){
-      console.log('getComments..');
       this.props.getComments(postId);
     // } else {
       // console.log('Comments, postId === null');
@@ -25,7 +24,6 @@ export class Comments extends Component {
   }
 
   render() {
-    console.log('render comments - this.props.postId:, comments:', this.props.postId, this.props.comments, 'in Comments Component');
     const { comments, postId } = this.props;
 
     if (postId === null) {
@@ -35,7 +33,7 @@ export class Comments extends Component {
       )
     }
     if (comments === []) {
-      console.log('Comments, are null.');
+      console.log('There are no comments for this post.');
       return (
         <div>Be the first to comment on this post</div>
       )
@@ -89,7 +87,7 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
-  console.log('in Comments, mapStoreToProps');
+  // console.log('in Comments, mapStoreToProps');
 
   const postId = store.viewData.selected || null;
 
@@ -101,8 +99,6 @@ function mapStoreToProps ( store ) {
   const comments = commentIds.reduce((acc, commentId) => {
     return acc.concat([store.comments[commentId]]);
   }, []);
-
-  console.log('postId;', postId, '\ncommentsIds', commentIds, '\ncomments', comments);
 
   return {
     postId,

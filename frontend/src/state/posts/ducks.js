@@ -245,7 +245,6 @@ import * as ReaderAPI from '../../utils/api';
   };
 
   export function voteOnPost(postId, vote){
-    console.log('____vote:', vote);
     return (dispatch) => {
 
       dispatch({
@@ -263,14 +262,11 @@ import * as ReaderAPI from '../../utils/api';
         })
         .then((response) => response.json())
         .then((data) => {
-          // data returned is the full post object.
-          // TODO: Problem: voteScore was NOT updated !!?? at the server !!??
-          console.log('voteScore after apiCall:', data.voteScore);
+          // data returned is the full (updated) post object.
           return (
             dispatch({
               type: VOTE_ON_POST_SUCCESS,
               postId: data.id,
-              // TODO: debug why server didn't update voteScore !!
               voteScore: data.voteScore,
             })
           )}

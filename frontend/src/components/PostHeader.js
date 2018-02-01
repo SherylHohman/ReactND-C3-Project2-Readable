@@ -48,7 +48,7 @@ PostHeader.propTypes = {
 }
 
 function mapDispatchToProps(dispatch){
-  console.log('in PostHeader, mapDispatchToProps');
+  // console.log('in PostHeader, mapDispatchToProps');
   return ({
     postUpVote:   (postId) => dispatch(upVotePost(postId)),
     postDownVote: (postId) => dispatch(downVotePost(postId)),

@@ -8,7 +8,7 @@ export class Categories extends Component {
     if (!this.props.categories) {
       this.props.getCategories();
     }
-    else {console.log('Categories componentDidMount ..not refetching, categories:', this.props.categories);}
+    else {console.log('Categories componentDidMount ..not refetching, categories:');}//, this.props.categories);}
     // may need to move this to App.js
 
   }
