@@ -48,42 +48,49 @@
   if logged-in user downvoted, make text lighter.
   */
 
+  .vote {
+    display: inline-block;
+  }
+
  /* Triangles for posts */
   .post-up-vote {
     width: 0;
     height: 0;
+    margin: 6px;
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
+
     border-bottom: 25px solid green;
   }
 
   .post-down-vote {
     width: 0;
     height: 0;
+    margin: 6px;
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
+
     border-top: 25px solid green;
   }
 
  /* "Hat" Arrows for comments */
-  .comment-vote-up {
-      border: solid black;
-      border-width: 0 3px 3px 0;
-      display: inline-block;
-      padding: 3px;
+  .comment-up-vote {
+    width: 0;
+    height: 0;
+    margin: 6px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
 
-      transform: rotate(-135deg);
-      -webkit-transform: rotate(-135deg);
+    border-bottom: 8px solid green;
   }
+  .comment-down-vote {
+    width: 0;
+    height: 0;
+    margin: 6px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
 
-  .comment-vote-down {
-      border: solid black;
-      border-width: 0 3px 3px 0;
-      display: inline-block;
-      padding: 3px;
-
-      transform: rotate(45deg);
-      -webkit-transform: rotate(45deg);
+    border-top: 8px solid green;
   }
 
 /* placeholder text */
