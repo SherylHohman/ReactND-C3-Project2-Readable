@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import {upVotePost, downVotePost} from '../state/posts/ducks';
 // import {incrementVoteOnComment, decrementVoteOnComment} from '../state/comments';
 import { changeView } from '../state/viewData/ducks';
+import { toPublicationDate } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 const PostHeader = function(props) {
@@ -14,10 +15,7 @@ const PostHeader = function(props) {
   const {title, category, voteScore, commentCount} = props.post;
   //  not required; may like to include (on Post, maybe not Home),
   const {author, timestamp} = post;
-
-  const d = new Date(timestamp);
-  const months = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
-  const publishedDate = `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  const publishedDate = toPublicationDate(timestamp);
 
   return  (
     <div>
