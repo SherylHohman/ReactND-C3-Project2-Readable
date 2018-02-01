@@ -8,9 +8,11 @@ if (!token)
   token = localStorage.token = Math.random().toString(36).substr(-8)
 
 const headers = {
-  'Content-Type': 'application/json',  // for server
   'Authorization': token,
-  'Accept': 'application/json',  // for response!
+  // for server, aka request - GET
+  'Accept': 'application/json',
+  // for app, aka response! - for POST/PUT: sends body
+  'Content-Type': 'application/json',
 }
 
 //FETCHING
@@ -37,6 +39,7 @@ const headers = {
 
   // Gets all comments associated with specified post
   export const fetchComments = (postId) => {
+    console.log('...utils/api fetchComments, postId:', postId);
     return fetch(`${api}/posts/${postId}/comments`, { method: 'GET', headers })
   }
 
@@ -91,7 +94,7 @@ const headers = {
   // Vote on a post
   //  {option=="upVote" OR option=="downVote" see export at top of file}
   export const voteOnPost = (postId, vote) => {
-    console.log('sending postId:', postId, 'vote option:', vote);
+    console.log('...utils/api voteOnPost, postId:', postId, 'vote option:', vote);
     if (vote !== upVote && vote !== downVote) {
       console.log('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
       throw Error('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
@@ -99,20 +102,24 @@ const headers = {
     return fetch(`${api}/posts/${postId}`, {
       method: 'POST',
       headers,
-      body: {
-        option: "upVote"
-      }
+      // body: {
+      //   option: "upVote"
+      // }
+      body: JSON.stringify({
+         option: vote
+      })
      });
   }
   // Vote on a comment
   //  {option=="upVote" OR option=="downVote" see export at top of file}
   export const voteOnComment = (commentId, voteValue) => {
+    console.log('...utils/api voteOnComment, commentId:', commentId, 'voteValue:', voteValue);
     return fetch(`${api}/comments/${commentId}`, {
       method: 'POST',
       headers,
-      body: {
+      body: JSON.stringify({
         option: voteValue
-      }
+      })
     });
   }
 
@@ -144,6 +151,29 @@ const headers = {
     })
 
   }
+
+
+// GEEZE SOOOOooooo much time WASTED on stupid API requests.
+//  This is a REACT course.
+//  They could have thrown in an example POST request in the server README.md
+//    file to save the rest of us so many headaches.
+//  The 2nd search term that I didn't know to include was FETCH!
+//    there are 3 different kind of api requests (XmlHTTP...., jquery.ajax, fetch)
+//  Kinda ticked they didn't bother to include an easy "up-to-speed" link
+//    for the relevant info we need to properly write our api requests
+//    for the kind of server setup they gave us !!
+//  Even the `js asynch` course they give does *NOT* say anything about this!!
+//    ..and BTW, title of course did *NOT* make it obvious to me that this was a
+//    course on how to make (api) GET/POST/PUT server requests !
+//    And really, we only needed the 3rd segment, on FETCH, for this course.
+//    Really, they could have done a better job helping us help ourselves here !
+//    UGH !!!
+
+// Evidentally, need to wrap object attached to `body` in JSON.Stringify()
+//  for the POST and PUT requests to work !!
+
+// And, as found out earlier, need to add the 3rd header for PUT/POST requests
+//  (TODO: probably should remove that 3rd header on GET requests)
 
 
 // NOTES:
