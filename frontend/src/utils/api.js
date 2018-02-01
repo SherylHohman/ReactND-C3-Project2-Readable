@@ -39,7 +39,6 @@ const headers = {
 
   // Gets all comments associated with specified post
   export const fetchComments = (postId) => {
-    console.log('...utils/api fetchComments, postId:', postId);
     return fetch(`${api}/posts/${postId}/comments`, { method: 'GET', headers })
   };
 
@@ -97,9 +96,7 @@ const headers = {
   // Vote on a post
   //  {option=="upVote" OR option=="downVote" see export at top of file}
   export const voteOnPost = (postId, vote) => {
-    console.log('...utils/api voteOnPost, postId:', postId, 'vote option:', vote);
     if (vote !== upVote && vote !== downVote) {
-      console.log('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
       throw Error('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
     }
     return fetch(`${api}/posts/${postId}`, {
@@ -113,13 +110,16 @@ const headers = {
 
   // Vote on a comment
   //  {option=="upVote" OR option=="downVote" see export at top of file}
-  export const voteOnComment = (commentId, voteValue) => {
-    console.log('...utils/api voteOnComment, commentId:', commentId, 'voteValue:', voteValue);
+  export const voteOnComment = (commentId, vote) => {
+    console.log('...utils/api voteOnComment, commentId:', commentId, 'voteValue:', vote);
+    if (vote !== upVote && vote !== downVote) {
+      throw Error('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
+    }
     return fetch(`${api}/comments/${commentId}`, {
       method: 'POST',
       headers,
       body: JSON.stringify({
-        option: voteValue
+        option: vote
       })
     });
   };
