@@ -287,14 +287,16 @@ import * as ReaderAPI from '../../utils/api';
 
     };  // anon function(dispatch) wrapper
   };
-  // export function upVotePost(dispatch, id){
-  //   console.log('hello--upVotePost');
-  //   // return (dispatch, id) => dispatch(voteOnPost(id, ReaderAPI.upVote));
-  //   voteOnPost(dispatch, id, ReaderAPI.upVote);
-  // };
-  // export function downVotePost(dispatch, id){
-  //   voteOnPost(id, ReaderAPI.downVote)
-  // };
+  export function upVotePost(id){
+    return (dispatch) => {
+      dispatch(voteOnPost(id, ReaderAPI.upVote));
+    }
+  };
+  export function downVotePost(id){
+    return (dispatch) => {
+      dispatch(voteOnPost(id, ReaderAPI.downVote));
+    }
+  };
 
 
 // ACTION CREATORS (regular)

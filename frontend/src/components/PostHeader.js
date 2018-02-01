@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { voteOnPost } from '../state/posts/ducks';
-import { upVote, downVote } from '../utils/api'
-// import {upVotePost, downVotePost} from '../state/posts/ducks';
+import {upVotePost, downVotePost} from '../state/posts/ducks';
 // import {incrementVoteOnComment, decrementVoteOnComment} from '../state/comments';
 import { changeView } from '../state/viewData/ducks';
 import PropTypes from 'prop-types';
@@ -54,10 +52,9 @@ PostHeader.propTypes = {
 
 function mapDispatchToProps(dispatch){
   console.log('in PostHeader, mapDispatchToProps');
-  // console.log('upVote, downVote', upVote, downVote);
   return ({
-    postUpVote:   (postId) => dispatch(voteOnPost(postId, upVote)),
-    postDownVote: (postId) => dispatch(voteOnPost(postId, downVote)),
+    postUpVote:   (postId) => dispatch(upVotePost(postId)),
+    postDownVote: (postId) => dispatch(downVotePost(postId)),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
   })
 }
