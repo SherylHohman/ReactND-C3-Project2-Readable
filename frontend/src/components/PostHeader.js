@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { voteOnPost } from '../state/posts/ducks';
-// import { upVote, downVote } from '../utils/api'
+import { upVote, downVote } from '../utils/api'
 // import {upVotePost, downVotePost} from '../state/posts/ducks';
 // import {incrementVoteOnComment, decrementVoteOnComment} from '../state/comments';
 import { changeView } from '../state/viewData/ducks';
@@ -32,9 +32,9 @@ const PostHeader = function(props) {
         </Link>
 
         <div>
-          <button onClick={() => {props.postVote(postId, 'upVote')}}>increment</button>
+          <button onClick={() => {props.postUpVote(postId)}}>increment</button>
           | votes: {voteScore} |
-          <button onClick={() => {props.postVote(postId, 'downVote')}}>decrement</button>
+          <button onClick={() => {props.postDownVote(postId)}}>decrement</button>
         </div>
         <p>Category: {category} | By: {author} | On: {publishedDate}</p>
         <div>number of comments: {commentCount}</div>
@@ -56,9 +56,8 @@ function mapDispatchToProps(dispatch){
   console.log('in PostHeader, mapDispatchToProps');
   // console.log('upVote, downVote', upVote, downVote);
   return ({
-    postVote: (postId, voteString) => dispatch(voteOnPost(postId, voteString)),
-    // postUpVote:   (postId) => dispatch(voteOnPost(postId, upVote)),
-    // postDownVote: (postId) => dispatch(voteOnPost(postId, downVote)),
+    postUpVote:   (postId) => dispatch(voteOnPost(postId, upVote)),
+    postDownVote: (postId) => dispatch(voteOnPost(postId, downVote)),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
   })
 }
