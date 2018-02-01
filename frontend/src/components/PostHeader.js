@@ -17,8 +17,6 @@ const PostHeader = function(props) {
 
   return  (
     <div>
-      <div key={postId}>
-
         <Link
           to={`/post/${postId}`}
           onClick={() => {props.onChangeView(`/post/${postId}`, postId)
@@ -39,8 +37,6 @@ const PostHeader = function(props) {
             onClick={() => {props.onDownVotePost(postId)}}>
           </div>
         </div>
-
-      </div>
     </div>
   )
 
@@ -62,11 +58,9 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store, ownProps ) {
+function mapStoreToProps ( store ) {
   const postId = store.viewData.selected;
   return {
-    // ...ownProps,
-    // post: ownProps.post,
     post: store.posts[postId],
   }
 };
