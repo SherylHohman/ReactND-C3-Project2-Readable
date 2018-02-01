@@ -54,8 +54,28 @@ export class Comments extends Component {
 
     return  (
 
-      <p> ---Comments Component--- </p>
-      // TODO: only render undeleted comments
+      // <p> ---Comments Component--- </p>
+      <div>
+        <hr />
+        {comments.filter((comment) => !comment.deleted && !comment.parentDeleted)
+          .map((comment) => {
+            return (
+              <li key={comment.id}>
+                <hr />
+                <p>comment: {comment.body}</p>
+                <p>
+                  <button>increment</button>
+                  votes: {comment.voteScore}
+                  <button>decrement</button>
+                </p>
+                <p>by: {comment.author}</p>
+                <p>at: {comment.timestamp}</p>
+                <hr />
+              </li>
+            );
+          })
+        }
+      </div>
     )
   }
 
