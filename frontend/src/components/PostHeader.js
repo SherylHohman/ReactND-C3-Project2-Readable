@@ -16,6 +16,8 @@ const PostHeader = function(props) {
   //  not required; may like to include (on Post, maybe not Home),
   const {author, timestamp} = post;
 
+  //  TODO: voting "buttons" arrows and voteScore don't line up. Fix this.
+
   return  (
     <div>
       <div key={postId}>
@@ -27,9 +29,17 @@ const PostHeader = function(props) {
         </Link>
 
         <div>
-          <button onClick={() => {props.postUpVote(postId)}}>increment</button>
+          <div
+            className="post-up-vote"
+            onClick={() => {props.postUpVote(postId)}}
+          >
+          </div>
           | votes: {voteScore} |
-          <button onClick={() => {props.postDownVote(postId)}}>decrement</button>
+          <div
+            className="post-down-vote"
+            onClick={() => {props.postDownVote(postId)}}
+            >
+          </div>
         </div>
         <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)}</p>
         <div>number of comments: {commentCount}</div>
