@@ -111,7 +111,6 @@ const headers = {
   // Vote on a comment
   //  {option=="upVote" OR option=="downVote" see export at top of file}
   export const voteOnComment = (commentId, vote) => {
-    console.log('...utils/api voteOnComment, commentId:', commentId, 'voteValue:', vote);
     if (vote !== upVote && vote !== downVote) {
       throw Error('api.js, votePost, "vote" must a string containing either: "upVote" or "downVote"');
     }

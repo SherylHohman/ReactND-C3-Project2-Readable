@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import {upVotePost, downVotePost} from '../state/posts/ducks';
 import { changeView } from '../state/viewData/ducks';
+import {upVotePost, downVotePost} from '../state/posts/ducks';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
@@ -14,8 +14,6 @@ const PostHeader = function(props) {
   const {title, category, voteScore, commentCount} = props.post;
   //  not required; may like to include (on Post, maybe not Home),
   const {author, timestamp} = post;
-
-  //  TODO: voting "buttons" arrows and voteScore don't line up. Fix this.
 
   return  (
     <div>
@@ -30,14 +28,12 @@ const PostHeader = function(props) {
         <div className="vote">
           <div
             className="post-up-vote"
-            onClick={() => {props.onUpVotePost(postId)}}
-          >
+            onClick={() => {props.onUpVotePost(postId)}}>
           </div>
           <h2>{voteScore}</h2>
           <div
             className="post-down-vote"
-            onClick={() => {props.onDownVotePost(postId)}}
-            >
+            onClick={() => {props.onDownVotePost(postId)}}>
           </div>
         </div>
 
@@ -76,5 +72,3 @@ function mapStoreToProps ( store, ownProps ) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(PostHeader);
-
- // export default PostHeader;

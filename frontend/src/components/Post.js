@@ -56,12 +56,10 @@ componentDidMount() {
 
     return (
       <div>
-              <PostHeader post={post} />
-              {/*<h2>{post.title}</h2>*/}
+              <PostHeader />
               <div> {post.body} </div>
               <div> Edit Post </div>
               <Comments />
-              {/*<Comments postId={post.id} />*/}
       </div>
     );
 

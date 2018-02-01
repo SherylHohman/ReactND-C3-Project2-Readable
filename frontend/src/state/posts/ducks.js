@@ -246,7 +246,6 @@ import * as ReaderAPI from '../../utils/api';
 
  function voteOnPost(postId, vote){
     return (dispatch) => {
-      console.log('___(POST_VOTE does get here!) about to dispatch REQUEST_VOTE_ON_COMMENT');
       dispatch({
         type: REQUEST_VOTE_ON_POST
       });
