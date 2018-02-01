@@ -31,7 +31,7 @@ import * as ReaderAPI from '../../utils/api';
   //  (if need access to more state, refactor to use redux-thunk,
   //    aka Thunk Action Creators)
 
-  export function fetchPosts(dispatch){
+  export function fetchPosts(){
     return (dispatch) => {
 
       dispatch({
@@ -80,7 +80,7 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function fetchPost(dispatch){
+  export function fetchPost(){
     return (dispatch) => {
 
       dispatch({
@@ -124,7 +124,7 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function addPost(dispatch){
+  export function addPost(){
     return (dispatch) => {
 
       dispatch({
@@ -164,7 +164,7 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function editPost(dispatch){
+  export function editPost(){
     return (dispatch) => {
 
       dispatch({
@@ -204,7 +204,7 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function deletePost(dispatch){
+  export function deletePost(){
     return (dispatch) => {
 
       dispatch({
@@ -244,9 +244,9 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function voteOnPost(postId, vote){
+ function voteOnPost(postId, vote){
     return (dispatch) => {
-
+      console.log('___(POST_VOTE does get here!) about to dispatch REQUEST_VOTE_ON_COMMENT');
       dispatch({
         type: REQUEST_VOTE_ON_POST
       });
@@ -257,12 +257,13 @@ import * as ReaderAPI from '../../utils/api';
             console.log('__response NOT OK, received in voteOnPost');
             throw Error(response.statusText);
           }
-
           return response;
         })
+
         .then((response) => response.json())
         .then((data) => {
-          // data returned is the full (updated) post object.
+
+          // data is the full (updated) post object.
           return (
             dispatch({
               type: VOTE_ON_POST_SUCCESS,
@@ -280,7 +281,6 @@ import * as ReaderAPI from '../../utils/api';
             error: true,
           })
         });
-
     };  // anon function(dispatch) wrapper
   };
   export function upVotePost(id){
@@ -353,7 +353,6 @@ import * as ReaderAPI from '../../utils/api';
       case FETCH_POST_FAILURE:
           // TODO: UI error message
           return state;
-
 
       case REQUEST_ADD_POST:
         // TODO:
