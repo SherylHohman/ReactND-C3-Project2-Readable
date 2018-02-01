@@ -68,7 +68,7 @@ export class Comments extends Component {
                     className="comment-up-vote"
                   >
                   </div>
-                  votes: {comment.voteScore}
+                  {comment.voteScore}
                   <div
                     className="comment-down-vote"
                   >

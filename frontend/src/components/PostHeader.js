@@ -28,13 +28,13 @@ const PostHeader = function(props) {
           <h2>{title}</h2>
         </Link>
 
-        <div>
+        <div className="vote">
           <div
             className="post-up-vote"
             onClick={() => {props.postUpVote(postId)}}
           >
           </div>
-          | votes: {voteScore} |
+          <h2>{voteScore}</h2>
           <div
             className="post-down-vote"
             onClick={() => {props.postDownVote(postId)}}
