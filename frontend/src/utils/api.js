@@ -154,28 +154,6 @@ const headers = {
   };
 
 
-// GEEZE SOOOOooooo much time WASTED on stupid API requests.
-//  This is a REACT course.
-//  They could have thrown in an example POST request in the server README.md
-//    file to save the rest of us so many headaches.
-//  The 2nd search term that I didn't know to include was FETCH!
-//    there are 3 different kind of api requests (XmlHTTP...., jquery.ajax, fetch)
-//  Kinda ticked they didn't bother to include an easy "up-to-speed" link
-//    for the relevant info we need to properly write our api requests
-//    for the kind of server setup they gave us !!
-//  Even the `js asynch` course they give does *NOT* say anything about this!!
-//    ..and BTW, title of course did *NOT* make it obvious to me that this was a
-//    course on how to make (api) GET/POST/PUT server requests !
-//    And really, we only needed the 3rd segment, on FETCH, for this course.
-//    Really, they could have done a better job helping us help ourselves here !
-//    UGH !!!
-
-// Evidentally, need to wrap object attached to `body` in JSON.Stringify()
-//  for the POST and PUT requests to work !!
-
-// And, as found out earlier, need to add the 3rd header for PUT/POST requests
-//  (TODO: probably should remove that 3rd header on GET requests)
-
 
 // NOTES:
   // Business logic of handling the responses are now in the (fat) action creators.
