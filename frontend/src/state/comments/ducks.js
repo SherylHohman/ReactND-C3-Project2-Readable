@@ -14,7 +14,9 @@ import * as ReaderAPI from '../../utils/api';
   export const VOTE_ON_COMMENT_SUCCESS = 'VOTE_ON_COMMENT_SUCCESS';
   export const VOTE_ON_COMMENT_FAILURE = 'VOTE_ON_COMMENT_FAILURE';
 
-// ACTION CREATORS
+// FAT ACTION CREATORS
+//  (includes business logic to decides which action(s) to create/dispatch)
+
   export function fetchComments(postId){
     return (dispatch) => {
 
@@ -91,17 +93,22 @@ import * as ReaderAPI from '../../utils/api';
     //
   };
 
-  function voteOnComment(dispatch, commentId, voteValue){
+  function voteOnComment(commentId, vote){
+    console.log('__(gets here) in comments-ducks, voteOnComment');
+    console.log('_(and here), commentId:', commentId, 'vote:', vote);
+    console.log('_(and here..)');
     return (dispatch) => {
+      console.log('____(COMMENT_VOTE does NOT get here) about to dispatch REQUEST_VOTE_ON_COMMENT');
 
       dispatch({
-        type: REQUEST_VOTE_ON_COMMENT,
+        type: REQUEST_VOTE_ON_COMMENT
       });
+      console.log('__(..or here) calling my api, vote:', vote);
 
-      ReaderAPI.voteOnComment(commentId, voteValue)
+      ReaderAPI.voteOnComment(commentId, vote)
         .then((response) => {
           if (!response.ok) {
-            console.log('__response NOT OK, fetchComments');
+            console.log('__response NOT OK, voteOnComment');
             throw Error(response.statusText);
           }
           return response;
@@ -110,12 +117,13 @@ import * as ReaderAPI from '../../utils/api';
         .then((response) => response.json())
         .then((data) => {
 
-          console.log('___data from comments API', data);
-          // TODO: see data, determine how to update comment's voteScore in store
+          console.log('___data from comment Vote API', data);
+          // data is the full (updated) comment object.
           return (
             dispatch({
               type: VOTE_ON_COMMENT_SUCCESS,
-              // TODO: update voteScore for this comment
+              commentId: data.id,
+              voteScore: data.voteScore,
             })
           )}
         )
@@ -128,14 +136,17 @@ import * as ReaderAPI from '../../utils/api';
             error: true,
           })
         });
-
     };  // anon function(dispatch) wrapper
   };
   export function incrementCommentVote(id){
-    voteOnComment(id, ReaderAPI.upVote)
+    return (dispatch) => {
+      voteOnComment(id, ReaderAPI.upVote)
+    };
   };
   export function decrementCommentVote(id){
-    voteOnComment(id, ReaderAPI.downVote)
+    return (dispatch) => {
+      voteOnComment(id, ReaderAPI.downVote)
+    };
   };
 
 // SAMPLE DATA
@@ -164,6 +175,7 @@ import * as ReaderAPI from '../../utils/api';
 // REDUCER(s)
   function comments(state={}, action) {
   // function comment(state=sampleData, action) {
+    console.log('(__COMMENTS_VOTE_ACTIONS do NOT make it here) comments reducer, action:', action);
     const { id } = action
 
     switch (action.type){
@@ -217,20 +229,20 @@ import * as ReaderAPI from '../../utils/api';
 
       case REQUEST_VOTE_ON_COMMENT:
         // TODO: do I need a spinner ?
+        console.log('__or here, in comments reducer, REQUEST_VOTE_ON_COMMENT');
         return state;
       case VOTE_ON_COMMENT_SUCCESS:
+        console.log('__or here, in comments reducer, VOTE_ON_COMMENT_SUCCESS, action:', action);
         // needs the comment ID
         return ({
           ...state,
-          // [id]: {
-          //   ...state[id],
-            //voteScore: state[id].voteScore + 1,
-            // TODO: how do I update the score: is it returned from the api?
-            //  do I need to refetch the post?
-            //  di manually +1 or -1 (would need to keep access to voteValue if so)
-          // }
+          [action.commentId]:{
+            ...state[action.commentId],
+            voteScore: action.voteScore,
+          }
         });
       case VOTE_ON_COMMENT_FAILURE:
+        console.log('__or here, in comments reducer, VOTE_ON_COMMENT_FAILURE');
         // TODO: error messate
         return state;
 

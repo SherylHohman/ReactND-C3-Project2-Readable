@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchComments } from '../state/comments/ducks';
+import { incrementCommentVote, decrementCommentVote } from '../state/comments/ducks';
 import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
 
 
@@ -53,7 +54,6 @@ export class Comments extends Component {
 
     return  (
 
-      // <p> ---Comments Component--- </p>
       <div>
         <hr />
         {comments.filter((comment) => !comment.deleted && !comment.parentDeleted)
@@ -66,11 +66,13 @@ export class Comments extends Component {
                 <div className="vote">
                   <div
                     className="comment-up-vote"
+                    onClick={() => {this.props.onUpVoteComment(comment.id)}}
                   >
                   </div>
                   {comment.voteScore}
                   <div
                     className="comment-down-vote"
+                    onClick={() => {this.props.onDownVoteComment(comment.id)}}
                   >
                   </div>
                 </div>
@@ -90,7 +92,9 @@ export class Comments extends Component {
 
 function mapDispatchToProps(dispatch){
   return ({
-    getComments: (postId) => dispatch(fetchComments(postId)),
+    getComments:     (postId)    => dispatch(fetchComments(postId)),
+    onUpVoteComment:   (commentId) => dispatch(incrementCommentVote(commentId)),
+    onDownVoteComment: (commentId) => dispatch(decrementCommentVote(commentId)),
   })
 }
 
