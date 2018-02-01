@@ -1,11 +1,11 @@
 export const upVote = "upVote";
 export const downVote = "downVote";
 
-const api = "http://localhost:3001"
+const api = "http://localhost:3001";
 
-let token = localStorage.token
+let token = localStorage.token;
 if (!token)
-  token = localStorage.token = Math.random().toString(36).substr(-8)
+  token = localStorage.token = Math.random().toString(36).substr(-8);
 
 const headers = {
   'Authorization': token,
@@ -13,40 +13,40 @@ const headers = {
   'Accept': 'application/json',
   // for app, aka response! - for POST/PUT: sends body
   'Content-Type': 'application/json',
-}
+};
 
 //FETCHING
 
   // Gets all categories listed in categories.js (modify that file as desired)
   export const fetchCategories = () => {
     return fetch(`${api}/categories`, { method: 'GET', headers })
-  }
+  };
 
   // Gets all (ok, 10 at a time) posts
   export const fetchPosts = () => {
     return fetch(`${api}/posts`, { method: 'GET', headers })
-  }
+  };
   // TODO: refactor to combine posts and postsCategory into a wrapper function
   // Gets all (ok 10) posts from specified category
   export const fetchPostsCategory = (category) => {
     return fetch(`${api}/${category}/posts`, { method: 'GET', headers })
-  }
+  };
 
   // Gets specified post
   export const fetchPost = (postId) => {
     return fetch(`${api}/posts/${postId}`, {method: 'GET', headers })
-  }
+  };
 
   // Gets all comments associated with specified post
   export const fetchComments = (postId) => {
     console.log('...utils/api fetchComments, postId:', postId);
     return fetch(`${api}/posts/${postId}/comments`, { method: 'GET', headers })
-  }
+  };
 
   // Gets specified comment
   export const fetchComment = (commentId) => {
     return fetch(`${api}/comments/${commentId}`, { method: 'GET', headers })
-  }
+  };
 
 //  DELETING
 
@@ -55,16 +55,16 @@ const headers = {
       return fetch(`${api}/comments/${commentId}`, {
         method: 'DELETE',
         headers
-      })
-    }
+      });
+    };
   //  sets posts's `deleted` flag to `true` AND
   //    all child comment's `parentDeleted` flag to `true`
     export const deletePost = (postId) => {
       return fetch(`${api}/posts/${postId}`, {
         method: 'DELETE',
         headers
-      })
-    }
+      });
+    };
 
 // ADDING
 
@@ -74,9 +74,11 @@ const headers = {
     return fetch(`${api}/posts`, {
       method: 'POST',
       headers,
-      ...addPostData,
-       })
-  }
+      body: JSON.stringify({
+        ...addPostData,
+      })
+    });
+  };
 
   // Adds a comment to a post:
   //  {id, timestap, body, author, parentId===existingPostId}
@@ -84,9 +86,10 @@ const headers = {
     return fetch(`${api}/comments`, {
       method: 'POST',
       headers,
-      ...addCommentData,
-    })
-
+      body: JSON.stringify({
+        ...addCommentData,
+      })
+    });
   }
 
 // MODIFYING/ EDITING
@@ -102,14 +105,12 @@ const headers = {
     return fetch(`${api}/posts/${postId}`, {
       method: 'POST',
       headers,
-      // body: {
-      //   option: "upVote"
-      // }
       body: JSON.stringify({
          option: vote
       })
      });
   }
+
   // Vote on a comment
   //  {option=="upVote" OR option=="downVote" see export at top of file}
   export const voteOnComment = (commentId, voteValue) => {
@@ -121,7 +122,7 @@ const headers = {
         option: voteValue
       })
     });
-  }
+  };
 
   // TODO:
   // QUESTION: editing a comment, we *change* the timestamp ?
@@ -133,11 +134,12 @@ const headers = {
     return fetch(`${api}/posts/${postId}`, {
       method: 'PUT',
       headers,
-      body: {
+      body: JSON.stringify({
         ...editPostData,
-      }
-    })
-  }
+      })
+    });
+  };
+
   // Edit a comment
   //   QUESTION: editing a comment, we *change* the timestamp ?
   //  {timestamp, body}
@@ -145,12 +147,11 @@ const headers = {
     return fetch(`${api}/comments/${commentId}`, {
       method: 'PUT',
       headers,
-      body: {
+      body: JSON.stringify({
         ...editCommentData,
-      }
-    })
-
-  }
+      })
+    });
+  };
 
 
 // GEEZE SOOOOooooo much time WASTED on stupid API requests.
