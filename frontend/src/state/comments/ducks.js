@@ -15,7 +15,8 @@ import * as ReaderAPI from '../../utils/api';
   export const VOTE_ON_COMMENT_FAILURE = 'VOTE_ON_COMMENT_FAILURE';
 
 // ACTION CREATORS
-  export function fetchComments(dispatch, postId){
+  export function fetchComments(postId){
+    console.log('in ducks - fetchComments, postId:', postId);
     return (dispatch) => {
 
       dispatch({
