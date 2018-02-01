@@ -62,11 +62,19 @@ export class Comments extends Component {
               <li key={comment.id}>
                 <hr />
                 <p>comment: {comment.body}</p>
-                <p>
-                  <button>increment</button>
+
+                <div className="vote">
+                  <div
+                    className="comment-up-vote"
+                  >
+                  </div>
                   votes: {comment.voteScore}
-                  <button>decrement</button>
-                </p>
+                  <div
+                    className="comment-down-vote"
+                  >
+                  </div>
+                </div>
+
                 <p>by: {comment.author}</p>
                 <p>{dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</p>
                 <hr />
