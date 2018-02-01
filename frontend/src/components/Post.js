@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import PostHeader from './PostHeader';
+import { Link } from 'react-router-dom';
 import Comments from './Comments';
+import { changeView } from '../state/viewData/ducks';
+import { upVotePost, downVotePost } from '../state/posts/ducks';
+import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
-import changeView from '../state/viewData/ducks';
 
 export class Post extends Component {
 
@@ -54,12 +56,41 @@ componentDidMount() {
       )
     }
 
+    const postId = props.post.id;
+    //  required to display (see project requirements)
+    const {title, category, voteScore, commentCount} = props.post;
+    //  not required; may like to include (on Post, maybe not Home),
+    const {author, timestamp} = post;
+
     return (
       <div>
-              <PostHeader />
+
+              <div>
+                  <Link
+                    to={`/post/${postId}`}
+                    onClick={() => {props.onChangeView(`/post/${postId}`, postId)
+                  }}>
+                    <h2>{title}</h2>
+                  </Link>
+
+                  <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | Edit Post</p>
+
+                  <div className="vote">
+                    <div
+                      className="post-up-vote"
+                      onClick={() => {props.onUpVotePost(postId)}}>
+                    </div>
+                    <h2>{voteScore}</h2>
+                    <div
+                      className="post-down-vote"
+                      onClick={() => {props.onDownVotePost(postId)}}>
+                    </div>
+                  </div>
+              </div>
+
               <div> {post.body} </div>
               <hr />
-              <h3>{post.commentCount} Comments</h3>
+              <h3>{commentCount} Comments</h3>
               <Comments />
       </div>
     );
@@ -76,7 +107,9 @@ function mapDispatchToProps(dispatch){
   return ({
     // getPosts: () => dispatch(fetchPosts()),
     // getPost: () => dispatch(fetchPost()),
-    onChangeView: (url, selected) => dispatch(changeView({ url, selected }))
+    onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
+    onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
+    onDownVotePost: (postId) => dispatch(downVotePost(postId)),
   })
 }
 
@@ -93,7 +126,6 @@ function mapStoreToProps ( store ) {
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Post);
 
- // export default PostDetail;
 
 
 
