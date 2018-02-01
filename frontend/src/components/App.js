@@ -46,7 +46,7 @@ class App extends Component {
           <Post/>
         )}/>
 
-        <Route path="/edit" render={({ history }) => (
+        <Route path="post/edit" render={({ history }) => (
           <EditPost />
         )}/>
 

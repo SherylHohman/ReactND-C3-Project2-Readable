@@ -73,7 +73,14 @@ componentDidMount() {
                     <h2>{title}</h2>
                   </Link>
 
-                  <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | Edit Post</p>
+                  <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | 
+                    <Link
+                      to={`/post/edit/${postId}`}
+                      onClick={() => {props.onChangeView(`/post/edit/${postId}`, postId)
+                    }}>
+                      Edit Post
+                    </Link>
+                  </p>
 
                   <div className="vote">
                     <div
