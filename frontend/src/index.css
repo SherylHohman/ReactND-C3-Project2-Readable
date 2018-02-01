@@ -48,38 +48,40 @@
   if logged-in user downvoted, make text lighter.
   */
 
-/* Voting arrows */
- /* Triangles for posts
-    Arrows for  comments,
- */
-  .triangle-up {
+ /* Triangles for posts */
+  .post-up-vote {
     width: 0;
     height: 0;
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
-    border-bottom: 50px solid #555;
+    border-bottom: 25px solid green;
   }
 
-  .triangle-down {
+  .post-down-vote {
     width: 0;
     height: 0;
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
-    border-top: 50px solid #555;
+    border-top: 25px solid green;
   }
 
-  .arrow {
+ /* "Hat" Arrows for comments */
+  .comment-vote-up {
       border: solid black;
       border-width: 0 3px 3px 0;
       display: inline-block;
       padding: 3px;
-  }
-  .up {
+
       transform: rotate(-135deg);
       -webkit-transform: rotate(-135deg);
   }
 
-  .down {
+  .comment-vote-down {
+      border: solid black;
+      border-width: 0 3px 3px 0;
+      display: inline-block;
+      padding: 3px;
+
       transform: rotate(45deg);
       -webkit-transform: rotate(45deg);
   }
