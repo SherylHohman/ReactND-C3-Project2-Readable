@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {upVotePost, downVotePost} from '../state/posts/ducks';
 // import {incrementVoteOnComment, decrementVoteOnComment} from '../state/comments';
 import { changeView } from '../state/viewData/ducks';
-import { toPublicationDate } from '../utils/helpers';
+import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 const PostHeader = function(props) {
@@ -15,7 +15,6 @@ const PostHeader = function(props) {
   const {title, category, voteScore, commentCount} = props.post;
   //  not required; may like to include (on Post, maybe not Home),
   const {author, timestamp} = post;
-  const publishedDate = toPublicationDate(timestamp);
 
   return  (
     <div>
@@ -32,7 +31,7 @@ const PostHeader = function(props) {
           | votes: {voteScore} |
           <button onClick={() => {props.postDownVote(postId)}}>decrement</button>
         </div>
-        <p>Category: {category} | By: {author} | On: {publishedDate}</p>
+        <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)}</p>
         <div>number of comments: {commentCount}</div>
         <hr />
       </div>

@@ -1,15 +1,18 @@
 const months = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
-export function toPublicationDate(unixTimestamp){
+export function dateMonthYear(unixTimestamp){
     const d = new Date(unixTimestamp);
     return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function timeIn12HourFormat(d){
+export function timeIn12HourFormat(unixTimestamp){
+  const d = new Date(unixTimestamp);
+
   let minutes = d.getMinutes();
   if (minutes<10){
     minutes = "0" + minutes;
   }
+
   let hours = d.getHours();
   let suffix = 'AM';
   if (hours >= 12) {
@@ -18,9 +21,5 @@ function timeIn12HourFormat(d){
   }
   return `${hours}:${minutes} ${suffix}`;
 }
-export function toCommentDateTime(unixTimestamp){
-    const d = new Date(unixTimestamp);
-    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} ${timeIn12HourFormat(d)}`;
-}
 
-// TODO: use moment.js to formate dates/times instead of above
+// TODO: use moment.js to formate dates/times using "relative" option in local timezones

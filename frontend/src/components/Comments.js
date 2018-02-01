@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchComments } from '../state/comments/ducks';
-import { toCommentDateTime } from '../utils/helpers';
+import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
 
 
 export class Comments extends Component {
@@ -70,7 +70,7 @@ export class Comments extends Component {
                   <button>decrement</button>
                 </p>
                 <p>by: {comment.author}</p>
-                <p>{toCommentDateTime(comment.timestamp)}</p>
+                <p>{dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</p>
                 <hr />
               </li>
             );
