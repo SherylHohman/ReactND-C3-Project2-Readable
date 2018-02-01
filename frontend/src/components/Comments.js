@@ -56,8 +56,7 @@ export class Comments extends Component {
           .map((comment) => {
             return (
               <li key={comment.id}>
-                <hr />
-                <p>comment: {comment.body}</p>
+                <p>{comment.body}</p>
 
                 <div className="vote">
                   <div
@@ -71,8 +70,9 @@ export class Comments extends Component {
                   </div>
                 </div>
 
-                <p>by: {comment.author}</p>
-                <p>{dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</p>
+                <p>by {comment.author},
+                <small> {dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</small>
+                </p>
                 <hr />
               </li>
             );

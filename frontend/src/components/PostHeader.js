@@ -11,19 +11,22 @@ const PostHeader = function(props) {
   const postId = props.post.id;
 
   //  required to display (see project requirements)
-  const {title, category, voteScore, commentCount} = props.post;
+  const {title, category, voteScore} = props.post;
   //  not required; may like to include (on Post, maybe not Home),
   const {author, timestamp} = post;
 
   return  (
     <div>
       <div key={postId}>
+
         <Link
           to={`/post/${postId}`}
           onClick={() => {props.onChangeView(`/post/${postId}`, postId)
         }}>
           <h2>{title}</h2>
         </Link>
+
+        <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | Edit Post</p>
 
         <div className="vote">
           <div
@@ -37,9 +40,6 @@ const PostHeader = function(props) {
           </div>
         </div>
 
-        <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)}</p>
-        <div>number of comments: {commentCount}</div>
-        <hr />
       </div>
     </div>
   )

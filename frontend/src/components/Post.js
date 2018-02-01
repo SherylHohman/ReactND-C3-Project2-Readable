@@ -58,7 +58,8 @@ componentDidMount() {
       <div>
               <PostHeader />
               <div> {post.body} </div>
-              <div> Edit Post </div>
+              <hr />
+              <h3>{post.commentCount} Comments</h3>
               <Comments />
       </div>
     );
