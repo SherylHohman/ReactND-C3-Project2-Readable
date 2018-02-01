@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { fetchComments } from '../state/comments/ducks';
-import { incrementCommentVote, decrementCommentVote } from '../state/comments/ducks';
+import { upVoteComment, downVoteComment } from '../state/comments/ducks';
 import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
+import PropTypes from 'prop-types';
 
 
 export class Comments extends Component {
 
   static propTypes = {
-    post:PropTypes.string//.isRequired,
+    post: PropTypes.string,//.isRequired,
+    comments: PropTypes.array,
   }
 
   componentDidMount(){
@@ -39,11 +40,7 @@ export class Comments extends Component {
         <div>Be the first to comment on this post</div>
       )
     }
-
-    //  TODO: need to know if post was deleted or not.
-    //    do I pass in the entire post, or just post.id and post.deleted
-
-    // if (post.deleted) {
+    // if (comments[0].parentDeleted) {
     //   return (
     //     <div>
     //       <h3> ..Oops! This post has been deleted.</h3>
@@ -53,7 +50,6 @@ export class Comments extends Component {
     // }
 
     return  (
-
       <div>
         <hr />
         {comments.filter((comment) => !comment.deleted && !comment.parentDeleted)
@@ -66,14 +62,12 @@ export class Comments extends Component {
                 <div className="vote">
                   <div
                     className="comment-up-vote"
-                    onClick={() => {this.props.onUpVoteComment(comment.id)}}
-                  >
+                    onClick={() => {this.props.onUpVoteComment(comment.id)}}>
                   </div>
                   {comment.voteScore}
                   <div
                     className="comment-down-vote"
-                    onClick={() => {this.props.onDownVoteComment(comment.id)}}
-                  >
+                    onClick={() => {this.props.onDownVoteComment(comment.id)}}>
                   </div>
                 </div>
 
@@ -92,9 +86,9 @@ export class Comments extends Component {
 
 function mapDispatchToProps(dispatch){
   return ({
-    getComments:     (postId)    => dispatch(fetchComments(postId)),
-    onUpVoteComment:   (commentId) => dispatch(incrementCommentVote(commentId)),
-    onDownVoteComment: (commentId) => dispatch(decrementCommentVote(commentId)),
+    getComments:       (postId)    => dispatch(fetchComments(postId)),
+    onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
+    onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),
   })
 }
 
@@ -119,5 +113,3 @@ function mapStoreToProps ( store ) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Comments);
-
- // export default Comments;

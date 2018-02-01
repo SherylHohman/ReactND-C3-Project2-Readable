@@ -94,16 +94,11 @@ import * as ReaderAPI from '../../utils/api';
   };
 
   function voteOnComment(commentId, vote){
-    console.log('__(gets here) in comments-ducks, voteOnComment');
-    console.log('_(and here), commentId:', commentId, 'vote:', vote);
-    console.log('_(and here..)');
     return (dispatch) => {
-      console.log('____(COMMENT_VOTE does NOT get here) about to dispatch REQUEST_VOTE_ON_COMMENT');
 
       dispatch({
         type: REQUEST_VOTE_ON_COMMENT
       });
-      console.log('__(..or here) calling my api, vote:', vote);
 
       ReaderAPI.voteOnComment(commentId, vote)
         .then((response) => {
@@ -117,7 +112,6 @@ import * as ReaderAPI from '../../utils/api';
         .then((response) => response.json())
         .then((data) => {
 
-          console.log('___data from comment Vote API', data);
           // data is the full (updated) comment object.
           return (
             dispatch({
@@ -129,6 +123,7 @@ import * as ReaderAPI from '../../utils/api';
         )
 
         .catch(err => {
+          console.log('(catch) error voting on comment, err:', err);
           console.error(err);  //  in case of render error
           dispatch({
             type: VOTE_ON_COMMENT_FAILURE,
@@ -138,14 +133,14 @@ import * as ReaderAPI from '../../utils/api';
         });
     };  // anon function(dispatch) wrapper
   };
-  export function incrementCommentVote(id){
+  export function upVoteComment(id){
     return (dispatch) => {
-      voteOnComment(id, ReaderAPI.upVote)
+      dispatch(voteOnComment(id, ReaderAPI.upVote))
     };
   };
-  export function decrementCommentVote(id){
+  export function downVoteComment(id){
     return (dispatch) => {
-      voteOnComment(id, ReaderAPI.downVote)
+      dispatch(voteOnComment(id, ReaderAPI.downVote))
     };
   };
 
@@ -175,7 +170,6 @@ import * as ReaderAPI from '../../utils/api';
 // REDUCER(s)
   function comments(state={}, action) {
   // function comment(state=sampleData, action) {
-    console.log('(__COMMENTS_VOTE_ACTIONS do NOT make it here) comments reducer, action:', action);
     const { id } = action
 
     switch (action.type){
@@ -229,10 +223,8 @@ import * as ReaderAPI from '../../utils/api';
 
       case REQUEST_VOTE_ON_COMMENT:
         // TODO: do I need a spinner ?
-        console.log('__or here, in comments reducer, REQUEST_VOTE_ON_COMMENT');
         return state;
       case VOTE_ON_COMMENT_SUCCESS:
-        console.log('__or here, in comments reducer, VOTE_ON_COMMENT_SUCCESS, action:', action);
         // needs the comment ID
         return ({
           ...state,
@@ -242,8 +234,7 @@ import * as ReaderAPI from '../../utils/api';
           }
         });
       case VOTE_ON_COMMENT_FAILURE:
-        console.log('__or here, in comments reducer, VOTE_ON_COMMENT_FAILURE');
-        // TODO: error messate
+        // TODO: error message
         return state;
 
       default:
