@@ -164,14 +164,15 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function editPost(postId){
+  export function editPost(postId, editedPostData){
+    console.log('ducks-editPost editedPostData:', editedPostData)
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_EDIT_POST
       });
 
-      ReaderAPI.editPost()
+      ReaderAPI.editPost(postId, editedPostData)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, editPost');
@@ -182,12 +183,13 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
-          // TODO: see data, determine how to proceed
+          // data is the entire, updated, post
+          console.log('editedPost res data', data);
 
           return (
             dispatch({
               type: EDIT_POST_SUCCESS,
-              // TODO
+              post: data,
             })
           )}
         )
@@ -387,20 +389,10 @@ import * as ReaderAPI from '../../utils/api';
           ...state,
         });
       case EDIT_POST_SUCCESS:
-        // TODO:
-        // action data should be a post item with (see const) fields
-        // const {id, title, body, category} = action;
         return ({
           ...state,
-           [action.id]: {
-            ...[action.id],
-            title,
-            body,
-            category,
-            // do I keep the original post time, or update to time of latest edit ?
-            // timestamp: action.timestamp,
-            // don't allow author to be changed, right?
-            // author: action.author,
+           [action.post.id]: {
+            ...[action.post],
            }
         });
       case EDIT_POST_FAILURE:

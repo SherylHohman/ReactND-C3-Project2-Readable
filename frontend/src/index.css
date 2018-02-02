@@ -61,6 +61,20 @@
     color: red;
   }
 
+/* TODO: need styles for these classnames
+  (EditPost, NewPost)
+    edit-title  -- want this font to be fairly large - input field for Post Title
+    edit-post-body -- descent size - input field for Post body
+
+  (New Post)
+    edit-category and
+    edit-author fields will also need to be set (new posts)
+
+  (EditComment, NewComment)
+    edit-comment  -- any reasonable size will do here.
+*/
+
+
 /* TODO: test (logged in user's) votes on posts and comments,
   if user upvoted, make text darker
   if logged-in user downvoted, make text lighter.

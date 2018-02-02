@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router';
+import { Redirect, Link } from 'react-router-dom';
 import { editPost } from '../state/posts/ducks';
 import { changeView } from '../state/viewData/ducks';
 // import { fetchPost } from '../state/posts/ducks';  // if don't have the post
@@ -12,6 +12,7 @@ export class EditPost extends Component {
   state = {
     title: '',
     body:  '',
+    category: '',
   }
 
   componentDidMount(){
@@ -28,12 +29,50 @@ export class EditPost extends Component {
       // controlled input fields
       this.setState({
         title: this.props.post.title,
-      });
-      this.setState({
         body : this.props.post.body,
+        category: this.props.post.category,
       });
-      console.log('state', this.state);
     }
+  }
+
+  controlledTitleField(e, currentText){
+    // prevent default ?
+    this.setState({title: currentText});
+  }
+
+  controlledBodyField(e, currentText){
+    // prevent default ?
+    this.setState({body: currentText});
+  }
+
+  returnToPost(){
+    const postId = this.props.postId;
+    const postUrl = `/post/${postId}`;
+
+    this.props.onChangeView(postUrl, postId);
+    // TODO: fix history - think need to grab history object with
+    //  ...ownProps in mapStateToProps
+    this.props.history.push(postUrl);
+    // this.context.router.history.push(postUrl);
+  }
+  onCancel(){
+    this.returnToPost();
+  }
+  onSave(){
+      // no trailing commas - to be used as a JSON value
+        // should I copy all post key/value fields, or only place the changed values
+        // ...this.props.post,
+        //  if copy entire post, pass it as "post",
+        //  else pass the subset as "editedPostData"
+    const editedPostData = {
+      title: this.state.title,
+      category: this.state.category,
+      body: this.state.body,
+    }
+    console.log(' in Save onClick, editedPostData', editedPostData);
+
+    this.props.onSave(this.props.postId, editedPostData);
+    this.returnToPost();
   }
 
   render(){
@@ -47,22 +86,57 @@ export class EditPost extends Component {
         <div>
           <p>No post exists in props, redirecting to the home page.</p>
           <Redirect to="/" push />
-          <button>Save</button>
-          <button>Cancel</button>
         </div>
       )
     }
 
     const post = this.props.post;
-    // const postId = this.props.post.id;
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
-    const { title, body } = this.props.post;
+    const { title, body, category } = this.props.post;
+    console.log('state', this.state);
 
     return  (
       <div>
-        <h2> {title} </h2>
-        <p>  {body}  </p>
+        <form>
+          <input
+            className="edit-title"
+            type="text"
+            value={this.state.title}
+            onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
+            />
+          {/*category - should be drop down list of avail categories
+          <input
+            className="edit-post-category"
+            type="text"
+            value={this.state.body}
+            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+            />
+            */}
+          <input
+            className="edit-post-body"
+            type="text"
+            value={this.state.body}
+            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+            />
+          <Link
+            to={postUrl}
+            onClick={() => {this.onSave();}}
+            >
+            <button>Save</button>
+          </Link>
+          <Link
+            to={postUrl}
+            onClick={() => {this.onCancel();
+            }}>
+            <button>Cancel</button>
+          </Link>
+          <hr />
+          {/*use css to make orig in light gray and smaller. Make above larger*/}
+          <h2> Orig Title: {title} </h2>
+          <p>  Orig Category: {category}  </p>
+          <p>  Orig Post: {body}  </p>
+        </form>
       </div>
     )
   };
@@ -78,8 +152,9 @@ EditPost.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    onSave: (post) => dispatch(editPost(post)),  // rem to also changeView to post
-    onCancel: (url, postId) => dispatch(changeView(url, postId)), // return to post
+    onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),  // rem to also changeView to post
+    // onCancel: (url, postId) => dispatch(changeView({ url, postId })), // return to post
+    onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
   })
 }
 
