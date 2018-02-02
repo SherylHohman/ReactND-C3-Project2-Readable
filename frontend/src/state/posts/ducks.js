@@ -80,14 +80,14 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function fetchPost(){
+  export function fetchPost(postId){
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_POST
       });
 
-      ReaderAPI.fetchPost()
+      ReaderAPI.fetchPost(postId)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, fetchPosts');
@@ -97,20 +97,14 @@ import * as ReaderAPI from '../../utils/api';
         })
 
         .then((response) => response.json())
-        .then((data) => {
-          // TODO: see data, determine how to proceed
-            // return {
-            //   // TODO
-            //   // [postData.id]: data,
-            // }
-
+        .then((post) => {
+          console.log('__got the post!:', post);
           return (
             dispatch({
               type: FETCH_POST_SUCCESS,
-              // post: post, // TODO
-            })
-          )}
-        )
+              post,
+          }));
+        })
 
         .catch(err => {
           console.error(err);  //  in case of render error
@@ -348,7 +342,7 @@ import * as ReaderAPI from '../../utils/api';
       case FETCH_POST_SUCCESS:
         return ({
           ...state,
-          ...action.post,
+          [action.post.id]: action.post,
           // TODO: turn loading spinner off
         });
       case FETCH_POST_FAILURE:
@@ -389,6 +383,7 @@ import * as ReaderAPI from '../../utils/api';
           ...state,
         });
       case EDIT_POST_SUCCESS:
+        console.log('EDIT_POST_SUCCESS, action.post:', action.post);
         return ({
           ...state,
            [action.post.id]: {
