@@ -30,7 +30,7 @@ class App extends Component {
           <div className="app-intro">
             <small>..an app for posting and viewing posts and comments</small>
           </div>
-          <input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />
+          {/*<input placeholder="Sign In to: Vote, Comment, Create/Edit Posts" />*/}
         </header>
 
 
