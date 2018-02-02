@@ -139,9 +139,11 @@ export class EditPost extends Component {
 }
 
 EditPost.propTypes = {
+    // TODO: how to make required, when using redux.store
+    // TODO: how to require specific keys exist on an (required) object
     postId: PropTypes.string,
-    // post : PropTypes.object,    // required keys: title, body, category
-    // history: PropTypes.object,
+    post : PropTypes.object,    // required keys: title, body, category
+    history: PropTypes.object,
 }
 
 function mapDispatchToProps(dispatch){
