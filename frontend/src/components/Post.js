@@ -10,18 +10,18 @@ import PropTypes from 'prop-types';
 
 export class Post extends Component {
 
-componentDidMount() {
-  console.log('in Post componentDidMount');
-  // TODO if page is loaded from saved url,
-  //  fetch the post, based on post.id that's in the url
+  componentDidMount() {
+    console.log('in Post componentDidMount');
+    // TODO if page is loaded from saved url,
+    //  fetch the post, based on post.id that's in the url
 
-  // re-direct to home page if don't have the post (until implement above)
+    // re-direct to home page if don't have the post (until implement above)
 
-  // if (this.props.post === null) {
-  //   <Redirect to="/" push />
-  // }
-  // else {console.log('post.id: ', this.props.post.id);}
-}
+    // if (this.props.post === null) {
+    //   <Redirect to="/" push />
+    // }
+    // else {console.log('post.id: ', this.props.post.id);}
+  }
 
   render(){
 
