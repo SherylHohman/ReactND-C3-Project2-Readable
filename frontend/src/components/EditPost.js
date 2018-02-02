@@ -16,16 +16,15 @@ export class EditPost extends Component {
   }
 
   componentDidMount(){
+    console.log('in EditPost componentDidMount');
 
     //  TODO: if postId not in store/state, then fetch it - could be from saved url
-
     if (!this.props || !this.props.post || this.props.post === null) {
       // TODO: fetchPost(this.props.postId) instead of history.push
-      console.log('componentDidMount, EditPost: I have no post in props');
       // this.state.history.push('/');
+      console.log('..componentDidMount, EditPost: I have no post in props');
     }
     else {
-      console.log('props', this.props);
       // controlled input fields
       this.setState({
         title: this.props.post.title,
@@ -50,16 +49,13 @@ export class EditPost extends Component {
     const postUrl = `/post/${postId}`;
 
     this.props.onChangeView(postUrl, postId);
-    // TODO: fix history - think need to grab history object with
-    //  ...ownProps in mapStateToProps
+    // TODO: put and get history from Store, rather than passed as prop from Route
     this.props.history.push(postUrl);
-    // this.context.router.history.push(postUrl);
   }
   onCancel(){
     this.returnToPost();
   }
   onSave(){
-      // no trailing commas - to be used as a JSON value
         // should I copy all post key/value fields, or only place the changed values
         // ...this.props.post,
         //  if copy entire post, pass it as "post",
@@ -69,17 +65,16 @@ export class EditPost extends Component {
       category: this.state.category,
       body: this.state.body,
     }
-    console.log(' in Save onClick, editedPostData', editedPostData);
 
     this.props.onSave(this.props.postId, editedPostData);
     this.returnToPost();
   }
 
   render(){
-    console.log('in EditPost');
 
-    // page probably loaded from saved url. Store is empty. Redirect to home page.
+    // if page loaded from saved url. Store is empty. Redirect to home page.
     //   TODO: better solution: read post id from the url, then fetch the post.
+    //   TODO: even before I read url from post, sometimes I can read it from viewData!
     if (!this.props || !this.props.post || this.props.post === null) {
       console.log('Post: post wasn\'t present in props, redirecting to home page.');
       return (
@@ -90,7 +85,7 @@ export class EditPost extends Component {
       )
     }
 
-    const post = this.props.post;
+    // const post = this.props.post;
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
     const { title, body, category } = this.props.post;
@@ -132,7 +127,7 @@ export class EditPost extends Component {
             <button>Cancel</button>
           </Link>
           <hr />
-          {/*use css to make orig in light gray and smaller. Make above larger*/}
+          {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
           <h2> Orig Title: {title} </h2>
           <p>  Orig Category: {category}  </p>
           <p>  Orig Post: {body}  </p>
@@ -145,22 +140,19 @@ export class EditPost extends Component {
 
 EditPost.propTypes = {
     postId: PropTypes.string,
-    // post : PropTypes.object,
-    // post.body: PropTypes.string,
-    // post.title: PropTypes.string,
+    // post : PropTypes.object,    // required keys: title, body, category
+    // history: PropTypes.object,
 }
 
 function mapDispatchToProps(dispatch){
   return ({
-    onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),  // rem to also changeView to post
-    // onCancel: (url, postId) => dispatch(changeView({ url, postId })), // return to post
+    onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
   })
 }
 
-function mapStoreToProps ( store, ownProps ) {
+function mapStoreToProps ( store ) {
   const postId = store.viewData.selected;
-  console.log('___ownProps', ownProps);
   return {
     postId: store.viewData.selected || null,
     post: store.posts[postId] || null,
