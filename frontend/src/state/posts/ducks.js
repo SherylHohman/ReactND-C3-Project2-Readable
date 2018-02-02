@@ -392,7 +392,7 @@ import * as ReaderAPI from '../../utils/api';
         return ({
           ...state,
            [action.post.id]: {
-            ...[action.post],
+            ...action.post,
            }
         });
       case EDIT_POST_FAILURE:
