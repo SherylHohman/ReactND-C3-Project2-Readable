@@ -50,7 +50,11 @@ export class Posts extends Component {
           <Categories />
           <hr />
 
-          <div><h2>Add New Post</h2><hr /></div>
+          <Link to={`/post/new`} onClick={() => {
+            this.props.onChangeView(`/new`, null)
+          }}>
+            <div><h2>Add New Post</h2><hr /></div>
+          </Link>
 
           <div> {/*post heading*/}
             <ol>

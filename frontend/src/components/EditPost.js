@@ -4,8 +4,11 @@ import React  from 'react';
 // import { fetchPosts } from '../state/posts/ducks';
 
 const EditPost = function(props) {
+  console.log('in EditPost');
   return  (
-    <h2> ---Edit Post Component--- </h2>
+    <div>
+      <h2> ---Edit Post Component--- </h2>
+    </div>
   )
 };
 

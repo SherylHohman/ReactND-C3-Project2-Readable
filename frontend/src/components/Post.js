@@ -75,8 +75,8 @@ componentDidMount() {
 
                   <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | 
                     <Link
-                      to={`/post/edit/${postId}`}
-                      onClick={() => {props.onChangeView(`/post/edit/${postId}`, postId)
+                      to={`/post/${postId}/edit`}
+                      onClick={() => {props.onChangeView(`/post/${postId}/edit`, postId)
                     }}>
                       Edit Post
                     </Link>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { Switch } from 'react-router-dom';  // on again, off again..
 import { connect } from 'react-redux';
 import Posts from './Posts';
 import Post from './Post';
@@ -36,23 +37,25 @@ class App extends Component {
       {/* Routes */}
         <Route exact path="/" render={({ history }) => (
           <Posts />
-        )}/>
+        )} />
 
         <Route path="/category" render={({ history }) => (
           <Posts />
-        )}/>
+        )} />
 
-        <Route path="/post" render={({ history }) => (
-          <Post/>
-        )}/>
+        <Switch>
+          <Route exact path="/post/new" render={({ history }) => (
+            <NewPost />
+          )} />
 
-        <Route path="post/edit" render={({ history }) => (
-          <EditPost />
-        )}/>
+          <Route path="/post/:postId/edit" render={({ history }) => (
+            <EditPost />
+          )} />
 
-        <Route path="/new" render={({ history }) => (
-          <NewPost />
-        )}/>
+          <Route exact path="/post/:postId" render={({ history }) => (
+            <Post />
+          )} />
+        </Switch>
 
         <hr />
       </div>
