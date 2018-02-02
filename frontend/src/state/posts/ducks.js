@@ -164,7 +164,7 @@ import * as ReaderAPI from '../../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function editPost(){
+  export function editPost(postId){
     return (dispatch) => {
 
       dispatch({
