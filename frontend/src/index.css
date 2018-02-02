@@ -16,7 +16,7 @@
 
   a:link {
       text-decoration: none;
-      padding: 10px 20px;
+      padding: 10px 10px;
       display: inline-block;
       text-align: center;
       color: darkorange;
@@ -36,17 +36,19 @@
 
   .app-header {
     background-color: #222;
-    height: 150px;
-    padding: 20px;
+    height: 120px;
+    padding: 10px;
     color: white;
   }
 
   .app-title {
-    font-size: 1.5em;
+    font-size: 1.4em;
+    color: white;
   }
 
   .app-intro {
-    font-size: large;
+    font-size: small;
+    color: red;
   }
 
   .nav {
@@ -56,7 +58,7 @@
   }
 
   .selected {
-    color: yellow;
+    color: red;
   }
 
 /* TODO: test (logged in user's) votes on posts and comments,

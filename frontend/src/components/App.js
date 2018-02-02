@@ -26,7 +26,6 @@ class App extends Component {
             this.props.onChangeView('/', '')}}>
             <h1 className="app-title">Readable</h1>
           </Link>
-          <hr />
           <div className="app-intro">
             <small>..an app for posting and viewing posts and comments</small>
           </div>
