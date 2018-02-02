@@ -11,16 +11,16 @@ export class EditPost extends Component {
 
   state = {
     title: '',
-    body: '',
+    body:  '',
   }
 
   componentDidMount(){
 
     //  TODO: if postId not in store/state, then fetch it - could be from saved url
 
-    if (this.props.post === null) {
+    if (!this.props || !this.props.post || this.props.post === null) {
       // TODO: fetchPost(this.props.postId) instead of history.push
-      console.log('I don\'t have a post in store');
+      console.log('componentDidMount, EditPost: I have no post in props');
       // this.state.history.push('/');
     }
     else {
@@ -39,13 +39,13 @@ export class EditPost extends Component {
   render(){
     console.log('in EditPost');
 
-    // page probably loaded from saved url. Store is empty. Redirect
-    // better solution would be to read the post id from the url.. fetch data.
-    if (this.props.post === null) {
+    // page probably loaded from saved url. Store is empty. Redirect to home page.
+    //   TODO: better solution: read post id from the url, then fetch the post.
+    if (!this.props || !this.props.post || this.props.post === null) {
       console.log('Post: post wasn\'t present in props, redirecting to home page.');
       return (
         <div>
-          <p>post wasn't present in props:</p>
+          <p>No post exists in props, redirecting to the home page.</p>
           <Redirect to="/" push />
           <button>Save</button>
           <button>Cancel</button>
@@ -86,7 +86,7 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps ( store ) {
   const postId = store.viewData.selected;
   return {
-    postId: store.viewData.selected,
+    postId: store.viewData.selected || null,
     post: store.posts[postId] || null,
   }
 };
