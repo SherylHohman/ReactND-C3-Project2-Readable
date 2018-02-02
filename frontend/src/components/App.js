@@ -48,7 +48,7 @@ class App extends Component {
           )} />
 
           <Route path="/post/:postId/edit" render={({ history }) => (
-            <EditPost />
+            <EditPost history={history}/>
           )} />
 
           <Route exact path="/post/:postId" render={({ history }) => (

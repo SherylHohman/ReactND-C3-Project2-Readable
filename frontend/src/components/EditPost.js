@@ -158,8 +158,9 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store ) {
+function mapStoreToProps ( store, ownProps ) {
   const postId = store.viewData.selected;
+  console.log('___ownProps', ownProps);
   return {
     postId: store.viewData.selected || null,
     post: store.posts[postId] || null,
