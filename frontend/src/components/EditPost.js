@@ -100,6 +100,14 @@ export class EditPost extends Component {
 
   componentWillReceiveProps(nextProps){
     console.log('__componentWillReceiveProps, nextProps', nextProps);
+    if (this.props.post.category !== nextProps.post.category){
+      this.setState({
+        title: nextProps.post.title,
+        body: nextProps.post.body,
+        category: nextProps.post.category,
+      })
+    }
+    // Whoah ! did that actually work ?? Createing a fresh save to be sure !!
   }
 
   controlledTitleField(e, currentText){
