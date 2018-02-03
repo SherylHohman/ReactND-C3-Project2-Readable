@@ -26,10 +26,8 @@ export class EditPost extends Component {
          this.props.post === null ||
          this.props.post === {} ||
          !this.props.post.id) {
-      // console.log('..componentDidMount, EditPost: props has no post');
       havePost = false;
       havePostId = false;
-
     }
     else {
       postId = this.props.postId;
@@ -39,16 +37,14 @@ export class EditPost extends Component {
 
     if (!havePostId && !havePost){
       this.loadHomePage();
-      // console.log('EditPost CDM, no postId, no post, ..returning home')
     }
 
     if (havePostId && !havePost){
         this.props.fetchPost(postId)
-        // console.log('__fetching post, postId', postId);
     }
 
     if (havePost) {
-      // controlled input fields
+      // init controlled input fields
       this.setState({
         title: this.props.post.title,
         body : this.props.post.body,
@@ -69,25 +65,20 @@ export class EditPost extends Component {
         category: nextProps.post.category,
       })
     }
-    // Whoah ! did that actually work ?? !!  Yes! app re-rendered! Finally!! :-)
   }
 
   controlledTitleField(e, currentText){
-    // prevent default ?
     this.setState({title: currentText});
   }
   controlledBodyField(e, currentText){
-    // prevent default ?
     this.setState({body: currentText});
   }
   controlledCategoryField(selectedCategory){
-    // prevent default ?
     this.setState({category: selectedCategory});
   }
 
   loadHomePage(){
     // used when cannot get the post, (not in store/props, could not fetch/nopostId)
-
     // These are the values viewData is initialized with for the home page.
     const selectedItem = '';
     const postUrl = '/';
@@ -120,10 +111,6 @@ export class EditPost extends Component {
   }
 
   render(){
-
-    // if ((!this.props || !this.props.post || this.props.post === null) ||
-    //    (this.state.title === '' && this.state.body === '' && this.state.category === '')) {
-    // //   console.log('Post: post wasn\'t present in props, hopefully, will attempt to fetch it');
 
     if (this.props.postId === '' || this.props.postId === null){
       return (
@@ -208,7 +195,7 @@ export class EditPost extends Component {
 
 EditPost.propTypes = {
     // TODO: how to make required, when using redux.store
-    // TODO: how to require specific keys exist on an (required) object
+    // TODO: how to require specific keys to exist on an (required) object
     postId: PropTypes.string,
     post : PropTypes.object,    // required keys: title, body, category
     categories: PropTypes.array,
@@ -220,21 +207,18 @@ function mapDispatchToProps(dispatch){
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
-    // fetchPosts: (postId) => dispatch(fetchPosts()),
   })
 }
 
 function mapStoreToProps ( store ) {
   const postId = store.viewData.selected;
-  // TODO: categories is an array on store. It *should* be an object of objects.
-  console.log('categories:', store.categories);
-  console.log('data', store.categories.categories);
 
+  // TODO: categories is an array on store. It *should* be an object of objects.
   const categoriesArray = store.categories.categories;
   console.log('categoriesArray:', categoriesArray);
-  // const categoryNames = categoriesArray.map((category) => {return category.name});
+  // TODO: find out why could not (do as did above render: create flat array of
+  //  category names.  Could not access array elements from here..?? showed undefined)
 
-  // const categories = store.categories.categories.map(category => category.name);
   return {
     postId: store.viewData.selected || null,
     post: store.posts[postId] || null,
