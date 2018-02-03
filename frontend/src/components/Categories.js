@@ -5,11 +5,15 @@ import { fetchCategories } from '../state/categories/ducks';
 export class Categories extends Component {
 
   componentDidMount() {
-    if (!this.props.categories) {
-      this.props.getCategories();
-    }
-    else {console.log('Categories componentDidMount ..not refetching, categories:');}//, this.props.categories);}
-    // may need to move this to App.js
+
+    // if (!this.props.categories || this.props.categories === null || this.props.categories === []) {
+    //   this.props.getCategories();
+    // }
+    // else {console.log('Categories componentDidMount ..not refetching, categories:');}//, this.props.categories);}
+    // // may need to move this to App.js
+
+    this.props.getCategories();
+    console.log('Categories componentDidMount ..(re)fetching, categories:');
 
   }
 
@@ -50,10 +54,13 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( { categories }) {
-  const categoriesArray = categories.categories
+function mapStoreToProps ( store ) {
+  const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
+    return acc.concat([store.categories[categoryKey]]);
+  }, []);
+
   return {
-      categories: categoriesArray,
+      categories: categoriesArray || null,
   }
 };
 

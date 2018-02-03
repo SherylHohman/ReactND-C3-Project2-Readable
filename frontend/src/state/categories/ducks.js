@@ -34,7 +34,7 @@ import * as ReaderAPI from '../../utils/api';
   //   categories
   // })
 
-  export function fetchCategories(dispatch){
+  export function fetchCategories(){
     return (dispatch) => {
 
       dispatch({ type: FETCH_CATEGORIES });
@@ -59,10 +59,19 @@ import * as ReaderAPI from '../../utils/api';
 
           })
           .then((response) => response.json())
-          .then((data) => dispatch({
+          .then((data) => {
+            // data.categories is array of category objects {name, url}
+            const categoriesObject = data.categories.reduce((acc, category)=>{
+              return {
+                ...acc,
+                [category.name]: category,
+              }
+            }, {})
+
+            return dispatch({
               type: FETCH_CATEGORIES_SUCCESS,
-              categories: data.categories,
-            })
+              categories: categoriesObject,
+            })}
           )
           .catch(err => {
             console.error(err);  //  in case of render error
@@ -110,7 +119,7 @@ import * as ReaderAPI from '../../utils/api';
       case FETCH_CATEGORIES_SUCCESS:
         return ({
           ...state,
-          categories: action.categories
+          ...action.categories
           // TODO: turn loading spinner off
         });
       case FETCH_CATEGORIES:

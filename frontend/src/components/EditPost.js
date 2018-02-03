@@ -124,7 +124,6 @@ export class EditPost extends Component {
 
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
-    const categories = this.props.categories.map(category => category.name);
 
       if (!this.props || !this.props.post || !this.props.post.id){
       return (
@@ -148,7 +147,7 @@ export class EditPost extends Component {
                 value={this.state.category}
                 onChange={(e)=>this.controlledCategoryField(e.target.value)}
                 >
-                {categories.map((category) => {
+                {this.props.categories.map((category) => {
                   return (
                     <option key={category} value={category}>{category}</option>
                   )
@@ -213,16 +212,18 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps ( store ) {
   const postId = store.viewData.selected;
 
-  // TODO: categories is an array on store. It *should* be an object of objects.
-  const categoriesArray = store.categories.categories;
-  console.log('categoriesArray:', categoriesArray);
+  const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
+    return acc.concat([store.categories[categoryKey].name]);
+  }, []);
+
+  // TODO: find out why could not (do as did above render: create flat array of
   // TODO: find out why could not (do as did above render: create flat array of
   //  category names.  Could not access array elements from here..?? showed undefined)
 
   return {
     postId: store.viewData.selected || null,
     post: store.posts[postId] || null,
-    categories: categoriesArray || null,
+    categories: categoryNames || null,
   }
 };
 
