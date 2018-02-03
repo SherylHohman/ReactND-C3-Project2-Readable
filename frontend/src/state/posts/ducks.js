@@ -159,7 +159,6 @@ import * as ReaderAPI from '../../utils/api';
   };
 
   export function editPost(postId, editedPostData){
-    console.log('ducks-editPost editedPostData:', editedPostData)
     return (dispatch) => {
 
       dispatch({
@@ -178,7 +177,6 @@ import * as ReaderAPI from '../../utils/api';
         .then((response) => response.json())
         .then((data) => {
           // data is the entire, updated, post
-          console.log('editedPost res data', data);
 
           return (
             dispatch({
@@ -383,7 +381,6 @@ import * as ReaderAPI from '../../utils/api';
           ...state,
         });
       case EDIT_POST_SUCCESS:
-        console.log('EDIT_POST_SUCCESS, action.post:', action.post);
         return ({
           ...state,
            [action.post.id]: {

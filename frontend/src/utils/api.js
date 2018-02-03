@@ -130,8 +130,6 @@ const headers = {
   // Edit a post
   //  {title, body}
   export const editPost = (postId, editPostData) => {
-    console.log('api.js editPostData', editPostData);
-    console.log('api.js ...editPostData', ...editPostData);
     return fetch(`${api}/posts/${postId}`, {
       method: 'PUT',
       headers,

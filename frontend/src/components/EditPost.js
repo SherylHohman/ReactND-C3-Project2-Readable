@@ -4,7 +4,6 @@ import { Redirect, Link } from 'react-router-dom';
 import { editPost } from '../state/posts/ducks';
 import { changeView } from '../state/viewData/ducks';
 import { fetchPost } from '../state/posts/ducks';
-import { fetchPosts } from '../state/posts/ducks';  // temp since fetchPost isn't working
 import PropTypes from 'prop-types';
 
 
@@ -21,85 +20,48 @@ export class EditPost extends Component {
 
     let havePost = true;
     let havePostId = true;
-    let postId;
+    let postId = null;
 
     if (!this.props || !this.props.post ||
          this.props.post === null ||
          this.props.post === {} ||
          !this.props.post.id) {
-      console.log('..componentDidMount, EditPost: props has no post');
+      // console.log('..componentDidMount, EditPost: props has no post');
       havePost = false;
+      havePostId = false;
 
-      // TODO: DELETE _ TEMP FOR TESTING FETCH/RE_RENDER WHEN Have PostId, but no Post
-      postId = '8xf0y6ziyjabvozdd253nd';  // temp for testing  // temp for testing
-      this.props.onChangeView(`/post/${postId}/edit`, postId); // temp for testing
-      havePostId = true;  // temp for testing
-      console.log('..falsely setting a postId, to test fetching a post from EditPost ' +
-                  '(ie later may be able to recover the postId from the url, and get it that way)');
     }
     else {
       postId = this.props.postId;
-      havePostId = true;  //redundant cuz move things around in debugging //temp for testing
-    }
-
-    //  The length used is a "magic number" that could change causing a bug.
-    //  length is a hacky "type-checker" for determining if the "selected" value from store,
-    //    represents a category, rather than a postId or commentId
-    //    CURRENTLY, id's are about 22 digits, but this could change, causing
-    //    bugs in any code relying on this.
-    //    So this hack is easily broken, and easily fooled. Best to not use it.
-    //  Oh - postId is set in mapStateToProps from store.viewData.selected !
-    if (postId === '' || postId === null || postId.length<16){
-      havePostId = false;
+      havePostId = (postId === '') || (postId === null) //|| (postId.length<16)
+        ? false : true;
     }
 
     if (!havePostId && !havePost){
-      console.log('EditPost CDM, no postId, no post, ..returning home')
       this.loadHomePage();
+      // console.log('EditPost CDM, no postId, no post, ..returning home')
     }
 
-    // TODO: WHY?? does page not reload after fetchPosts puts posts on store ??
     if (havePostId && !havePost){
-        // console.log('__fetching all posts');
-        // this.props.fetchPosts();
-        console.log('__fetching post, postId', postId);
         this.props.fetchPost(postId)
+        // console.log('__fetching post, postId', postId);
     }
 
     if (havePost) {
       // controlled input fields
-      console.log('havePost, props:', this.props, 'state before', this.state);
       this.setState({
-        // TODO: WHY?? does setState not Update info once have fetched the posts ??
         title: this.props.post.title,
         body : this.props.post.body,
         category: this.props.post.category,
       });
-      console.log('state after', this.state);
+      // (if !havePostId) just to be complete - no holes left open. Unlikely, but..
+      postId = this.props.post.id;  // make sure postId and post data are synched !
     }
 
-    //Thought: put counter on state, initialized at 1.
-    //  when CDM is called increment it.
-    //  CDM will be called before rendering.
-    //  if have data, np. everything works
-    //  if don't have post, then I call fetch post,
-    //    then once post has been fetched, CDM (is supposed to be called again,
-    //    since state has changed.  Since its "connected" a change in store should
-    //    trigger a change in props. Hence we're here, try 2)
-    //  So, uncessful at post on try 2 -> reload the post page instead.
-    //    easy to click "edit" from there.
-    //  Of course, if CDM never gets called, despite prop change
-    //    (the issue I have currently) ,then.. Oops - no go.
-    //  Could also start a timer.  If 30sec passes, and still no post, then
-    //    trigger a page load.
-    //  Could also try in 2 phases: first try loading the single post
-    //    if that doesn't work, then load all posts, and filter to find this one.
-    //  Then if have postId, reload Post page, and if don't, then reload home.
-    //  Ok, part of that didn't make logical sense. Just ignore that bit.
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('__componentWillReceiveProps, nextProps', nextProps);
+    // console.log('__componentWillReceiveProps, nextProps', nextProps);
     if (this.props.post.category !== nextProps.post.category){
       this.setState({
         title: nextProps.post.title,
@@ -107,7 +69,7 @@ export class EditPost extends Component {
         category: nextProps.post.category,
       })
     }
-    // Whoah ! did that actually work ?? Createing a fresh save to be sure !!
+    // Whoah ! did that actually work ?? !!  Yes! app re-rendered! Finally!! :-)
   }
 
   controlledTitleField(e, currentText){
@@ -123,11 +85,11 @@ export class EditPost extends Component {
   loadHomePage(){
     // used when cannot get the post, (not in store/props, could not fetch/nopostId)
 
-    // probably should be null, but '' is it's initial state for home when app loads
-    const postId = '';
+    // These are the values viewData is initialized with for the home page.
+    const selectedItem = '';
     const postUrl = '/';
 
-    this.props.onChangeView(postUrl, postId);
+    this.props.onChangeView(postUrl, selectedItem);
     this.props.history.push(postUrl);
   }
 
@@ -143,8 +105,7 @@ export class EditPost extends Component {
     this.returnToPost();
   }
   onSave(){
-    //  sending only changed values, rather than the whole post
-    //  If decide instead to send the entire post, rename the object to "post"
+    //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
       title: this.state.title,
       category: this.state.category,
@@ -157,35 +118,23 @@ export class EditPost extends Component {
 
   render(){
 
-    //   If page is loaded from saved url: Store is empty. Redirect to home page.
-    //   TODO: better solution: read post id from the url, then fetch the post.
-    //   TODO: even before I reading postId from the url,
-    //    perhaps I can read it from viewData.selected (aka props.postId), or viewData.url
-
-
     // if ((!this.props || !this.props.post || this.props.post === null) ||
     //    (this.state.title === '' && this.state.body === '' && this.state.category === '')) {
-    //   console.log('Post: post wasn\'t present in props, hopefully, will attempt to fetch it');
+    // //   console.log('Post: post wasn\'t present in props, hopefully, will attempt to fetch it');
 
-    // if (this.props.postId === '' || this.props.postId === null){
-    //   return (
-    //     <div>
-    //       <p>I do not know that post id.. Can you find it for me ?</p>
-    //       <p> ..going to the home page now ;-)</p>
-    //       <Redirect to="/" />
-    //     </div>
-    //   )
-    // }
-
-    //   let tempData = this.props || this.props.post || this.props.post || this.state.title+this.state.body+this.state.category;
-    //   console.log('either props, or state - whatever first data I have, tempData:', tempData);
-
+    if (this.props.postId === '' || this.props.postId === null){
+      return (
+        <div>
+          <p>I do not know that post id.. Can you find it for me ?</p>
+          <p> ..going to the home page now ;-D </p>
+          <Redirect to="/" />
+        </div>
+      )
+    }
 
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
-    console.log('about to render state:', this.state);
 
-    // if (this.state.title === '' && this.state.body === '' && this.state.category === ''){
       if (!this.props || !this.props.post || !this.props.post.id){
       return (
         <div><h2> Hold On.. I'm getting your Post </h2></div>
@@ -228,14 +177,19 @@ export class EditPost extends Component {
             }}>
             <button>Cancel</button>
           </Link>
-          <hr />
-          {/* uses props (immutable) */}
-          {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
-          <h3> Original Post </h3>
-          <h2> {this.props.title} </h2>
-          <p>  {this.props.category}  </p>
-          <p>  {this.props.body}  </p>
         </form>
+          <hr />
+          {/* uses props */}
+          {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
+          <h4> Rendered Edited Post </h4>
+          <h3> {this.state.title} </h3>
+          <p>  Category: {this.state.category}  </p>
+          <p>  {this.state.body}  </p>
+          <hr />
+          <h4> Original Post </h4>
+          <p> {this.props.post.title} </p>
+          <p>  Category: {this.props.post.category}  </p>
+          <p>  {this.props.post.body}  </p>
       </div>
     )
   };
@@ -255,20 +209,26 @@ function mapDispatchToProps(dispatch){
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
-    fetchPosts: (postId) => dispatch(fetchPosts()),
+    // fetchPosts: (postId) => dispatch(fetchPosts()),
   })
 }
 
 function mapStoreToProps ( store ) {
   const postId = store.viewData.selected;
   // try copying post to create a NEW object -- maybe that will allow page to re-render?
-  const copyOfPost = {...store.posts[postId]};
+  // const copyOfPost = {...store.posts[postId]};
   return {
     postId: store.viewData.selected || null,
-    // post: store.posts[postId] || null,
-    post: copyOfPost || null,
-    posts: store.posts || null,   // 4testing - perhaps  non re-render is an imutable problem ?
+    post: store.posts[postId] || null,
+    // post: copyOfPost || null,
+    // posts: store.posts || null,   // 4testing - perhaps  non re-render is an imutable problem ?
   }
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(EditPost);
+
+
+//   If page is loaded from saved url: Store is empty. Redirect to home page.
+//   TODO: perhaps I can read it from viewData.selected (aka props.postId), or viewData.url
+//   TODO: better solution: read post id from the url, then fetch the post.
+
