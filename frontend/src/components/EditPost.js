@@ -76,10 +76,13 @@ export class EditPost extends Component {
     // prevent default ?
     this.setState({title: currentText});
   }
-
   controlledBodyField(e, currentText){
     // prevent default ?
     this.setState({body: currentText});
+  }
+  controlledCategoryField(selectedCategory){
+    // prevent default ?
+    this.setState({category: selectedCategory});
   }
 
   loadHomePage(){
@@ -134,6 +137,7 @@ export class EditPost extends Component {
 
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
+    const categories = this.props.categories.map(category => category.name);
 
       if (!this.props || !this.props.post || !this.props.post.id){
       return (
@@ -151,14 +155,20 @@ export class EditPost extends Component {
             value={this.state.title}
             onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
             />
-          {/*category - should be drop down list of avail categories
-          <input
-            className="edit-post-category"
-            type="text"
-            value={this.state.body}
-            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-            />
-            */}
+
+            <div>
+              <select
+                value={this.state.category}
+                onChange={(e)=>this.controlledCategoryField(e.target.value)}
+                >
+                {categories.map((category) => {
+                  return (
+                    <option key={category} value={category}>{category}</option>
+                  )
+                })}
+              </select>
+            </div>
+
           <input
             className="edit-post-body"
             type="text"
@@ -201,6 +211,7 @@ EditPost.propTypes = {
     // TODO: how to require specific keys exist on an (required) object
     postId: PropTypes.string,
     post : PropTypes.object,    // required keys: title, body, category
+    categories: PropTypes.array,
     history: PropTypes.object,
 }
 
@@ -215,13 +226,19 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps ( store ) {
   const postId = store.viewData.selected;
-  // try copying post to create a NEW object -- maybe that will allow page to re-render?
-  // const copyOfPost = {...store.posts[postId]};
+  // TODO: categories is an array on store. It *should* be an object of objects.
+  console.log('categories:', store.categories);
+  console.log('data', store.categories.categories);
+
+  const categoriesArray = store.categories.categories;
+  console.log('categoriesArray:', categoriesArray);
+  // const categoryNames = categoriesArray.map((category) => {return category.name});
+
+  // const categories = store.categories.categories.map(category => category.name);
   return {
     postId: store.viewData.selected || null,
     post: store.posts[postId] || null,
-    // post: copyOfPost || null,
-    // posts: store.posts || null,   // 4testing - perhaps  non re-render is an imutable problem ?
+    categories: categoriesArray || null,
   }
 };
 
