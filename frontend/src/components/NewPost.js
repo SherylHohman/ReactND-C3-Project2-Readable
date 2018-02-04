@@ -21,6 +21,7 @@ export class NewPost extends Component {
     author: '',
 
     // ok to have here? it shouldn't change - need to be a component constant ?
+    // was working, now not. using createPostId instead
     id: Math.random().toString(36).substr(22),
   }
 
@@ -73,6 +74,8 @@ export class NewPost extends Component {
   }
   onSubmit(e){
     e.preventDefault();
+    this.onSave();
+    return false;
   }
 
   loadHomePage(){
@@ -122,13 +125,13 @@ export class NewPost extends Component {
   }
   onSave(){
     const newPostData = {
-      id: this.state.id,
+      // id: this.state.id,   // was working, dow does not (neither does category)
+      id: this.creatPostId(),
       title: this.state.title,
       author: this.state.author,  // TODO: automatically populate from logged in user
       category: this.state.category,
       body: this.state.body,
       timestamp: Date.now(),
-
       // TODO: input validation: no empty fields.
     }
 
@@ -212,6 +215,7 @@ export class NewPost extends Component {
         <p>  Category: {this.state.category}  </p>
         <p>  {this.state.body}  </p>
         <p>  Authored by: {this.state.author}  </p>
+        <p>  {this.state.id}  </p>
         <hr />
 
       </div>
@@ -229,7 +233,7 @@ NewPost.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    onSave: (postId, editedPostData) => dispatch(addPost(postId, editedPostData)),
+    onSave: (newPostData) => dispatch(addPost(newPostData)),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
     fetchCategories:  (postId) => dispatch(fetchCategories(postId)),
   })
