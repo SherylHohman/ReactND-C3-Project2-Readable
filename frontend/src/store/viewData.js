@@ -59,9 +59,9 @@ export const SORT_BY = 'SORT_BY';
     url: '/',      // home page
     selected: '',  // all posts (no category filter)
 
-    // sticky fields
-    sortBy: 'none',       // ?? '', null, 'none'
-    selectedCategory: ''  // ?? '', null, 'none', 'all-categories'
+    // // sticky fields
+    // sortBy: 'none',       // ?? '', null, 'none'
+    // selectedCategory: ''  // ?? '', null, 'none', 'all-categories'
 
   }
 
