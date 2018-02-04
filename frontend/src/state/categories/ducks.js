@@ -22,18 +22,6 @@ import * as ReaderAPI from '../../utils/api';
   //    components)
   //  in that case: refactor to use redux-thunks instead (THUNK ACTION CREATOR)
 
-
-  // const requestCategories = () => ({
-  //   type: REQUEST_CATEGORIES
-  // })
-  // const requestCategories_fail = () => ({
-  //   type: REQUEST_CATEGORIES_SUCCESS
-  // })
-  // const requestCategories_success = () => ({
-  //   type: REQUEST_CATEGORIES_FAIL,
-  //   categories
-  // })
-
   export function fetchCategories(){
     return (dispatch) => {
 
@@ -86,29 +74,6 @@ import * as ReaderAPI from '../../utils/api';
 };
 
 
-// ACTION CREATORS  (traditional)
-
-  // export function fetchCategories({ categories={} }){
-  //   return({
-  //     type: FETCH_CATEGORIES,
-  //     categories,
-  //   });
-  // }
-
-  // export function fetchCategoriesSuccess({ categories={} }){
-  //   return({
-  //     type: FETCH_CATEGORIES_SUCCESS,
-  //     categories,
-  //   });
-  // }
-
-// SAMPLE DATA
-  // const sampleData = {
-  //   categories: ['redux', 'react', 'javaScript'],
-  //   selectedCategory: null,
-  //   // use null to display *ALL* categories
-  // };
-
 // INITIAL STATES
   const categoriesInitialState = {};
 
@@ -140,8 +105,3 @@ import * as ReaderAPI from '../../utils/api';
   }
 
 export default categories;
-
-// export default combineReducers( {
-//     categories,
-//     category,
-// } );

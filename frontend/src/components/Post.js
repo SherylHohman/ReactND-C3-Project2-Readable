@@ -27,7 +27,6 @@ export class Post extends Component {
 
     const props = this.props;
     if (!props){console.log('Post props is undefined');}
-    // else {console.log('props:', props);}
 
     const post =
       (props && props.post) ||
@@ -44,8 +43,8 @@ export class Post extends Component {
     }
 
 
-    // page probably loaded from saved url. Store is empty. Redirect
-    // better solution would be to read the post id from the url.. fetch data.
+    // If page is loaded from a saved url. Store is empty. Redirect
+    // A better solution would be to read the post id from the url.. fetch data.
     if (post === null) {
       console.log('Post: post wasn\'t present in props, redirecting to home page.');
       return (
@@ -56,55 +55,53 @@ export class Post extends Component {
       )
     }
 
-    const postId = props.post.id;
-    //  required to display (see project requirements)
-    const {title, category, voteScore, commentCount} = props.post;
-    //  not required; may like to include (on Post, maybe not Home),
+    const postId = props.post.id;  // change to == post.id ?  //see above, and below.
+    const {title, category, voteScore, commentCount} = props.post;  // change to =post ?
     const {author, timestamp} = post;
 
     return (
       <div>
+        <div>
+            <Link
+              to={`/post/${postId}`}
+              onClick={() => {props.onChangeView(`/post/${postId}`, postId)
+            }}>
+              <h2>{title}</h2>
+            </Link>
 
-              <div>
-                  <Link
-                    to={`/post/${postId}`}
-                    onClick={() => {props.onChangeView(`/post/${postId}`, postId)
-                  }}>
-                    <h2>{title}</h2>
-                  </Link>
+            <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | 
+              <Link
+                to={`/post/${postId}/edit`}
+                onClick={() => {props.onChangeView(`/post/${postId}/edit`, postId)
+              }}>
+                Edit Post
+              </Link>
+            </p>
 
-                  <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | 
-                    <Link
-                      to={`/post/${postId}/edit`}
-                      onClick={() => {props.onChangeView(`/post/${postId}/edit`, postId)
-                    }}>
-                      Edit Post
-                    </Link>
-                  </p>
-
-                  <div className="vote">
-                    <div
-                      className="post-up-vote"
-                      onClick={() => {props.onUpVotePost(postId)}}>
-                    </div>
-                    <h2>{voteScore}</h2>
-                    <div
-                      className="post-down-vote"
-                      onClick={() => {props.onDownVotePost(postId)}}>
-                    </div>
-                  </div>
+            <div className="vote">
+              <div
+                className="post-up-vote"
+                onClick={() => {props.onUpVotePost(postId)}}>
               </div>
+              <h2>{voteScore}</h2>
+              <div
+                className="post-down-vote"
+                onClick={() => {props.onDownVotePost(postId)}}>
+              </div>
+            </div>
+        </div>
 
-              <div> {post.body} </div>
-              <hr />
-              <h3>{commentCount} Comments</h3>
-              <Comments />
+        <div> {post.body} </div>
+        <hr />
+        <h3>{commentCount} Comments</h3>
+        <Comments />
       </div>
     );
 
   }
 }
 
+// TODO: how to use PropTypes with redux store?
 // const { object, func } = PropTypes;
 Post.propTypes = {
   post: PropTypes.object//.isRequired,
@@ -112,8 +109,6 @@ Post.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    // getPosts: () => dispatch(fetchPosts()),
-    // getPost: () => dispatch(fetchPost()),
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
     onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),

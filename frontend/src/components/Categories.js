@@ -8,14 +8,9 @@ import { changeView } from '../state/viewData/ducks';
 export class Categories extends Component {
 
   componentDidMount() {
-    // if (!this.props.categories || this.props.categories === null || this.props.categories === []) {
-    //   this.props.getCategories();
-    // }
-    // else {console.log('Categories componentDidMount ..not refetching, categories:');}//, this.props.categories);}
-    // // may need to move this to App.js
-
+    // may need to move this to App.js
     this.props.getCategories();
-    console.log('Categories componentDidMount ..(re)fetching, categories:');
+    console.log('Categories componentDidMount ..(re)fetching, categories');
   }
 
   onSelectCategory(categoryName=null){
@@ -39,9 +34,6 @@ export class Categories extends Component {
   }
 
   render() {
-
-    // const propsValue = this.props||this.state||'no props or state'
-    // console.log('Categories render:', propsValue);
 
     return (
       <div>
@@ -72,7 +64,6 @@ export class Categories extends Component {
 
 }
 
-// export default Categories
 function mapDispatchToProps(dispatch){
   return ({
     getCategories: () => dispatch(fetchCategories()),
@@ -92,4 +83,3 @@ function mapStoreToProps ( store ) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Categories);
-

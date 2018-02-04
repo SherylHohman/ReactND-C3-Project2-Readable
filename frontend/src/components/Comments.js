@@ -93,14 +93,12 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
-  // console.log('in Comments, mapStoreToProps');
 
   const postId = store.viewData.selected || null;
 
-  //  TODO: double check that if there is a comments array in store ,
-  //    it is for *this* post
+  //  TODO: if there is already a comments array in store,
+  //    double check that it is for *this* post
 
-  // turn object of comment objects into array of comment objects (for react mapping)
   const commentIds = Object.keys(store.comments);
   const comments = commentIds.reduce((acc, commentId) => {
     return acc.concat([store.comments[commentId]]);

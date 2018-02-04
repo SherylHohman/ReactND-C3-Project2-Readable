@@ -57,7 +57,6 @@ export class EditPost extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('__componentWillReceiveProps, nextProps', nextProps);
     if (this.props.post.category !== nextProps.post.category){
       this.setState({
         title: nextProps.post.title,
@@ -216,10 +215,6 @@ function mapStoreToProps ( store ) {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
-  // TODO: find out why could not (do as did above render: create flat array of
-  // TODO: find out why could not (do as did above render: create flat array of
-  //  category names.  Could not access array elements from here..?? showed undefined)
-
   return {
     postId: store.viewData.selected || null,
     post: store.posts[postId] || null,
@@ -230,7 +225,7 @@ function mapStoreToProps ( store ) {
 export default connect(mapStoreToProps, mapDispatchToProps)(EditPost);
 
 
-//   If page is loaded from saved url: Store is empty. Redirect to home page.
+//   If page is loaded from saved url: Store is empty. Redirect to home page. Instead...
 //   TODO: perhaps I can read it from viewData.selected (aka props.postId), or viewData.url
 //   TODO: better solution: read post id from the url, then fetch the post.
 

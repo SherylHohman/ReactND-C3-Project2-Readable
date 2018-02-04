@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { Switch } from 'react-router-dom';  // on again, off again..
+import { Link, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Posts from './Posts';
 import Post from './Post';
@@ -63,7 +62,6 @@ class App extends Component {
 }
 
 function mapDispatchToProps(dispatch){
-  // console.log("in App mapDispatchToProps");
   return ({
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
   })
@@ -76,6 +74,3 @@ function mapStoreToProps ( store ) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(App);
-// export default connect(null, mapDispatchToProps)(App);
-
- // export default App;

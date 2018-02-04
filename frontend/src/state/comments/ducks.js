@@ -14,8 +14,8 @@ import * as ReaderAPI from '../../utils/api';
   export const VOTE_ON_COMMENT_SUCCESS = 'VOTE_ON_COMMENT_SUCCESS';
   export const VOTE_ON_COMMENT_FAILURE = 'VOTE_ON_COMMENT_FAILURE';
 
+
 // FAT ACTION CREATORS
-//  (includes business logic to decides which action(s) to create/dispatch)
 
   export function fetchComments(postId){
     return (dispatch) => {
@@ -30,15 +30,13 @@ import * as ReaderAPI from '../../utils/api';
             console.log('__response NOT OK, fetchComments');
             throw Error(response.statusText);
           }
-          // console.log('__response OK, fetchComments', response);
           return response;
         })
 
         .then((response) => response.json())
         .then((data) => {
 
-          // transform db's "array of comments" to "object of comment objects", the
-          // proper storage format for `store`
+          // transform array to object
           const commentsAsObjects = data.reduce((acc, commentData)=>{
             return {
               ...acc,
@@ -167,9 +165,11 @@ import * as ReaderAPI from '../../utils/api';
 
   // state (inside the components) would be transformed into an array of sampleComment items
 
-// REDUCER(s)
+
+// REDUCERs
+
   function comments(state={}, action) {
-  // function comment(state=sampleData, action) {
+
     const { id } = action
 
     switch (action.type){
@@ -242,5 +242,4 @@ import * as ReaderAPI from '../../utils/api';
     }
   }
 
-// export default comment
 export default comments

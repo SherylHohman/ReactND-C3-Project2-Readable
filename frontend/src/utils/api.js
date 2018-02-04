@@ -9,8 +9,11 @@ if (!token)
 
 const headers = {
   'Authorization': token,
+
   // for server, aka request - GET
   'Accept': 'application/json',
+
+  // TODO: only put this header on POST an PUT requests
   // for app, aka response! - for POST/PUT: sends body
   'Content-Type': 'application/json',
 };
@@ -152,14 +155,6 @@ const headers = {
 
 
 
-// NOTES:
-  // Business logic of handling the responses are now in the (fat) action creators.
-  //  Not sure I'm happy with it there, but it works!!
-  //  Basically, I need to check response.ok to know whether to send out
-  //    a _SUCCESS action or a _FAILURE action
-  //    and that must happen before res.json()
-  //  So, *all* the "thenning" must happen in 1 location.
-  //    Essentiallly, it seems better to dispatch actions there than here,
-  //    so I just return the raw response from here.
-  //  This may change, if I learn a better pattern for handling the combo of:
-  //    dispatch success/failure, unwrap the api res, parsing data from api
+// File NOTES:
+  //  (Business logic of handling the responses aka)
+  //  "thenning" happens in the Fat Action Creators

@@ -27,14 +27,10 @@ import * as ReaderAPI from '../../utils/api';
 
 
 // FAT ACTION CREATORS
-  //  (include business logic to decides which action(s) to create/dispatch)
-  //  (if need access to more state, refactor to use redux-thunk,
-  //    aka Thunk Action Creators)
 
   export function fetchPosts(category=null){
-    // if no param is provided (or null is provided),
-    //  fetches ALL posts:  fetchPosts(), or fetchPosts(null)
-    //  fetches by category if (category.path) provided fetchPosts(categoryName)
+    //  fetches ALL posts:   fetchPosts(), or fetchPosts(null)
+    //  fetches by category: fetchPosts(category.path)
     return (dispatch) => {
 
       dispatch({
@@ -53,9 +49,7 @@ import * as ReaderAPI from '../../utils/api';
         .then((response) => response.json())
         .then((data) => {
 
-          // posts are returned as an array
-          //  change them to Post objects where key===post.id
-          //  NO arrays in store
+          // Turn array into Object
           const postsAsObjects = data.reduce((acc, postData)=>{
             return {
               ...acc,
@@ -101,7 +95,7 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((post) => {
-          console.log('__got the post!:', post);
+          // console.log('__got the post!:', post);
           return (
             dispatch({
               type: FETCH_POST_SUCCESS,
@@ -179,7 +173,7 @@ import * as ReaderAPI from '../../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
-          // data is the entire, updated, post
+          // data is the full (updated) post object.
 
           return (
             dispatch({
@@ -328,18 +322,9 @@ import * as ReaderAPI from '../../utils/api';
         // TODO set loading spinner on
         return state;
       case FETCH_POSTS_SUCCESS:
-        // This is for fetch returning All Posts, and fetch returning Posts by Category
-        // Question for what to save in "store"
-        // should I replace all posts with the latest fetch ? ..or append ?
-        // If append, then UI *Must Always filter posts by category*
-        // if replace, then UI can simply show all posts in list.
-        //    but, home page may show an inconsistent number of posts (fetch returns only 10),
-        //      or I can filter home page UI to always show only 10,
-        //      but the "10" shown may be different for different sessions/users
-        // if append: that sounds enticing for caching purposes.
-        //   ..ah, but I have no way to tell the app that I don't need it to "fetch"
-        //   So, nevermind.  NOT appending.
-        // CURRENTLY, I'm Replacing.
+        // This is for fetch returning All Posts,
+        // and fetch returning Posts by Category
+        // REPLACES all posts in store with current fetch results
         return ({
           //...state,
           ...action.posts,
@@ -420,6 +405,7 @@ import * as ReaderAPI from '../../utils/api';
           }
           // Also Need to set `parentDeleted` property for ALL COMMENTS
           //  which are "owned" by this post.
+          //  TODO: double check - this may be taken care of on the Server end
         });
       case DELETE_POST_FAILURE:
         // TODO: UI error message
