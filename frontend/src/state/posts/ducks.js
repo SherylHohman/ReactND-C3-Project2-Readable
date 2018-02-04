@@ -31,14 +31,17 @@ import * as ReaderAPI from '../../utils/api';
   //  (if need access to more state, refactor to use redux-thunk,
   //    aka Thunk Action Creators)
 
-  export function fetchPosts(){
+  export function fetchPosts(category=null){
+    // if no param is provided (or null is provided),
+    //  fetches ALL posts:  fetchPosts(), or fetchPosts(null)
+    //  fetches by category if (category.path) provided fetchPosts(categoryName)
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_POSTS
       });
 
-      ReaderAPI.fetchPosts()
+      ReaderAPI.fetchPosts(category)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, fetchPosts');
@@ -325,8 +328,20 @@ import * as ReaderAPI from '../../utils/api';
         // TODO set loading spinner on
         return state;
       case FETCH_POSTS_SUCCESS:
+        // This is for fetch returning All Posts, and fetch returning Posts by Category
+        // Question for what to save in "store"
+        // should I replace all posts with the latest fetch ? ..or append ?
+        // If append, then UI *Must Always filter posts by category*
+        // if replace, then UI can simply show all posts in list.
+        //    but, home page may show an inconsistent number of posts (fetch returns only 10),
+        //      or I can filter home page UI to always show only 10,
+        //      but the "10" shown may be different for different sessions/users
+        // if append: that sounds enticing for caching purposes.
+        //   ..ah, but I have no way to tell the app that I don't need it to "fetch"
+        //   So, nevermind.  NOT appending.
+        // CURRENTLY, I'm Replacing.
         return ({
-          ...state,
+          //...state,
           ...action.posts,
           // TODO: turn loading spinner off
         });

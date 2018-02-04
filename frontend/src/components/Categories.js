@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { fetchCategories } from '../state/categories/ducks';
+import { fetchPosts } from '../state/posts/ducks';
+import { changeView } from '../state/viewData/ducks';
 
 export class Categories extends Component {
 
   componentDidMount() {
-
     // if (!this.props.categories || this.props.categories === null || this.props.categories === []) {
     //   this.props.getCategories();
     // }
@@ -14,12 +16,29 @@ export class Categories extends Component {
 
     this.props.getCategories();
     console.log('Categories componentDidMount ..(re)fetching, categories:');
+  }
 
+  onSelectCategory(categoryName=null){
+    let appUrl, categoryPath;
+
+    if (categoryName === null){
+      categoryName = '';
+      categoryPath = null;  // or should I change this to '' throughout app for "all posts"
+      appUrl = '/';
+    }
+    else {
+      const category = this.props.categories.find((category) => {
+        return category.name === categoryName;
+      });
+      categoryPath = category.path;
+      appUrl = `/category/${category.path}`;
+    }
+
+    this.props.getPosts(categoryPath);
+    this.props.changeView(appUrl, categoryName);
   }
 
   render() {
-
-    // const { dispatch } = this.props;
 
     // const propsValue = this.props||this.state||'no props or state'
     // console.log('Categories render:', propsValue);
@@ -29,10 +48,16 @@ export class Categories extends Component {
         {this.props && this.props.categories &&
             (
               <ul className="nav">
-                <li className="selected" key="l;asjd9f87q23j;lksa">All Categories</li>
+                <Link to="/" onClick={() => {this.onSelectCategory(null)}}>
+                  <li className="selected" key="all-categories">All Categories</li>
+                </Link>
                 {this.props.categories.map(category => {
                   return (
-                    <li key={category.name}>{category.name}</li>
+                    <Link key={category.name}
+                      to={`/category/${category.path}`}
+                      onClick={() => {this.onSelectCategory(category.name)}}>
+                      <li key={category.name}>{category.name}</li>
+                    </Link>
                   )
                 })}
               </ul>
@@ -51,6 +76,8 @@ export class Categories extends Component {
 function mapDispatchToProps(dispatch){
   return ({
     getCategories: () => dispatch(fetchCategories()),
+    getPosts: (category) => dispatch(fetchPosts(category)),
+    changeView: (url, selected) => dispatch(changeView({ url, selected })),
   })
 }
 

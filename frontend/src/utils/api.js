@@ -22,14 +22,14 @@ const headers = {
     return fetch(`${api}/categories`, { method: 'GET', headers })
   };
 
-  // Gets all (ok, 10 at a time) posts
-  export const fetchPosts = () => {
-    return fetch(`${api}/posts`, { method: 'GET', headers })
-  };
-  // TODO: refactor to combine posts and postsCategory into a wrapper function
-  // Gets all (ok 10) posts from specified category
-  export const fetchPostsCategory = (category) => {
-    return fetch(`${api}/${category}/posts`, { method: 'GET', headers })
+  export const fetchPosts = (categoryPath=null) => {
+    if (categoryPath === null) {
+      // fetch all (ok, 10) posts, mixed categories
+      return fetch(`${api}/posts`, { method: 'GET', headers })
+    } else {
+      // fetch posts by category
+      return fetch(`${api}/${categoryPath}/posts`, { method: 'GET', headers })
+    }
   };
 
   // Gets specified post
