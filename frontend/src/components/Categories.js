@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchCategories } from '../state/categories/ducks';
-import { fetchPosts } from '../state/posts/ducks';
-import { changeView } from '../state/viewData/ducks';
+import { fetchCategories } from '../store/categories';
+import { fetchPosts } from '../store/posts';
+import { changeView } from '../store/viewData';
 
 export class Categories extends Component {
 

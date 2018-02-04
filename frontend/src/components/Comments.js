@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchComments } from '../state/comments/ducks';
-import { upVoteComment, downVoteComment } from '../state/comments/ducks';
+import { fetchComments } from '../store/comments';
+import { upVoteComment, downVoteComment } from '../store/comments';
 import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
 import PropTypes from 'prop-types';
 

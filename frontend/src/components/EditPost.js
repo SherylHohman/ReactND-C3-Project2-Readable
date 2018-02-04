@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, Link } from 'react-router-dom';
-import { editPost } from '../state/posts/ducks';
-import { changeView } from '../state/viewData/ducks';
-import { fetchPost } from '../state/posts/ducks';
+import { editPost } from '../store/posts';
+import { changeView } from '../store/viewData';
+import { fetchPost } from '../store/posts';
 import PropTypes from 'prop-types';
 
 

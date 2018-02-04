@@ -5,7 +5,7 @@ import { Route } from 'react-router-dom';  // remove or combine (see Notes)
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';    // not using..yet anyway (see Notes) below
-import rootReducer from './state/index.js';
+import rootReducer from './store/index.js';
 import App from './components/App';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';

@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
-import { changeView } from '../state/viewData/ducks';
-import { upVotePost, downVotePost } from '../state/posts/ducks';
+import { changeView } from '../store/viewData';
+import { upVotePost, downVotePost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
 

@@ -1,4 +1,4 @@
-import * as ReaderAPI from '../../utils/api';
+import * as ReaderAPI from '../utils/api';
 
 // ACTION TYPES
   export const REQUEST_COMMENTS = 'REQUEST_COMMENTS';

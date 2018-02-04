@@ -1,4 +1,4 @@
-import * as ReaderAPI from '../../utils/api';
+import * as ReaderAPI from '../utils/api';
 
 // ACTION TYPES
   export const FETCH_CATEGORIES = 'FETCH_CATEGORIES';

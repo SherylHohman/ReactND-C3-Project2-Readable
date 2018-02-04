@@ -6,7 +6,7 @@ import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
-import { changeView } from '../state/viewData/ducks';
+import { changeView } from '../store/viewData';
 
 class App extends Component {
 

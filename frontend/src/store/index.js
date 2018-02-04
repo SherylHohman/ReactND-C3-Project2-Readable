@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
-import categories from "./categories/ducks";
-import posts from "./posts/ducks";
-import comments from "./comments/ducks";
-import user from "./user/ducks";
-import viewData from '../state/viewData/ducks';
+import categories from "./categories";
+import posts from "./posts";
+import comments from "./comments";
+import user from "./user";
+import viewData from './viewData';
 
 const rootReducer = combineReducers({
   categories,
