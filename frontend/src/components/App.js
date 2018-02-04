@@ -43,7 +43,7 @@ class App extends Component {
 
         <Switch>
           <Route exact path="/post/new" render={({ history }) => (
-            <NewPost />
+            <NewPost history={history} />
           )} />
 
           <Route path="/post/:postId/edit" render={({ history }) => (
