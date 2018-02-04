@@ -115,14 +115,16 @@ import * as ReaderAPI from '../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function addPost(){
+  export function addPost(newPostData){
+    console.log('actionCreator addPost, newPostData:', newPostData);
+    // post does not contain fields that are initialized by the server
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_ADD_POST
       });
 
-      ReaderAPI.addPost()
+      ReaderAPI.addPost(newPostData)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, addPost');
@@ -133,12 +135,13 @@ import * as ReaderAPI from '../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
-          // TODO: see data, determine how to proceed
+          // data is the full post
 
+          console.log('data returned from addPost API', data);
           return (
             dispatch({
               type: ADD_POST_SUCCESS,
-              // TODO
+              post: data,
             })
           )}
         )
@@ -315,7 +318,6 @@ import * as ReaderAPI from '../utils/api';
   function posts(state=postsInitialState, action) {
     // console.log('posts reducer, action', action)
 
-    const { id, timestamp, title, body, author, category } = action;
     switch (action.type){
 
       case REQUEST_POSTS:
@@ -356,23 +358,13 @@ import * as ReaderAPI from '../utils/api';
           ...state,
         });
       case ADD_POST_SUCCESS:
-        // TODO:
-        // action data should be a post item with (const) fields
-        // const { id, timestamp, title, body, author, category } = action;
+        console.log('action:', action);
         return ({
           ...state,
           // adds a new id and object to the posts object (quasi-list)
-          [action.post]: {
-            id,
-            timestamp,
-            title,
-            body,
-            author,
-            category,
-            voteScore: 1,
-            deleted: false,
-            commentCount: 0,
-          }
+          [action.post.id]: {
+            ...action.post,
+          },
         });
 
       case REQUEST_EDIT_POST:

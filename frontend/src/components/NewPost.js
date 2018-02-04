@@ -21,7 +21,7 @@ export class NewPost extends Component {
     author: '',
 
     // ok to have here? it shouldn't change - need to be a component constant ?
-    id: Math.random().toString(36).substr(-22),
+    id: Math.random().toString(36).substr(22),
   }
 
   haveCategories(){
@@ -121,7 +121,7 @@ export class NewPost extends Component {
     this.loadHomePage();
   }
   onSave(){
-    const editedPostData = {
+    const newPostData = {
       id: this.state.id,
       title: this.state.title,
       author: this.state.author,  // TODO: automatically populate from logged in user
@@ -134,8 +134,8 @@ export class NewPost extends Component {
 
     // There are additional fields on a "full" Post object.
     // Hence the name. (they have default values for a new post.)
-    this.props.onSave(this.props.postId, editedPostData);
-    console.log('onSave NewPost, editedPostData:', editedPostData);
+    this.props.onSave(newPostData);
+    console.log('onSave NewPost, newPostData:', newPostData);
     this.showPost();
   }
 
