@@ -1,25 +1,71 @@
 export const CHANGE_VIEW = 'CHANGE_VIEW';
+export const SELECTED_CATEGORY = 'SELECTED_CATEGORY';
+export const SORT_BY = 'SORT_BY';
+// export const SORT_ORDER = 'SORT_ORDER'; // Ascending only
+
+
+// Valid Values
+  // Use below to populate the Heading/Sort Options UI
+  export const sortMethods = [
+    {sortBy: "voteScore", text: 'Highest Votes'},
+    {sortBy: "date", text: 'Most Recent'}
+  ];
+
+  // TODO: get paths from App.js
+  export const routes = [
+    {path: '/', label: 'home'}, // or 'posts' ?
+    {path: '/', label: 'home'},
+    {path: '/', label: 'home'},
+    {path: '/', label: 'home'},
+    {path: '/', label: 'home'},
+  ];
+
+  // "selected" is one of: post.id, comment.id, category.name
+  // "url" is an exact path, as per browser window
+  // "route" is a route format, where `:` prefix represents a variable name
+  // "sortOrder" is "Ascending" or "Descending". Not implemented.
 
 
 // ACTION CREATORS
-export const changeView = ({ url, selected }) => ({
+
+  // temporal settings:
+  export const changeView = ({ url, selected }) => ({
     type: CHANGE_VIEW,
     url,
     selected,
   })
 
+  // "sticky" settings:
+  export const selectedCategory = ({ TODO }) => ({
+    type: SELECTED_CATEGORY,
+  })
+
+  export const sortOrder = ({ TODO }) => ({
+    type: SORT_BY,
+  })
+
+  // export const sortOrder = ({  }) => ({
+  //   type: SORT_ORDER,
+  // })
+
 
 // DATA, INITIAL, SAMPLE
   const sampleHomePage = {
-    // Assumes user starts on the home page
-    // Better to check the loaded url:
-    // When app first loads, read user's starting URL.
 
+    // temporal, non-sticky fields
+      // Assumes user starts on the home page
+      // Better to check the loaded url:
+      // When app first loads, read user's starting URL.
     url: '/',      // home page
     selected: '',  // all posts (no category filter)
 
+    // sticky fields
+    sortBy: 'none',       // ?? '', null, 'none'
+    selectedCategory: ''  // ?? '', null, 'none', 'all-categories'
+
   }
 
+  // TODO: Uncomment after set directive to not Warn about Unused (this section only)
   // const samplePostOrCommentPage = {
   //   url: '/post',   // also format for edit/new comment or post
   //   filter: '8xf0y6ziyjabvozdd253nd', // post.id; also use for comment.id
