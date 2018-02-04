@@ -23,11 +23,13 @@
     "sherylhohman"
   ],
   "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
-    "deep-freeze": "^0.0.1",
-    "expect": "^22.1.0",
-    "fsevents": "^1.1.3",
-    "jest": "^22.1.4",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
@@ -36,10 +38,10 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+  "devDependencies": {
+    "deep-freeze": "^0.0.1",
+    "expect": "^22.1.0",
+    "mocha": "^5.0.0",
+    "react-addons-test-utils": "^15.6.2"
   }
 }
