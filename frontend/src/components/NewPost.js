@@ -100,12 +100,16 @@ export class NewPost extends Component {
   }
 
   loadCategoryPage(){
+    const categoryName = this.state.categoryName;
+    console.log('categories', this.props.categories);
     const category = this.props.categories.find((category) => {
-      return category.name === this.state.categoryName;
+      return category.name === categoryName;
     });
+    console.log('categoryName, path', categoryName, category.path);
 
     const selectedCategory = this.state.categoryName || '';
-    const url = category.url || '/';
+    const url = `/category/${category.path}` || '/';
+    console.log('selectedCategory & url:', selectedCategory, url);
 
     this.props.onChangeView(url, selectedCategory);
     // TODO: set sortOrder to load most recent at top of page
@@ -183,24 +187,12 @@ export class NewPost extends Component {
 
           {/* uses state */}
           <input
-            className="edit-author"
-            type="text"
-            placeholder="Your Name in Lights.."
-            value={this.state.author}
-            onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-            />
-
-          <input
             className="edit-title"
             type="text"
             placeholder="Clever Title.."
             value={this.state.title}
             onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
             />
-
-            <div>
-                {selectCategoryOrLoading}
-            </div>
 
           <input
             className="edit-post-body"
@@ -209,14 +201,27 @@ export class NewPost extends Component {
             value={this.state.body}
             onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
             />
+
+          <input
+            className="edit-author"
+            type="text"
+            placeholder="Your Name in Lights.."
+            value={this.state.author}
+            onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+            />
+
+            <div>
+                {selectCategoryOrLoading}
+            </div>
+
           <button
-            className=""
+            className="on-save"
             onClick={() => {this.onSave();}}
             >
             Save
           </button>
           <button
-            className=""
+            className="on-cancel"
             onClick={() => {this.onCancel();
           }}>
             Cancel
