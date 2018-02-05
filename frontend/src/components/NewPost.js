@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import { Redirect, Link } from 'react-router-dom';
 import { addPost } from '../store/posts';
 import { changeView } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
@@ -10,11 +9,10 @@ import PropTypes from 'prop-types';
 export class NewPost extends Component {
 
   state = {
-    id: Math.random().toString(36).substr(22),
-    title: 'You\'re Awesome !',
-    //  TODO: this should be set automatically, once have a 'LoggedInUser'
-    author: 'SH',  // TODO - s/b input field
-    body:  'Remember this:)  It does noone any good to think otherwise.  Least of all you.  Remember this, too.  Everyone is awesome. Feel Happy any way you can.  Intrinsic happiness is fuller than a temporary surface pleasure.  Though pleasure can help you find your way from unhappiness back to where you, and everyone, should strive to live at all times.',
+    id: Math.random().toString(36).substr(22),  // Should NOT change
+    title: '',
+    author: '',   //  TODO: assign the value of 'LoggedInUser'
+    body:  '',
     categoryName: '',
   }
 
@@ -28,12 +26,12 @@ export class NewPost extends Component {
              this.props.categories[0].name
              );
 
+    return (!!val === false) ? false : true;
+
       // val === false, if does not make it to the final check: (name).
       // If (name) exists, then val === (name), ==> return true.
       // If (name) undefined, val is either false or undefined
       //  (either look up which it would be, or just use: !!val to ensure false)
-
-    return (!!val === false) ? false : true;
   }
 
   componentDidMount(){
@@ -57,8 +55,8 @@ export class NewPost extends Component {
          nextProps.categories &&
          nextProps.categories[0]
        ){
+          // default "selected" category to the first in the list
           this.setState({
-          // default selected category to the first in the list
           categoryName:   nextProps.categories[0].name,
        })
       console.log('..setState on new categories:', nextProps.categories);
@@ -78,13 +76,15 @@ export class NewPost extends Component {
     this.setState({author: currentText});
   }
   creatPostId(){
+    return  Math.random().toString(36).substring(2, 20)
+          + Math.random().toString(36).substring(2, 20);
+
     // Base-36 gives 10 digits plus 26 alphabet characters (lower case)
     //   Start at index 2 to skip the leading zero and decimal point
     //   Use 20 characters
     //   Perhaps not necessary to add; might limit the possibility of getting 0.
-    return  Math.random().toString(36).substring(2, 20)
-            + Math.random().toString(36).substring(2, 20);
   }
+
   onSubmit(e){
     e.preventDefault();
     this.onSave();
@@ -92,14 +92,9 @@ export class NewPost extends Component {
   }
 
   loadHomePage(){
-    // If user Cancels, goto home page.
-    //  Also if an error loading page from a saved url.
-    //  Or if have trouble fetching categories
-
     // These are the values viewData is initialized with for the home page.
     const selected = '';
     const url = '/';
-
     this.props.onChangeView(url, selected);
     this.props.history.push(url);
   }
@@ -113,100 +108,71 @@ export class NewPost extends Component {
     const url = category.url || '/';
 
     this.props.onChangeView(url, selectedCategory);
+    // TODO: set sortOrder to load most recent at top of page
+
     this.props.history.push(url);
   }
 
   showPost(){
-    // Can't re-direct to thePost just yet,
-    // So, re-direct to the Category page (rather than home).
-    this.loadCategoryPage();
+    // TODO: Implementation
+    // TODO: Stay Here, Show spinner until ADD_POST_SUCCES (post is saved in store.)
 
-    // TODO: default to filter on the category from this post ?
-      // TODO: Stay Here, show spinner, util it' saved in store,
-      //       then redirect to the post page.
+    const postId = this.state.id;
+    const postUrl = `/post/${postId}`;
 
-      // // goto the post when user Submits/Saves the Post
-        // const postId = this.state.id;
-        // const postUrl = `/post/${postId}`;
-
-        // this.props.onChangeView(postUrl, postId);
-
-        // // Actuallyl, I cannot show the new page until after it's saved in the DB
-        // //  This would need to be a response to ADD_POST_SUCCESS action type.
-        // // this.props.history.push(postUrl);
-
-        // // Go to home page, sorting the posts by most recent.
-        // // Then from there, the new post should appear on store, then re-render.
-
-      // // TODO: stay here with a spinner, until ADD_POST_ACTION
-      // //  that redirects to the new post.
-
-      // // FOr now, just go to home.
+    this.props.onChangeView(postUrl, postId);
+    this.props.history.push(postUrl);
   }
 
   onCancel(){
-    //  TODO: if can access user history, "Cancelling" could return to prev url.
+    //  TODO: return to prev url, via history object.
     this.loadHomePage();
   }
 
   onSave(){
-    console.log('onSave, this.state.categoryName', this.state.categoryName);
-
-    const categoryName = this.state.categoryName;
-
     const newPostData = {
-      id: this.creatPostId(),
+      id:    this.state.id,       //this.creatPostId(),
       title: this.state.title,
+      body:  this.state.body,
+
       // TODO: automatically populate author from logged in user
-      author: 'sheryl',
-      body: this.state.body,
-      category: this.state.categoryName,
+      author:    this.state.author,
+      category:  this.state.categoryName,
       timestamp: Date.now(),
-    }
     // "Full" Post object has additional fields, initialized by the server.
+    }
 
     // TODO: input validation: no empty fields.
     this.props.onSave(newPostData);
-    this.showPost();
-  }
 
-  renderHaveNoCategoriesMssg(){
-    console.log('___renderHave_No_CategoriesMssg');
-    return (
-      <p> Hang on.. we're looking for the categories ! </p>
-    )
-  }
-
-  renderCategoriesDropDown(){
-    console.log('___rendering CategoriesDropDown:', this.props.categories);
-    console.log('___rendering first item is:', this.props.categories[0].name);
-    return (
-      <div>
-        <h2> HELLO </h2>
-         <select
-          value={this.state.categoryName}
-          onChange={(e)=>this.controlledCategoryField(e.target.value)}
-          >
-          {this.props.categories.map((category) => {
-            return (
-              <option key={category.name} value={category.name}>{category.name}</option>
-            )
-          })}
-        </select>
-      </div>
-    );
-  }
-
-  renderCategoriesSection(){
-    console.log('__render categories decision time..');
-    if (this.haveCategories()){
-      this.renderCategoriesDropDown();
-    } else {
-      this.renderHaveNoCategoriesMssg();
-    }
+    // TODO: this.showPost();
+    this.loadCategoryPage();
   }
 
   render(){
+
+    const loadingCategories = (
+        <p> Hang on.. we're looking for the categories ! </p>
+    )
+
+    const selectCategory = (
+        <div>
+           <select
+            value={this.state.categoryName}
+            onChange={(e)=>this.controlledCategoryField(e.target.value)}
+            >
+            {this.props.categories.map((category) => {
+              return (
+                <option key={category.name} value={category.name}>{category.name}</option>
+              )
+            })}
+          </select>
+        </div>
+    );
+                                    //this.haveCategories()
+    const selectCategoryOrLoading = (this.state.categoryName !== '')
+         ? selectCategory
+         : loadingCategories;
 
     return  (
       <div>
@@ -233,7 +199,7 @@ export class NewPost extends Component {
             />
 
             <div>
-                {this.renderCategoriesSection()}
+                {selectCategoryOrLoading}
             </div>
 
           <input
@@ -258,19 +224,6 @@ export class NewPost extends Component {
         </form>
 
         <hr />
-
-        <select
-          value={this.state.categoryName}
-          onChange={(e)=>this.controlledCategoryField(e.target.value)}
-          >
-          {this.props.categories.map((category) => {
-            return (
-              <option key={category.name} value={category.name}>{category.name}</option>
-            )
-          })}
-        </select>
-
-
         {/* uses props */}
         <h4> Rendered Edited Post </h4>
         <h3> {this.state.title} </h3>
@@ -289,9 +242,9 @@ export class NewPost extends Component {
 }
 
 NewPost.propTypes = {
-    // TODO: how to make required, when using redux.store
-    // TODO: how to require specific keys to exist on an (required) object
-    categories: PropTypes.array,
+// TODO: how to make required, when using redux.store
+// TODO: how to require specific keys to exist on an (required) object
+  categories: PropTypes.array,
     history: PropTypes.object,
 }
 
@@ -308,17 +261,9 @@ function mapStoreToProps ( store ) {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
 
-  // console.log('mapStoreToProps, categories:', categories);
-
   return {
     categories: categories || null,
   }
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(NewPost);
-
-
-//   If page is loaded from saved url: Store is empty. Redirect to home page. Instead...
-//   TODO: perhaps I can read it from viewData.selected (aka props.postId), or viewData.url
-//   TODO: better solution: read post id from the url, then fetch the post.
-
