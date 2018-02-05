@@ -26,12 +26,19 @@ export class NewPost extends Component {
   }
 
   haveCategories(){
-    return !!(this.props &&
+    // return !!
+    const val = (this.props &&
              this.props.categories &&
              this.props.categories !== null &&
              Array.isArray(this.props.categories) &&
-             this.props.categories !== []
+             this.props.categories.length > 0  &&
+             this.props.categories[0].name
              );
+    console.log('NewPost: haveCategories, val:', val);
+    if (val === false) {return false;}
+      // will be false if does not make it to the final check: ...name
+      // if it has a value (a name == some string), then  a-ok.
+    return true;
   }
 
   componentDidMount(){
@@ -45,17 +52,42 @@ export class NewPost extends Component {
     //                      : false;
 
     if (!this.haveCategories()){
-        this.props.fetchCategories()
+        this.props.fetchCategories();
+        console.log('fetching categories..');
+    }
+    else {
+      // initialize post category to first in the list
+      console.log('have categories:', this.props.categories, +
+                  'setting default value to first in the list:', this.props.category[0]
+                 );
+      this.setState({category: this.props.category[0]});
     }
   }
 
-  // componentWillReceiveProps(nextProps){
-  //   if (this.props.categories !== nextProps.post.categories){
-  //     this.setState({
-  //       categories: nextProps.post.categories,
-  //     })
-  //   }
-  // }
+  componentWillReceiveProps(nextProps){
+    console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
+
+    // categories never change in life of app, so always ok to overwrite w/o checking.
+    if ( nextProps &&
+         nextProps.categories &&
+         nextProps.categories &&
+         nextProps.categories[0]
+       ){
+          this.setState({
+          // default selected category to the first in the list
+          category:   nextProps.categories[0],
+       })
+      console.log('..setState on new categories:', nextProps.categories);
+    }
+
+    // if ( nextProps.categories &&
+    //    (!this.props.categories || (this.props.categories !== nextProps.post.categories))){
+    //   this.setState({
+    //     categories: nextProps.post.categories,
+    //     category: nextProps.post.categories[0],
+    //   })
+    // }
+  }
 
   controlledTitleField(e, currentText){
     this.setState({title: currentText});
@@ -70,7 +102,7 @@ export class NewPost extends Component {
     this.setState({author: currentText});
   }
   creatPostId(){
-    return Math.random().toString(36).substr(-8);
+    return Math.random().toString(36).substr(-20);
   }
   onSubmit(e){
     e.preventDefault();
@@ -86,7 +118,7 @@ export class NewPost extends Component {
     //  TODO: if can access user history, "Cancelling" could return to prev url.
 
     // These are the values viewData is initialized with for the home page.
-    const selectedItem = this.state.category || '';
+    const selectedItem = this.state.category.name || '';
     const url = '/';
 
     this.props.onChangeView(url, selectedItem);
@@ -129,7 +161,7 @@ export class NewPost extends Component {
       id: this.creatPostId(),
       title: this.state.title,
       author: this.state.author,  // TODO: automatically populate from logged in user
-      category: this.state.category,
+      category: this.state.category,  // TODO: WHY IS THIS UNDEFINED ??
       body: this.state.body,
       timestamp: Date.now(),
       // TODO: input validation: no empty fields.
@@ -141,6 +173,7 @@ export class NewPost extends Component {
     console.log('onSave NewPost, newPostData:', newPostData);
     this.showPost();
   }
+
 
   render(){
 
@@ -168,21 +201,31 @@ export class NewPost extends Component {
             />
 
             <div>
-              {this.haveCategories && (
-                <select
-                  value={this.state.category}
-                  onChange={(e)=>this.controlledCategoryField(e.target.value)}
-                  >
-                  {this.props.categories.map((category) => {
-                    return (
-                      <option key={category} value={category}>{category}</option>
-                    )
-                  })}
-                </select>
-              )}
+              {(
 
-              {!this.haveCategories && (
-                <p> Hang on.. we're looking for the categories ! </p>
+                (
+                  (!this.haveCategories) &&
+                  (<p> Hang on.. we're looking for the categories ! </p>)
+                )
+
+                ||
+
+                (
+                  (this.haveCategories) &&
+                  (
+                     <select
+                      value={this.state.category}
+                      onChange={(e)=>this.controlledCategoryField(e.target.value)}
+                      >
+                      {this.props.categories.map((category) => {
+                        return (
+                          <option key={this.props.category.name} value={this.props.category}>{this.props.category.name}</option>
+                        )
+                      })}
+                    </select>
+                  )
+                )
+
               )}
             </div>
 
@@ -212,7 +255,11 @@ export class NewPost extends Component {
         {/* uses props */}
         <h4> Rendered Edited Post </h4>
         <h3> {this.state.title} </h3>
-        <p>  Category: {this.state.category}  </p>
+
+        {/* should be this.state.category.name why UNDEFINED ?? */}
+        {/*<p>  Category: {this.state.category.name}  </p>*/}
+        {console.log('this.props.categories:', this.props.categories || null)}
+
         <p>  {this.state.body}  </p>
         <p>  Authored by: {this.state.author}  </p>
         <p>  {this.state.id}  </p>
@@ -240,12 +287,12 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
-  const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
-    return acc.concat([store.categories[categoryKey].name]);
+  const categories = Object.keys(store.categories).reduce((acc, categoryKey) => {
+    return acc.concat([store.categories[categoryKey]]);
   }, []);
 
   return {
-    categories: categoryNames || null,
+    categories: categories || null,
   }
 };
 
