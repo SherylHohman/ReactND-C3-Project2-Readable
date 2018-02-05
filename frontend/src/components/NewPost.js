@@ -9,7 +9,6 @@ import PropTypes from 'prop-types';
 export class NewPost extends Component {
 
   state = {
-    id: Math.random().toString(36).substr(22),  // Should NOT change
     title: '',
     author: '',   //  TODO: assign the value of 'LoggedInUser'
     body:  '',
@@ -135,7 +134,7 @@ export class NewPost extends Component {
 
   onSave(){
     const newPostData = {
-      id:    this.state.id,       //this.creatPostId(),
+      id:    this.creatPostId(),
       title: this.state.title,
       body:  this.state.body,
 
