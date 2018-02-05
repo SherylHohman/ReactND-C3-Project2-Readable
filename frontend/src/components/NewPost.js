@@ -11,11 +11,11 @@ export class NewPost extends Component {
 
   state = {
     id: Math.random().toString(36).substr(22),
-    title: '',
+    title: 'You\'re Awesome !',
     //  TODO: this should be set automatically, once have a 'LoggedInUser'
-    author: 'sheryl',  // TODO - s/b input field
-    body:  '',
-    category: '',
+    author: 'SH',  // TODO - s/b input field
+    body:  'Remember this:)  It does noone any good to think otherwise.  Least of all you.  Remember this, too.  Everyone is awesome. Feel Happy any way you can.  Intrinsic happiness is fuller than a temporary surface pleasure.  Though pleasure can help you find your way from unhappiness back to where you, and everyone, should strive to live at all times.',
+    categoryName: '',
   }
 
   haveCategories(){
@@ -27,7 +27,6 @@ export class NewPost extends Component {
              this.props.categories.length > 0  &&
              this.props.categories[0].name
              );
-    console.log('NewPost: haveCategories, val:', val);
 
       // val === false, if does not make it to the final check: (name).
       // If (name) exists, then val === (name), ==> return true.
@@ -40,28 +39,18 @@ export class NewPost extends Component {
   componentDidMount(){
     console.log('in NewPost componentDidMount');
 
-    // const haveCategories = this.props &&
-    //                        this.props.categories &&
-    //                        this.props.post !== null &&
-    //                        this.props.post !== []
-    //                      ? true
-    //                      : false;
-
     if (!this.haveCategories()){
         this.props.fetchCategories();
         console.log('fetching categories..');
     }
     else {
       // initialize post category to first in the list
-      console.log('have categories:', this.props.categories);
-      console.log('setting default value to first in the list:', this.props.categories[0]);
-      this.setState({category: this.props.categories[0]});
+      this.setState({categoryName: this.props.categories[0].name});
     }
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
-
+    // console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
     // categories never change in life of app, so always ok to overwrite w/o checking.
     if ( nextProps &&
          nextProps.categories &&
@@ -70,18 +59,10 @@ export class NewPost extends Component {
        ){
           this.setState({
           // default selected category to the first in the list
-          category:   nextProps.categories[0],
+          categoryName:   nextProps.categories[0].name,
        })
       console.log('..setState on new categories:', nextProps.categories);
     }
-
-    // if ( nextProps.categories &&
-    //    (!this.props.categories || (this.props.categories !== nextProps.post.categories))){
-    //   this.setState({
-    //     categories: nextProps.post.categories,
-    //     category: nextProps.post.categories[0],
-    //   })
-    // }
   }
 
   controlledTitleField(e, currentText){
@@ -90,14 +71,19 @@ export class NewPost extends Component {
   controlledBodyField(e, currentText){
     this.setState({body: currentText});
   }
-  controlledCategoryField(selectedCategory){
-    this.setState({category: selectedCategory});
+  controlledCategoryField(selectedCategoryName){
+    this.setState({categoryName: selectedCategoryName});
   }
-  controlledAuthorField(currentText){
+  controlledAuthorField(e, currentText){
     this.setState({author: currentText});
   }
   creatPostId(){
-    return Math.random().toString(36).substr(-20);
+    // Base-36 gives 10 digits plus 26 alphabet characters (lower case)
+    //   Start at index 2 to skip the leading zero and decimal point
+    //   Use 20 characters
+    //   Perhaps not necessary to add; might limit the possibility of getting 0.
+    return  Math.random().toString(36).substring(2, 20)
+            + Math.random().toString(36).substring(2, 20);
   }
   onSubmit(e){
     e.preventDefault();
@@ -110,102 +96,109 @@ export class NewPost extends Component {
     //  Also if an error loading page from a saved url.
     //  Or if have trouble fetching categories
 
-    //  TODO: if can access user history, "Cancelling" could return to prev url.
-
     // These are the values viewData is initialized with for the home page.
-    const selectedItem = this.state.category.name || '';
+    const selected = '';
     const url = '/';
 
-    this.props.onChangeView(url, selectedItem);
+    this.props.onChangeView(url, selected);
+    this.props.history.push(url);
+  }
+
+  loadCategoryPage(){
+    const category = this.props.categories.find((category) => {
+      return category.name === this.state.categoryName;
+    });
+
+    const selectedCategory = this.state.categoryName || '';
+    const url = category.url || '/';
+
+    this.props.onChangeView(url, selectedCategory);
     this.props.history.push(url);
   }
 
   showPost(){
+    // Can't re-direct to thePost just yet,
+    // So, re-direct to the Category page (rather than home).
+    this.loadCategoryPage();
 
-    this.loadHomePage();
     // TODO: default to filter on the category from this post ?
-    // TODO: Stay Here, show spinner, util it' saved in store,
-    //       then redirect to the post page.
+      // TODO: Stay Here, show spinner, util it' saved in store,
+      //       then redirect to the post page.
 
-    // // goto the post when user Submits/Saves the Post
-    // const postId = this.state.id;
-    // const postUrl = `/post/${postId}`;
+      // // goto the post when user Submits/Saves the Post
+        // const postId = this.state.id;
+        // const postUrl = `/post/${postId}`;
 
-    // this.props.onChangeView(postUrl, postId);
+        // this.props.onChangeView(postUrl, postId);
 
-    // // Actuallyl, I cannot show the new page until after it's saved in the DB
-    // //  This would need to be a response to ADD_POST_SUCCESS action type.
-    // // this.props.history.push(postUrl);
+        // // Actuallyl, I cannot show the new page until after it's saved in the DB
+        // //  This would need to be a response to ADD_POST_SUCCESS action type.
+        // // this.props.history.push(postUrl);
 
-    // // Go to home page, sorting the posts by most recent.
-    // // Then from there, the new post should appear on store, then re-render.
+        // // Go to home page, sorting the posts by most recent.
+        // // Then from there, the new post should appear on store, then re-render.
 
-    // // TODO: stay here with a spinner, until ADD_POST_ACTION
-    // //  that redirects to the new post.
+      // // TODO: stay here with a spinner, until ADD_POST_ACTION
+      // //  that redirects to the new post.
 
-    // // FOr now, just go to home.
-
-    // // TODO: put and get history from Store, rather than passed as prop from Route
+      // // FOr now, just go to home.
   }
+
   onCancel(){
+    //  TODO: if can access user history, "Cancelling" could return to prev url.
     this.loadHomePage();
   }
+
   onSave(){
+    console.log('onSave, this.state.categoryName', this.state.categoryName);
 
-    console.log('onSave, this.state.category', this.state.category);
-
-    const categoryName = this.state.category.name;  // if store only the name on state..
-    // can use the name to filter through the array of categories to find the category.
+    const categoryName = this.state.categoryName;
 
     const newPostData = {
-      // id: this.state.id,   // was working, dow does not (neither does category)
       id: this.creatPostId(),
       title: this.state.title,
       // TODO: automatically populate author from logged in user
-      author: 'sheryl',        //t TODO: fix - this.state.author,
+      author: 'sheryl',
       body: this.state.body,
-      category: this.state.category.name,
+      category: this.state.categoryName,
       timestamp: Date.now(),
-
-      // TODO: input validation: no empty fields.
     }
+    // "Full" Post object has additional fields, initialized by the server.
 
-    // There are additional fields on a "full" Post object.
-    // Hence the name. (they have default values for a new post.)
+    // TODO: input validation: no empty fields.
     this.props.onSave(newPostData);
-    console.log('onSave NewPost, newPostData:', newPostData);
     this.showPost();
   }
 
   renderHaveNoCategoriesMssg(){
-    console.log('renderHave_No_CategoriesMssg');
+    console.log('___renderHave_No_CategoriesMssg');
     return (
       <p> Hang on.. we're looking for the categories ! </p>
     )
   }
+
   renderCategoriesDropDown(){
-    // console.log('this.props', this.props);
-    // console.log('this.props.categories', this.props.categories);
-
-    // console.log('this.props', this.props);
-    // console.log('this.props', this.props);
-
-    console.log('renderCategoriesDropDown:', this.props.categories);
-
+    console.log('___rendering CategoriesDropDown:', this.props.categories);
+    console.log('___rendering first item is:', this.props.categories[0].name);
     return (
-       <select
-        value={this.state.category}
-        onChange={(e)=>this.controlledCategoryField(e.target.value)}
-        >
-        {this.props.categories.map((category) => {
-          return (
-            <option key={category.name} value={category}>{category.name}</option>
-          )
-        })}
-      </select>
-    )
+      <div>
+        <h2> HELLO </h2>
+         <select
+          value={this.state.categoryName}
+          onChange={(e)=>this.controlledCategoryField(e.target.value)}
+          >
+          {this.props.categories.map((category) => {
+            return (
+              <option key={category.name} value={category.name}>{category.name}</option>
+            )
+          })}
+        </select>
+      </div>
+    );
   }
+
   renderCategoriesSection(){
+    console.log('__render categories decision time..');
     if (this.haveCategories()){
       this.renderCategoriesDropDown();
     } else {
@@ -218,17 +211,18 @@ export class NewPost extends Component {
     return  (
       <div>
 
-        <p>New Post</p>
+        <small>New Post</small>
 
         <form onSubmit={(e)=> {this.onSubmit(e)}}>
-          {/* uses state * /}
+
+          {/* uses state */}
           <input
             className="edit-author"
             type="text"
             placeholder="Your Name in Lights.."
             value={this.state.author}
             onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-            />  */}
+            />
 
           <input
             className="edit-title"
@@ -265,13 +259,23 @@ export class NewPost extends Component {
 
         <hr />
 
+        <select
+          value={this.state.categoryName}
+          onChange={(e)=>this.controlledCategoryField(e.target.value)}
+          >
+          {this.props.categories.map((category) => {
+            return (
+              <option key={category.name} value={category.name}>{category.name}</option>
+            )
+          })}
+        </select>
+
+
         {/* uses props */}
         <h4> Rendered Edited Post </h4>
         <h3> {this.state.title} </h3>
 
-        {/* should be this.state.category.name why UNDEFINED ?? */}
-        {/*<p>  Category: {this.state.category.name}  </p>*/}
-        {console.log('this.props.categories:', this.props.categories || null)}
+        <p>  Category: {this.state.categoryName}  </p>
 
         <p>  {this.state.body}  </p>
         <p>  Authored by: {this.state.author}  </p>
@@ -304,7 +308,7 @@ function mapStoreToProps ( store ) {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
 
-  console.log('mapStoreToProps, categories:', categories);
+  // console.log('mapStoreToProps, categories:', categories);
 
   return {
     categories: categories || null,
