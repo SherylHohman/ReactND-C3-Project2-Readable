@@ -8,25 +8,18 @@ import PropTypes from 'prop-types';
 
 
 export class NewPost extends Component {
-  // TODO: calculate these at onSubmit
-  // id,
-  // timestamp,
 
   state = {
+    id: Math.random().toString(36).substr(22),
     title: '',
+    //  TODO: this should be set automatically, once have a 'LoggedInUser'
+    author: 'sheryl',  // TODO - s/b input field
     body:  '',
     category: '',
-
-    //  TODO: this should be set automatically, once have a 'LoggedInUser'
-    author: '',
-
-    // ok to have here? it shouldn't change - need to be a component constant ?
-    // was working, now not. using createPostId instead
-    id: Math.random().toString(36).substr(22),
   }
 
   haveCategories(){
-    // return !!
+
     const val = (this.props &&
              this.props.categories &&
              this.props.categories !== null &&
@@ -35,10 +28,13 @@ export class NewPost extends Component {
              this.props.categories[0].name
              );
     console.log('NewPost: haveCategories, val:', val);
-    if (val === false) {return false;}
-      // will be false if does not make it to the final check: ...name
-      // if it has a value (a name == some string), then  a-ok.
-    return true;
+
+      // val === false, if does not make it to the final check: (name).
+      // If (name) exists, then val === (name), ==> return true.
+      // If (name) undefined, val is either false or undefined
+      //  (either look up which it would be, or just use: !!val to ensure false)
+
+    return (!!val === false) ? false : true;
   }
 
   componentDidMount(){
@@ -57,10 +53,9 @@ export class NewPost extends Component {
     }
     else {
       // initialize post category to first in the list
-      console.log('have categories:', this.props.categories, +
-                  'setting default value to first in the list:', this.props.category[0]
-                 );
-      this.setState({category: this.props.category[0]});
+      console.log('have categories:', this.props.categories);
+      console.log('setting default value to first in the list:', this.props.categories[0]);
+      this.setState({category: this.props.categories[0]});
     }
   }
 
@@ -156,14 +151,22 @@ export class NewPost extends Component {
     this.loadHomePage();
   }
   onSave(){
+
+    console.log('onSave, this.state.category', this.state.category);
+
+    const categoryName = this.state.category.name;  // if store only the name on state..
+    // can use the name to filter through the array of categories to find the category.
+
     const newPostData = {
       // id: this.state.id,   // was working, dow does not (neither does category)
       id: this.creatPostId(),
       title: this.state.title,
-      author: this.state.author,  // TODO: automatically populate from logged in user
-      category: this.state.category,  // TODO: WHY IS THIS UNDEFINED ??
+      // TODO: automatically populate author from logged in user
+      author: 'sheryl',        //t TODO: fix - this.state.author,
       body: this.state.body,
+      category: this.state.category.name,
       timestamp: Date.now(),
+
       // TODO: input validation: no empty fields.
     }
 
@@ -174,6 +177,41 @@ export class NewPost extends Component {
     this.showPost();
   }
 
+  renderHaveNoCategoriesMssg(){
+    console.log('renderHave_No_CategoriesMssg');
+    return (
+      <p> Hang on.. we're looking for the categories ! </p>
+    )
+  }
+  renderCategoriesDropDown(){
+    // console.log('this.props', this.props);
+    // console.log('this.props.categories', this.props.categories);
+
+    // console.log('this.props', this.props);
+    // console.log('this.props', this.props);
+
+    console.log('renderCategoriesDropDown:', this.props.categories);
+
+    return (
+       <select
+        value={this.state.category}
+        onChange={(e)=>this.controlledCategoryField(e.target.value)}
+        >
+        {this.props.categories.map((category) => {
+          return (
+            <option key={category.name} value={category}>{category.name}</option>
+          )
+        })}
+      </select>
+    )
+  }
+  renderCategoriesSection(){
+    if (this.haveCategories()){
+      this.renderCategoriesDropDown();
+    } else {
+      this.renderHaveNoCategoriesMssg();
+    }
+  }
 
   render(){
 
@@ -201,32 +239,7 @@ export class NewPost extends Component {
             />
 
             <div>
-              {(
-
-                (
-                  (!this.haveCategories) &&
-                  (<p> Hang on.. we're looking for the categories ! </p>)
-                )
-
-                ||
-
-                (
-                  (this.haveCategories) &&
-                  (
-                     <select
-                      value={this.state.category}
-                      onChange={(e)=>this.controlledCategoryField(e.target.value)}
-                      >
-                      {this.props.categories.map((category) => {
-                        return (
-                          <option key={this.props.category.name} value={this.props.category}>{this.props.category.name}</option>
-                        )
-                      })}
-                    </select>
-                  )
-                )
-
-              )}
+                {this.renderCategoriesSection()}
             </div>
 
           <input
@@ -290,6 +303,8 @@ function mapStoreToProps ( store ) {
   const categories = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
+
+  console.log('mapStoreToProps, categories:', categories);
 
   return {
     categories: categories || null,
