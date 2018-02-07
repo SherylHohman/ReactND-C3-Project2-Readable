@@ -92,28 +92,28 @@ export class NewPost extends Component {
 
   loadHomePage(){
     // These are the values viewData is initialized with for the home page.
-    const selected = '';
+    const id = '';
     const url = '/';
-    this.props.onChangeView(url, selected);
+    this.props.changeViewByUrlId(url, id);
     this.props.history.push(url);
   }
 
-  loadCategoryPage(){
-    const categoryName = this.state.categoryName;
-    console.log('categories', this.props.categories);
+  loadCategoryPage(categoryName){
+    // const categoryName = this.state.categoryName;
+    // console.log('categories', this.props.categories);
     const category = this.props.categories.find((category) => {
-      return category.name === categoryName;
+      return category.name === this.state.categoryName;
     });
-    console.log('categoryName, path', categoryName, category.path);
+      console.log('categoryName, path', categoryName, category.path);
 
-    const selectedCategory = this.state.categoryName || '';
-    const url = `/category/${category.path}` || '/';
-    console.log('selectedCategory & url:', selectedCategory, url);
+    // const selectedCategory = this.state.categoryName || '';
+    const url = `/category/${category.path}`;
+      console.log('category:', category, 'url': url);
 
-    this.props.onChangeView(url, selectedCategory);
+    this.props.changeViewByCategory(category);
     // TODO: set sortOrder to load most recent at top of page
 
-    this.props.history.push(url);
+    this.props.history.push(`/category/${category.path}`);
   }
 
   showPost(){
@@ -145,11 +145,11 @@ export class NewPost extends Component {
     // "Full" Post object has additional fields, initialized by the server.
     }
 
-    // TODO: input validation: no empty fields.
-    this.props.onSave(newPostData);
-
     // TODO: this.showPost();
     this.loadCategoryPage();
+
+    // TODO: input validation: no empty fields.
+    this.props.onSave(newPostData);
   }
 
   render(){
@@ -255,7 +255,8 @@ NewPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (newPostData) => dispatch(addPost(newPostData)),
-    onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
+    changeViewByUrlId: (url, id) => dispatch(changeView({ url, id })),
+    changeViewByCategory: (category) => dispatch(changeView({ category })),
     fetchCategories:  (postId) => dispatch(fetchCategories(postId)),
   })
 }

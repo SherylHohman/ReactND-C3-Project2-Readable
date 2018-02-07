@@ -7,30 +7,48 @@ import { changeView } from '../store/viewData';
 
 export class Categories extends Component {
 
-  componentDidMount() {
-    // may need to move this to App.js
-    this.props.getCategories();
-    console.log('Categories componentDidMount ..(re)fetching, categories');
+  state = {
+    category: '',
   }
 
-  onSelectCategory(categoryName=null){
-    let appUrl, categoryPath;
+  componentDidMount() {
+    // may need to move this to App.js
+    this.props.fetchCategories();
+    console.log('Categories componentDidMount ..(re)fetching, categories');
 
-    if (categoryName === null){
-      categoryName = '';
-      categoryPath = null;  // or should I change this to '' throughout app for "all posts"
-      appUrl = '/';
+    if (this.props && this.props.category){
+      this.setState({ category: this.props.category });
     }
-    else {
-      const category = this.props.categories.find((category) => {
+  }
+
+  getCategoryFromName(categoryName){
+    if (!categoryName || categoryName === null || categoryName === ''){
+      console.log('error: categoryName is invalid, Categories.js: getCategoryFromName, setting to categories[0]', this.props.categories[0]);
+      return null; //({name: '', path: '/'});  // home page, show all categories
+    } else {
+      return this.props.categories.find((category) => {
         return category.name === categoryName;
       });
-      categoryPath = category.path;
-      appUrl = `/category/${category.path}`;
     }
+  }
 
-    this.props.getPosts(categoryPath);
-    this.props.changeView(appUrl, categoryName);
+  onSelectCategory(categoryName){
+    const category = this.getCategoryFromName(categoryName);
+    this.props.changeView(category);
+    this.props.getPosts(category.path);  // category.path could fail if category is null
+  }
+
+  setOnclickFunction(){
+    let TODO;   // placeholder for TODO. compiler won't complain.
+    if ( TODO ) {
+      return () => {this.onSelectCategory}
+    }
+    else {
+      // no onclick handler for category on current route
+      // TODO no mouse pointer
+      // TODO no linkTo
+      return null;
+    }
   }
 
   render() {
@@ -40,15 +58,22 @@ export class Categories extends Component {
         {this.props && this.props.categories &&
             (
               <ul className="nav">
-                <Link to="/" onClick={() => {this.onSelectCategory(null)}}>
-                  <li className="selected" key="all-categories">All Categories</li>
+                <Link to="/"
+                      onClick={() => {this.onSelectCategory('')}}>
+                  <li className="selected"
+                      key="all-categories-makeSureItsUnique"
+                      >All Categories
+                  </li>
                 </Link>
                 {this.props.categories.map(category => {
                   return (
                     <Link key={category.name}
                       to={`/category/${category.path}`}
                       onClick={() => {this.onSelectCategory(category.name)}}>
-                      <li key={category.name}>{category.name}</li>
+                      <li className="selected"
+                          key={category.name}
+                          >{category.name}
+                      </li>
                     </Link>
                   )
                 })}
@@ -66,9 +91,10 @@ export class Categories extends Component {
 
 function mapDispatchToProps(dispatch){
   return ({
-    getCategories: () => dispatch(fetchCategories()),
+    fetchCategories: () => dispatch(fetchCategories()),
     getPosts: (category) => dispatch(fetchPosts(category)),
-    changeView: (url, selected) => dispatch(changeView({ url, selected })),
+    changeView: (category) => dispatch(changeView({ category })),
+    // selectCategory: (category) => dispatch(selectCategory(category)),
   })
 }
 
@@ -76,9 +102,13 @@ function mapStoreToProps ( store ) {
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
+  const allCategories = {name: 'all', path: '/'};
 
   return {
       categories: categoriesArray || null,
+      // categoriesPlus: categoriesArray.concat[allCategories],
+      category: store.viewData.category || '',
+      sortBy: store.viewData.ssortBy || 'date',
   }
 };
 

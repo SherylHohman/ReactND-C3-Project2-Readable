@@ -1,15 +1,22 @@
+// import { DELETE_POST_SUCCESS } from './posts';
+// import { DELETE_COMMENT_SUCCESS } from './comments';
+
+
+// ACTION TYPES
 export const CHANGE_VIEW = 'CHANGE_VIEW';
-export const SELECTED_CATEGORY = 'SELECTED_CATEGORY';
+export const SELECT_CATEGORY = 'SELECT_CATEGORY';
 export const SORT_BY = 'SORT_BY';
-// export const SORT_ORDER = 'SORT_ORDER'; // Ascending only
+// export const SORT_ORDER = 'SORT_ORDER'; // Descending, Ascending
 
 
 // Valid Values
-  // Use below to populate the Heading/Sort Options UI
+  // TODO: Map over these to populate the Heading/Sort Options in the UI
   export const sortMethods = [
-    {sortBy: "voteScore", text: 'Highest Votes'},
-    {sortBy: "date", text: 'Most Recent'}
+    {sortBy: "date", text: 'Most Recent'},
+    {sortBy: "voteScore", text: 'Highest Votes'}
   ];
+
+  // export const sortOrder = ['decending', 'ascending'];
 
   // TODO: get paths from App.js
   export const routes = [
@@ -20,7 +27,7 @@ export const SORT_BY = 'SORT_BY';
     {path: '/', label: 'home'},
   ];
 
-  // "selected" is one of: post.id, comment.id, category.name
+  // "id" is one of: post.id, comment.id, category.name
   // "url" is an exact path, as per browser window
   // "route" is a route format, where `:` prefix represents a variable name
   // "sortOrder" is "Ascending" or "Descending". Not implemented.
@@ -28,58 +35,96 @@ export const SORT_BY = 'SORT_BY';
 
 // ACTION CREATORS
 
-  // temporal settings:
-  export const changeView = ({ url, selected }) => ({
-    type: CHANGE_VIEW,
-    url,
-    selected,
-  })
+  // temporal view settings:
+  const changeViewDefaults = {
+    url: '/',      // home === Posts, all categories
+    id:  null,     // either: post.id, comment.id, or category.name
+    // // persistent data
+    // category: '',  // all categories
+    // sortBy: 'date',
+  }
 
-  // "sticky" settings:
-  export const selectedCategory = ({ TODO }) => ({
-    type: SELECTED_CATEGORY,
-  })
+  export const changeView = (newViewData=changeViewDefaults) => {
+    console.log('in changeView, newViewData:', newViewData);
 
-  export const sortOrder = ({ TODO }) => ({
+    if (newViewData.category) {
+      const category = (newViewData.category.name)  // '' or null
+        ? newViewData.category
+        : {...changeViewDefaults, category: ''};  // home page, all cagetories
+      return ({
+        type: SELECT_CATEGORY,
+        category,
+        // reducer also sets url and id appropriately, as they are dependant
+      });
+    } else {
+      return ({
+        // potential issue: if url is a category url, and/or id is a category..
+        // the sticky category (object) won't get updated !!
+        type: CHANGE_VIEW,
+        url:  newViewData.url,
+        id:   newViewData.id,
+      })
+    }
+  }
+
+  // "persistent" settings:
+
+  // Embededed selectCategory into changeView - as it's not independant
+  // export const selectCategory = (categoryObject) => ({
+  //   // could push the new URL here, or in the View.
+  //   type: SELECT_CATEGORY,
+  //   category: categoryObject,
+  //   id: categoryObject.name,
+  // })
+
+  export const sortBy = (sortBy='date') => ({
+    // TODO: add this field to (browser) url ??
+    //   if so, then would need to push the new URL
+    // TODO: either validate the param given,
+    //       or use sortByMethods to populate Component
     type: SORT_BY,
+    sortBy,
   })
 
   // export const sortOrder = ({  }) => ({
   //   type: SORT_ORDER,
+  //   sortOrder: 'DESCENDING'
   // })
 
 
 // DATA, INITIAL, SAMPLE
   const sampleHomePage = {
 
-    // temporal, non-sticky fields
-      // Assumes user starts on the home page
-      // Better to check the loaded url:
-      // When app first loads, read user's starting URL.
-    url: '/',      // home page
-    selected: '',  // all posts (no category filter)
+    // current view, non-persistant fields
+    // Assumes user starts app from the home page
+    // Better to check the Browser url
+    // THESE FIELDS WILL GO AWAY, when read/parse Browser Fields
+    url: '/',  // home page
+    id: '',    // all posts (no category filter)
 
-    // // sticky fields
-    // sortBy: 'none',       // ?? '', null, 'none'
-    // selectedCategory: ''  // ?? '', null, 'none', 'all-categories'
-
+    // persistent - can restore settings upon return to relevant view
+    sortBy: 'date',   // ?? '', null, 'none'
+    category: ''      // ?? '', null, 'none', 'all'
   }
 
-  // TODO: Uncomment after set directive to not Warn about Unused (this section only)
-  // const samplePostOrCommentPage = {
-  //   url: '/post',   // also format for edit/new comment or post
-  //   filter: '8xf0y6ziyjabvozdd253nd', // post.id; also use for comment.id
-  // }
-  // const sampleCategoryPage = {
-  //   url: '/category',
-  //   filter: {
-  //     category: 'react',
-  //     sortBy: 'votes'
-  //   },
-  // }
+  // TODO: Uncomment, after set lint directive to not Warn about Unused
+    // (this section only)
+    // const samplePostOrCommentPage = {
+    //   url: '/post',   // also format for edit/new comment or post
+    //   id: '8xf0y6ziyjabvozdd253nd', // post.id; also use for comment.id
+    // }
+    // const sampleCategoryPage = {
+    //   url: '/category/react',  // '/category/:categoryPath'
+    //   id: 'react'              // categoryName
+    //   filter: {
+    //     category: {name: 'react', path: 'react'},
+    //     sortBy: 'votes'
+    //   },
+    // }
 
   const initialState = {
-    // TODO: set this with data from browser URL
+    // TODO: set url, id with data from browser URL
+    // TODO: parse url, and set sticky: category and sortBy from browser URL
     ...sampleHomePage
   };
 
@@ -87,11 +132,56 @@ export const SORT_BY = 'SORT_BY';
 function viewData(state=initialState, action){
   switch (action.type) {
     case CHANGE_VIEW:
+      // potential issue: if url is a category route, or id is category.name
+      //       then viewSettings.category (object) won't get updated.
+      // TODO: parse URL and call selectCategory action creator instead.
       return ({
-              ...state,
-              url: action.url,
-              selected: action.selected,
+                ...state,
+                url: action.url,
+                id: action.id,
+              });
+    case SELECT_CATEGORY:
+      const url = (action.category)
+                 ? `/category/${action.category.path}`
+                 : '/'
+      return ({
+                ...state,
+                url,
+                id: action.category.name,
+                category: action.category,
             });
+    case SORT_BY:
+      return ({
+                ...state,
+                // TODO sort method stored in url ??
+                sortBy: action.sortBy,
+            });
+
+    // case DELETE_POST_SUCCESS:
+    //     // Show "posts" page for category from deleted post.
+    //     // Sending a "changeView" from the deletePost handler in Post Component
+    //     // instead, because I don't have access to the categories Array here
+    //     // Although, maybe Categories reducer could dispatch changeView
+    //     //   in reaction to DELETE_POST_SUCCESS, using post.categoryName
+    //     //   to dispatch another DELETE_POST_SUCCESS, or CHANGE_VIEW
+    //     //   with action.categories AND action.categoryName..
+    //     // That sounds too convoluted.
+    //     //   and I prefer (currently) to use reducers for changing state data
+    //     //   only.  Hmm.. maybe calling action creators from reducers is OK.
+
+    //     // // TODO: how to access store.categories ??
+    //     const categoryPath = store.categories  // TODO ??
+    //         .find((category) =>  category.name === action.categoryName)
+    //         .path;
+    //     return ({
+    //           ...state,
+    //           url: `/category/${categoryPath}`,  // (path can differ from name)
+    //           id: `${action.categoryName}`,
+    //         });
+    // case DELETE_COMMENT_SUCCESS:
+    //   // TODO
+    //   return state;
+
     default:
       return state;
   }

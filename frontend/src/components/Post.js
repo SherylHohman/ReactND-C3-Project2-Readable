@@ -4,14 +4,16 @@ import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { changeView } from '../store/viewData';
-import { upVotePost, downVotePost } from '../store/posts';
+import { upVotePost, downVotePost, deletePost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
+import { pullFromStore, l } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 export class Post extends Component {
 
   componentDidMount() {
     console.log('in Post componentDidMount');
+
     // TODO if page is loaded from saved url,
     //  fetch the post, based on post.id that's in the url
 
@@ -23,10 +25,23 @@ export class Post extends Component {
     // else {console.log('post.id: ', this.props.post.id);}
   }
 
+  onDelete(postId){
+    // must call delete before changeView
+    this.props.deletePost(postId);
+    // Link redirects to category that this post previously appeared
+    // viewData mush store this same info (keep in synch)
+    const category = {
+      name: this.props.post.category,
+      path: this.props.categoryPath,
+    }
+    console.log(category);
+    this.props.changeViewByCategory(category);
+  }
+
   render(){
 
     const props = this.props;
-    if (!props){console.log('Post props is undefined');}
+    if (!this.props){console.log('Post props is undefined');}
 
     const post =
       (props && props.post) ||
@@ -45,6 +60,7 @@ export class Post extends Component {
 
     // If page is loaded from a saved url. Store is empty. Redirect
     // A better solution would be to read the post id from the url.. fetch data.
+
     if (post === null) {
       console.log('Post: post wasn\'t present in props, redirecting to home page.');
       return (
@@ -56,23 +72,27 @@ export class Post extends Component {
     }
 
     const postId = props.post.id;  // change to == post.id ?  //see above, and below.
-    const {title, category, voteScore, commentCount} = props.post;  // change to =post ?
-    const {author, timestamp} = post;
+    const {title, voteScore, commentCount, author, timestamp } = this.props.post;
+
+    // disambiguity:
+    // category is also an object (on store.categories array),
+    // the category field on a post is a category.name
+    const categoryName = this.props.post.category;
 
     return (
       <div>
         <div>
             <Link
               to={`/post/${postId}`}
-              onClick={() => {props.onChangeView(`/post/${postId}`, postId)
+              onClick={() => {this.props.onChangeView(`/post/${postId}`, postId)
             }}>
               <h2>{title}</h2>
             </Link>
 
-            <p>Category: {category} | By: {author} | On: {dateMonthYear(timestamp)} | 
+            <p>Category: {categoryName} | By: {author} | On: {dateMonthYear(timestamp)} |
               <Link
                 to={`/post/${postId}/edit`}
-                onClick={() => {props.onChangeView(`/post/${postId}/edit`, postId)
+                onClick={() => {this.props.onChangeView(`/post/${postId}/edit`, postId)
               }}>
                 Edit Post
               </Link>
@@ -81,14 +101,21 @@ export class Post extends Component {
             <div className="vote">
               <div
                 className="post-up-vote"
-                onClick={() => {props.onUpVotePost(postId)}}>
+                onClick={() => {this.props.onUpVotePost(postId)}}>
               </div>
               <h2>{voteScore}</h2>
               <div
                 className="post-down-vote"
-                onClick={() => {props.onDownVotePost(postId)}}>
+                onClick={() => {this.props.onDownVotePost(postId)}}>
               </div>
             </div>
+
+            <Link
+              to={`/category/${this.props.categoryPath}`}
+              onClick={() => {this.onDelete(postId)}}
+            >
+              Delete Post
+            </Link>
         </div>
 
         <div> {post.body} </div>
@@ -101,7 +128,7 @@ export class Post extends Component {
   }
 }
 
-// TODO: how to use PropTypes with redux store?
+// TODO: how to use PropTypes ".isRequired" with redux store?
 // const { object, func } = PropTypes;
 Post.propTypes = {
   post: PropTypes.object//.isRequired,
@@ -109,20 +136,36 @@ Post.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
+    onChangeView:  (url, id) => dispatch(changeView({ url, id })),
     onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
+
+    changeViewByCategory: (category) => dispatch(changeView({ category })),
+    deletePost: (postId) => dispatch(deletePost(postId)),
   })
 }
 
 function mapStoreToProps ( store ) {
-  const postId = store.viewData.selected;
+  const postId = store.viewData.id;
   const post = store.posts[postId] || null;
+
+  // post.category is a categoryName
+  // grab it's path from the categories object
+
+  const categoriesArray = Object.keys(store.categories)
+    .reduce((acc, categoryKey) => {
+      return acc.concat([store.categories[categoryKey]]);
+    }, []);
+
+  const categoryPath = categoriesArray
+    .find(categoryId => (categoryId.name === post.category))
+    .path;
 
   // TODO read from url instead. Especially if post==null because of fresh page load.
 
   return {
     post,
+    categoryPath,
   }
 };
 
@@ -131,7 +174,7 @@ export default connect(mapStoreToProps, mapDispatchToProps)(Post);
 
 
 
-    // TODO "connect" this component, and IF post isn't in store, fetch it.
+    // TODO IF post isn't in store, fetch it.
     // props post accessed by query string
     // https://github.com/ReactTraining/react-router/issues/4036
 

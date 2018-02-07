@@ -18,7 +18,7 @@ import * as ReaderAPI from '../utils/api';
    const EDIT_POST_FAILURE = 'EDIT_POST_FAILURE';
 
   export const REQUEST_DELETE_POST = 'REQUEST_DELETE_POST';
-   const DELETE_POST_SUCCESS = 'DELETE_POST_SUCCESS';
+  export const DELETE_POST_SUCCESS = 'DELETE_POST_SUCCESS';
    const DELETE_POST_FAILURE = 'DELETE_POST_FAILURE';
 
   export const REQUEST_VOTE_ON_POST = 'REQUEST_VOTE_ON_POST';
@@ -116,8 +116,7 @@ import * as ReaderAPI from '../utils/api';
   };
 
   export function addPost(newPostData){
-    console.log('actionCreator addPost, newPostData:', newPostData);
-    // post does not contain fields that are initialized by the server
+    // newPostData does not contain fields that are initialized by the server
     return (dispatch) => {
 
       dispatch({
@@ -137,7 +136,6 @@ import * as ReaderAPI from '../utils/api';
         .then((data) => {
           // data is the full post
 
-          console.log('data returned from addPost API', data);
           return (
             dispatch({
               type: ADD_POST_SUCCESS,
@@ -198,14 +196,14 @@ import * as ReaderAPI from '../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function deletePost(){
+  export function deletePost(id){
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_DELETE_POST
       });
 
-      ReaderAPI.deletePost()
+      ReaderAPI.deletePost(id)
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, deletePost');
@@ -216,12 +214,15 @@ import * as ReaderAPI from '../utils/api';
 
         .then((response) => response.json())
         .then((data) => {
-          // TODO: see data, determine how to proceed
-
+          if (data.deleted !== true) {
+            throw Error('Post wasn\'t deleted, postId: ' + data.id);
+          }
           return (
             dispatch({
               type: DELETE_POST_SUCCESS,
-              // TODO
+              id: data.id,
+              // deleted: data.deleted,
+              categoryName: data.category,
             })
           )}
         )
@@ -389,16 +390,11 @@ import * as ReaderAPI from '../utils/api';
       case DELETE_POST_SUCCESS:
         // TODO:
         // action data should be a post item with an id field
-        return ({
-          ...state,
-          [action.id]: {
-            ...state[action.id],
-            deleted: true,
-          }
-          // Also Need to set `parentDeleted` property for ALL COMMENTS
-          //  which are "owned" by this post.
-          //  TODO: double check - this may be taken care of on the Server end
-        });
+        let newState = {...state};
+        console.log('copy of State', newState);
+        delete newState[action.id]
+        console.log('newState', newState);
+        return newState;
       case DELETE_POST_FAILURE:
         // TODO: UI error message
         return state;

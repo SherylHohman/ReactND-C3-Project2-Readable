@@ -6,12 +6,15 @@ import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
+import { fetchCategories } from '../store/categories';
 import { changeView } from '../store/viewData';
+import { pullFromStore } from '../utils/helpers';
 
 class App extends Component {
 
   componentDidMount() {
     console.log("in App componentDidMount");
+    // this.props.fetchCategories();
   }
 
   render() {
@@ -37,7 +40,7 @@ class App extends Component {
           <Posts />
         )} />
 
-        <Route path="/category" render={({ history }) => (
+        <Route path="/category/:category" render={({ history }) => (
           <Posts />
         )} />
 
@@ -64,12 +67,18 @@ class App extends Component {
 function mapDispatchToProps(dispatch){
   return ({
     onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
+    // fetchCategories: () => dispatch(fetchCategories()),
   })
 }
 
 function mapStoreToProps ( store ) {
-  return {
+  // const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
+  //   return acc.concat([store.categories[categoryKey]]);
+  // }, []);
 
+  // console.log('viewData:', store.viewData);
+  return {
+      // categories: pullFromStore.categories(store) || null,
   }
 };
 

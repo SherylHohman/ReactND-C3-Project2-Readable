@@ -56,3 +56,34 @@ export function parseBrowserUrl(urlString=window.location){
   }
 };
 
+
+// I rewrite these far too often. Dry function
+export function getCategoryFromName(categoryName){
+    if (!categoryName || categoryName === null || categoryName === ''){
+      console.log('error: categoryName is invalid, getCategoryFromName in helpers.js');
+      return this.props.categories[0] || categoryName;
+    } else {
+    return this.props.categories.find((category) => {
+      return category.name === categoryName;
+    });
+  }
+};
+
+
+
+// These functions transform top level store objects (when they represent arrays)
+//  into their array equivalents for props, when (DRY) it's been used > 1x.
+//  Simple to write, but DRY: it's even simplier to call a func.
+export const pullFromStore = {
+  categories: function(store) {
+    Object.keys(store.categories).reduce((acc, categoryKey) => {
+      return acc.concat([store.categories[categoryKey]]);
+    }, []);
+  }
+}
+
+// This keyboard hurts my finger sooo much.  Strain is building up daily
+//  redefine console.log to l
+export function l(text){
+  console.log(text);
+}

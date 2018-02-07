@@ -8,8 +8,8 @@ import { changeView } from '../store/viewData';
 export class Posts extends Component {
 
   componentDidMount() {
-    this.props.getPosts();
-    console.log('Posts componentDidMount ..fetching, posts');
+    this.props.fetchPosts(this.props.categoryName);
+    console.log('Posts componentDidMount ..fetching, posts for category:', this.props.categoryName);
   }
 
   render() {
@@ -77,20 +77,22 @@ export class Posts extends Component {
 
 function mapDispatchToProps(dispatch){
   return ({
-    getPosts: () => dispatch(fetchPosts()),
-    onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
+    fetchPosts: (category) => dispatch(fetchPosts(category)),
+    onChangeView: (url, id) => dispatch(changeView({ url, id })),
+    onChangeViewByCategory: (category) => dispatch(changeView({ category })),
   })
 }
 
-function mapStoreToProps ( state ) {
+function mapStoreToProps ( store ) {
   // turn object of post objects into array of post objects (for react mapping)
-  const postIds = Object.keys(state.posts);
+  const postIds = Object.keys(store.posts);
   const posts = postIds.reduce((acc, postId) => {
-    return acc.concat([state.posts[postId]]);
+    return acc.concat([store.posts[postId]]);
   }, []);
 
   return {
     posts: posts,
+    categoryName: store.viewData.category.name,
   }
 };
 
