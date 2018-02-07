@@ -31,6 +31,7 @@ export const SORT_BY = 'SORT_BY';
   // "url" is an exact path, as per browser window
   // "route" is a route format, where `:` prefix represents a variable name
   // "sortOrder" is "Ascending" or "Descending". Not implemented.
+  // "category.path" is a url-safe string for the category url. Not including'/''
 
   // ensure consistancy
   const ALL_POSTS_CATEGORY= {name: '', path: ''}
@@ -87,16 +88,6 @@ export const SORT_BY = 'SORT_BY';
     }
   }
 
-  // "persistent" settings:
-
-  // Embededed selectCategory into changeView - as it's not independant
-  // export const selectCategory = (categoryObject) => ({
-  //   // could push the new URL here, or in the View.
-  //   type: SELECT_CATEGORY,
-  //   category: categoryObject,
-  //   id: categoryObject.name,
-  // })
-
   export const sortBy = (sortBy='date') => ({
     // TODO: add this field to (browser) url ??
     //   if so, then would need to push the new URL
@@ -145,13 +136,10 @@ function viewData(state=initialState_ViewData, action){
               });
 
     case SELECT_CATEGORY:
-      console.log('SELECT_CATEGORY, action:', action);
-
-      // let url = action.url ||
+      // console.log('SELECT_CATEGORY, action:', action);
       let url = (action.category.name)
                   ? `/category/${action.category.path}`
                   : '/'    // home page: all categories
-      // let id = action.id || action.category.name;
       let id = action.category.name;
       return ({
                 ...state,
@@ -200,13 +188,7 @@ function viewData(state=initialState_ViewData, action){
 export default viewData
 
 
-//  NOTE, I only need either url OR filsters: id/cateogry/sortBy.
-//    I'm experimenting to seewhich I prefer.
-//    URL prpbably better long term or in a more complex app.
-//    In this simple app, `selected` requires less code to reach the data
-//    once in mapStateToProps.
-//    Also, there may be difficulty pulling Router "location" info from store.
-//    And they say it's asynch, so it may not update when expected.
+//  NOTE, I only need either url OR filters: id/cateogry/sortBy.
 //
 //  The other option is to pull it off the history object. or Window object.
 //  Finally, this app is simple, so I can "just" pass the url whenever the
@@ -219,13 +201,3 @@ export default viewData
 //  Really don't want to duplicate Router logic.
 //  Best would be to access URL from Router's Source Of Truth.
 //  Both these other options could fall out of synch when the address changes, outside a "<Link>" (or push) action from WITHIN my app.
-
-/*
-  //  what happened
-      CHANGE_LOCATION or CHANGE_VIEW or CHANGE_URL
-      export const  CHANGE_LOCATION = 'CHANGE_LOCATION';
-
-  // UPDATE_CURRENT_FOCUS or UPDATE_CURRENT or CHANGE_VIEW or CHANGE_SELECTED or ..
-      export function changeLocation
-
-  */

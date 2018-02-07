@@ -31,7 +31,7 @@ export class EditPost extends Component {
     }
     else {
       postId = this.props.postId;
-      havePostId = (postId === '') || (postId === null) //|| (postId.length<16)
+      havePostId = (postId === '') || (postId === null) //|| (postId.length<20)
         ? false : true;
     }
 

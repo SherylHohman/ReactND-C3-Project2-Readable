@@ -26,10 +26,11 @@ export class Post extends Component {
   }
 
   onDelete(postId){
-    // must call delete before changeView
+    // must call deletePost before changeView
     this.props.deletePost(postId);
     // Link redirects to category that this post previously appeared
-    // viewData mush store this same info (keep in synch)
+    // viewData musht store this same info to keep in synch
+    // Not Dry :/ - TODO: read and parse data from URL routes
     const category = {
       name: this.props.post.category,
       path: this.props.categoryPath,

@@ -29,7 +29,7 @@ const headers = {
 
   export const fetchPosts = (categoryPath=HOME.category.path) => {
     if (categoryPath === HOME.category.path || categoryPath === null) {
-      // fetch all (ok, 10) posts, mixed categories
+      // fetch all posts, mixed categories (returns 10 max)
       return fetch(`${api}/posts`, { method: 'GET', headers })
     } else {
       // fetch posts by category

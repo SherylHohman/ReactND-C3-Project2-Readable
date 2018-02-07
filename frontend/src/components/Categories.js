@@ -41,19 +41,6 @@ export class Categories extends Component {
     this.props.getPosts(category.path || null);
   }
 
-  setOnclickFunction(){
-    let TODO;   // placeholder for TODO. compiler won't complain.
-    if ( TODO ) {
-      return () => {this.onSelectCategory}
-    }
-    else {
-      // no onclick handler for category on current route
-      // TODO no mouse pointer
-      // TODO no linkTo
-      return null;
-    }
-  }
-
   render() {
 
     const isExactPath = () => {
@@ -104,7 +91,6 @@ function mapDispatchToProps(dispatch){
     getPosts: (category) => dispatch(fetchPosts(category)),
     changeView: (id, url) => dispatch(changeView({ id, url })),
     changeViewByCategory: (category) => dispatch(changeView({ category })),
-    // selectCategory: (category) => dispatch(selectCategory(category)),
   })
 }
 
@@ -113,7 +99,6 @@ function mapStoreToProps ( store ) {
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
-  console.log('store.categories:', store.categories)
 
   const categoryAll = {name: '', path: ''}; // or path=null or '/' or ''
   console.log('to be props.category:', store.viewData.category, 'or categoryAll:', categoryAll);
