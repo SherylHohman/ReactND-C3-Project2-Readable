@@ -84,7 +84,7 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
-  console.log('store:', store);
+  // console.log('store:', store);
 
   // turn object of post objects into array of post objects (for react mapping)
   const postIds = Object.keys(store.posts);

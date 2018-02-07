@@ -6,7 +6,7 @@ import Comments from './Comments';
 import { changeView } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
-import { pullFromStore, l } from '../utils/helpers';
+// import { pullFromStore, l } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 export class Post extends Component {

@@ -6,9 +6,9 @@ import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
-import { fetchCategories } from '../store/categories';
+// import { fetchCategories } from '../store/categories';
 import { changeView } from '../store/viewData';
-import { pullFromStore } from '../utils/helpers';
+// import { pullFromStore } from '../utils/helpers';
 
 class App extends Component {
 

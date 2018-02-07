@@ -48,12 +48,12 @@ export const SORT_BY = 'SORT_BY';
 // ACTION CREATORS
 
   export const changeView = (newViewData=HOME) => {
-    console.log('___in changeView, newViewData:', newViewData);
+    // console.log('___in changeView, newViewData:', newViewData);
 
     // changeView By Category
 
     if (newViewData.category) {
-      console.log('___in changeView By Category, newViewData.category:', newViewData.category);
+      // console.log('___in changeView By Category, newViewData.category:', newViewData.category);
 
       const category = (newViewData.category.name)  // '' or null
         ? newViewData.category
@@ -75,7 +75,7 @@ export const SORT_BY = 'SORT_BY';
     // changeView By: url, id
 
     } else {
-      console.log('___in changeView, via id, url:', newViewData);
+      // console.log('___in changeView, via id, url:', newViewData);
       // potential issue: if url is a category url, and/or id is a category..
       // the sticky category (object) won't get updated !!
       // The fix: parse URL. If it is '/category/:category', then treat it as
@@ -125,7 +125,7 @@ function viewData(state=initialState_ViewData, action){
   switch (action.type) {
 
     case CHANGE_VIEW:
-      console.log("CHANGE_VIEW, action:", action);
+      // console.log("CHANGE_VIEW, action:", action);
       // potential issue: if url is a category route, or id is category.name
       //       then viewData's "category" (object) won't get updated.
       // TODO: parse URL and call selectCategory action creator instead.

@@ -8,19 +8,10 @@ import { changeView, HOME } from '../store/viewData';
 
 export class Categories extends Component {
 
-  state = {
-    category: '',
-  }
-
   componentDidMount() {
     // may need to move this to App.js
     this.props.fetchCategories();
     console.log('Categories componentDidMount ..(re)fetching, categories');
-
-    if (this.props && this.props.category){
-      console.log('cdm, category:', this.props.category);
-      this.setState({ category: this.props.category });
-    }
   }
 
   getCategoryFromName(categoryName){
@@ -36,7 +27,7 @@ export class Categories extends Component {
 
   onSelectCategory(categoryName){
     const category = this.getCategoryFromName(categoryName);
-    console.log('__category for changeView:', category);
+    // console.log('__category for changeView:', category);
     this.props.changeViewByCategory(category);
     this.props.getPosts(category.path || null);
   }
@@ -95,13 +86,12 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
-  console.log('store.categories:', store.categories)
+  // console.log('store.categories:', store.categories)
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
 
   const categoryAll = {name: '', path: ''}; // or path=null or '/' or ''
-  console.log('to be props.category:', store.viewData.category, 'or categoryAll:', categoryAll);
 
   return {
       categories: categoriesArray || null,
