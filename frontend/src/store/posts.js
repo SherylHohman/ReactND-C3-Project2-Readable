@@ -29,6 +29,7 @@ import * as ReaderAPI from '../utils/api';
 // FAT ACTION CREATORS
 
   export function fetchPosts(category=null){
+    console.log('..in fetchPosts, category:', category);
     //  fetches ALL posts:   fetchPosts(), or fetchPosts(null)
     //  fetches by category: fetchPosts(category.path)
     return (dispatch) => {

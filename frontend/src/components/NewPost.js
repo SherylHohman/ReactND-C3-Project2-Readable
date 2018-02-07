@@ -135,11 +135,11 @@ export class NewPost extends Component {
   onSave(){
     const newPostData = {
       id:    this.creatPostId(),
-      title: this.state.title,
-      body:  this.state.body,
+      title: this.state.title || '..I have no name',  // easter egg hunt
+      body:  this.state.body  || '..nothing to say',  // no eggs here
 
       // TODO: automatically populate author from logged in user
-      author:    this.state.author,
+      author:    this.state.author || 'timeless wisdom',  // the easter bunny
       category:  this.state.categoryName,
       timestamp: Date.now(),
     // "Full" Post object has additional fields, initialized by the server.

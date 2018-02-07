@@ -57,8 +57,11 @@
     align-items: center;
   }
 
-  .selected {
+  .nav .selected {
     color: red;
+  }
+  .nav .active {
+    color: blue;
   }
 
 /* TODO: need styles for these classnames

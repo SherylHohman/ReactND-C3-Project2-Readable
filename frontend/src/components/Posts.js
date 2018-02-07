@@ -42,7 +42,7 @@ export class Posts extends Component {
           <hr />
 
           <Link to={`/post/new`} onClick={() => {
-            this.props.onChangeView(`/new`, null)
+            this.props.onChangeView(`/new`, '')
           }}>
             <div><h2>Add New Post</h2><hr /></div>
           </Link>
@@ -84,15 +84,16 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
+  console.log('store:', store);
+
   // turn object of post objects into array of post objects (for react mapping)
   const postIds = Object.keys(store.posts);
   const posts = postIds.reduce((acc, postId) => {
     return acc.concat([store.posts[postId]]);
   }, []);
-
   return {
     posts: posts,
-    categoryName: store.viewData.category.name,
+    categoryName: store.viewData.persistentCategory.name,
   }
 };
 

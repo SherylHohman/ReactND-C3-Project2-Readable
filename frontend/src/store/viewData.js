@@ -18,7 +18,7 @@ export const SORT_BY = 'SORT_BY';
 
   // export const sortOrder = ['decending', 'ascending'];
 
-  // TODO: get paths from App.js
+  // TODO: get paths from App.js, then use to populate App.js
   export const routes = [
     {path: '/', label: 'home'}, // or 'posts' ?
     {path: '/', label: 'home'},
@@ -32,34 +32,54 @@ export const SORT_BY = 'SORT_BY';
   // "route" is a route format, where `:` prefix represents a variable name
   // "sortOrder" is "Ascending" or "Descending". Not implemented.
 
+  // ensure consistancy
+  const ALL_POSTS_CATEGORY= {name: '', path: ''}
+  const ALL_POSTS_ID  = '' ;  // or null ??
+  const ALL_POSTS_URL = '/';
+  const DEFAULT_SORT_BY = 'date';
+
+  export const HOME  = {
+    id: ALL_POSTS_ID,
+    url: ALL_POSTS_URL,
+    category: ALL_POSTS_CATEGORY,
+  }
 
 // ACTION CREATORS
 
-  // temporal view settings:
-  const changeViewDefaults = {
-    url: '/',      // home === Posts, all categories
-    id:  null,     // either: post.id, comment.id, or category.name
-    // // persistent data
-    // category: '',  // all categories
-    // sortBy: 'date',
-  }
+  export const changeView = (newViewData=HOME) => {
+    console.log('___in changeView, newViewData:', newViewData);
 
-  export const changeView = (newViewData=changeViewDefaults) => {
-    console.log('in changeView, newViewData:', newViewData);
+    // changeView By Category
 
     if (newViewData.category) {
+      console.log('___in changeView By Category, newViewData.category:', newViewData.category);
+
       const category = (newViewData.category.name)  // '' or null
         ? newViewData.category
-        : {...changeViewDefaults, category: ''};  // home page, all cagetories
+        : ALL_POSTS_CATEGORY;
+
+      // url and id are NOT independant of category, set them to ensure in synch
+      const url = (category.name)
+                  ? `/category/${category.path}`
+                  : ALL_POSTS_URL
+      const id = category.name;
+
       return ({
         type: SELECT_CATEGORY,
+        url,
+        id,
         category,
-        // reducer also sets url and id appropriately, as they are dependant
       });
+
+    // changeView By: url, id
+
     } else {
+      console.log('___in changeView, via id, url:', newViewData);
+      // potential issue: if url is a category url, and/or id is a category..
+      // the sticky category (object) won't get updated !!
+      // The fix: parse URL. If it is '/category/:category', then treat it as
+      // changeViewBCagetory ('SELECT_CATEGORY' above)
       return ({
-        // potential issue: if url is a category url, and/or id is a category..
-        // the sticky category (object) won't get updated !!
         type: CHANGE_VIEW,
         url:  newViewData.url,
         id:   newViewData.id,
@@ -93,63 +113,53 @@ export const SORT_BY = 'SORT_BY';
 
 
 // DATA, INITIAL, SAMPLE
-  const sampleHomePage = {
 
-    // current view, non-persistant fields
-    // Assumes user starts app from the home page
-    // Better to check the Browser url
-    // THESE FIELDS WILL GO AWAY, when read/parse Browser Fields
-    url: '/',  // home page
-    id: '',    // all posts (no category filter)
-
-    // persistent - can restore settings upon return to relevant view
-    sortBy: 'date',   // ?? '', null, 'none'
-    category: ''      // ?? '', null, 'none', 'all'
-  }
-
-  // TODO: Uncomment, after set lint directive to not Warn about Unused
-    // (this section only)
-    // const samplePostOrCommentPage = {
-    //   url: '/post',   // also format for edit/new comment or post
-    //   id: '8xf0y6ziyjabvozdd253nd', // post.id; also use for comment.id
-    // }
-    // const sampleCategoryPage = {
-    //   url: '/category/react',  // '/category/:categoryPath'
-    //   id: 'react'              // categoryName
-    //   filter: {
-    //     category: {name: 'react', path: 'react'},
-    //     sortBy: 'votes'
-    //   },
-    // }
-
-  const initialState = {
+    // Assumes starts app from from Home Page url.
+    // TODO read from react-router or Browser Window
     // TODO: set url, id with data from browser URL
     // TODO: parse url, and set sticky: category and sortBy from browser URL
-    ...sampleHomePage
-  };
 
+  const initialState_ViewData = {
+    // "current" FIELDS WILL GO AWAY, when can read/parse data from Browser Fields
+    currentUrl: HOME.url,
+    // holds: post.id, comment.id, or category.name, or '' (all posts)
+    currentId:  HOME.id,
+    // object eg: {name: 'react', path: 'react'}
+    persistentCategory: HOME.category,
+    // 'votes' or 'date'
+    persistentSortBy:   DEFAULT_SORT_BY,
+  }
 
-function viewData(state=initialState, action){
+function viewData(state=initialState_ViewData, action){
   switch (action.type) {
+
     case CHANGE_VIEW:
+      console.log("CHANGE_VIEW, action:", action);
       // potential issue: if url is a category route, or id is category.name
-      //       then viewSettings.category (object) won't get updated.
+      //       then viewData's "category" (object) won't get updated.
       // TODO: parse URL and call selectCategory action creator instead.
       return ({
                 ...state,
                 url: action.url,
                 id: action.id,
               });
+
     case SELECT_CATEGORY:
-      const url = (action.category)
-                 ? `/category/${action.category.path}`
-                 : '/'
+      console.log('SELECT_CATEGORY, action:', action);
+
+      // let url = action.url ||
+      let url = (action.category.name)
+                  ? `/category/${action.category.path}`
+                  : '/'    // home page: all categories
+      // let id = action.id || action.category.name;
+      let id = action.category.name;
       return ({
                 ...state,
                 url,
-                id: action.category.name,
+                id,
                 category: action.category,
             });
+
     case SORT_BY:
       return ({
                 ...state,
@@ -190,7 +200,7 @@ function viewData(state=initialState, action){
 export default viewData
 
 
-//  NOTE, I only need either url OR filter.
+//  NOTE, I only need either url OR filsters: id/cateogry/sortBy.
 //    I'm experimenting to seewhich I prefer.
 //    URL prpbably better long term or in a more complex app.
 //    In this simple app, `selected` requires less code to reach the data
@@ -210,42 +220,12 @@ export default viewData
 //  Best would be to access URL from Router's Source Of Truth.
 //  Both these other options could fall out of synch when the address changes, outside a "<Link>" (or push) action from WITHIN my app.
 
+/*
+  //  what happened
+      CHANGE_LOCATION or CHANGE_VIEW or CHANGE_URL
+      export const  CHANGE_LOCATION = 'CHANGE_LOCATION';
 
+  // UPDATE_CURRENT_FOCUS or UPDATE_CURRENT or CHANGE_VIEW or CHANGE_SELECTED or ..
+      export function changeLocation
 
-/*  NAMING THOUGHTS..
-
-    url,
-    filter: postId, commentId, {category, sortBy}
-
-  // experiment with using both options.
-  // Only 1 would be needed (either url, OR filter)
-
-  name of this object to be placed on `store`:
-  If I use, or include, `url` as a key/property,
-    then "selected" doesn't make sense idiomatically.
-    neither does "filter".
-    But they *would* work for the name of key *on* the object.
-
-  call this:
-    selected, or state, or url or localData, OR localState,
-    current, currentData,  appState,  view, , page,  location,  locationState,
-    locationData,  selectedData,  filterProps,  transient,  emigrate,  ephemeral,
-    stateData, selectedState, currentState, currentData, prop, viewData, componentData,
-    ropData, locationData, locationProps, componentProps, viewProps, propsToPass,
-    transientProps, transientData, viewData
-
-  `selected` works, or `filter`. Unless I also have a url prop.
-
-
-//  what happened
-CHANGE_LOCATION or CHANGE_VIEW or CHANGE_URL
-export const  CHANGE_LOCATION = 'CHANGE_LOCATION';
-
-// UPDATE_CURRENT_FOCUS or UPDATE_CURRENT or CHANGE_VIEW or CHANGE_SELECTED or ..
-
-export const UPDATE_CURRENT_FOCUS
-
-export function changeLocation
-export function viewData
-
-*/
+  */

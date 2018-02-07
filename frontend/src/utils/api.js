@@ -1,3 +1,5 @@
+import { HOME } from '../store/viewData';
+
 export const upVote = "upVote";
 export const downVote = "downVote";
 
@@ -25,8 +27,8 @@ const headers = {
     return fetch(`${api}/categories`, { method: 'GET', headers })
   };
 
-  export const fetchPosts = (categoryPath=null) => {
-    if (categoryPath === null) {
+  export const fetchPosts = (categoryPath=HOME.category.path) => {
+    if (categoryPath === HOME.category.path || categoryPath === null) {
       // fetch all (ok, 10) posts, mixed categories
       return fetch(`${api}/posts`, { method: 'GET', headers })
     } else {

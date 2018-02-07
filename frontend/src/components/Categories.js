@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { fetchCategories } from '../store/categories';
 import { fetchPosts } from '../store/posts';
-import { changeView } from '../store/viewData';
+import { changeView, HOME } from '../store/viewData';
+
 
 export class Categories extends Component {
 
@@ -17,6 +18,7 @@ export class Categories extends Component {
     console.log('Categories componentDidMount ..(re)fetching, categories');
 
     if (this.props && this.props.category){
+      console.log('cdm, category:', this.props.category);
       this.setState({ category: this.props.category });
     }
   }
@@ -24,7 +26,7 @@ export class Categories extends Component {
   getCategoryFromName(categoryName){
     if (!categoryName || categoryName === null || categoryName === ''){
       console.log('error: categoryName is invalid, Categories.js: getCategoryFromName, setting to categories[0]', this.props.categories[0]);
-      return null; //({name: '', path: '/'});  // home page, show all categories
+      return {name: '', path: ''};  // home page, show all categories
     } else {
       return this.props.categories.find((category) => {
         return category.name === categoryName;
@@ -34,8 +36,9 @@ export class Categories extends Component {
 
   onSelectCategory(categoryName){
     const category = this.getCategoryFromName(categoryName);
-    this.props.changeView(category);
-    this.props.getPosts(category.path);  // category.path could fail if category is null
+    console.log('__category for changeView:', category);
+    this.props.changeViewByCategory(category);
+    this.props.getPosts(category.path || null);
   }
 
   setOnclickFunction(){
@@ -53,28 +56,34 @@ export class Categories extends Component {
 
   render() {
 
+    const isExactPath = () => {
+      return (this.props.category.name === HOME.category.name);
+      // breaks when app is loaded from a saved url
+    }
+
     return (
       <div>
         {this.props && this.props.categories &&
             (
               <ul className="nav">
-                <Link to="/"
-                      onClick={() => {this.onSelectCategory('')}}>
-                  <li className="selected"
-                      key="all-categories-makeSureItsUnique"
-                      >All Categories
+                <NavLink to="/"
+                      onClick={() => {this.onSelectCategory('')}}
+                      activeClassName={"selected"}
+                      isActive={isExactPath}
+                      >
+                  <li key="all-categories-makeSureThisKeyIsUnique">
+                    All Categories
                   </li>
-                </Link>
+                </NavLink>
                 {this.props.categories.map(category => {
                   return (
-                    <Link key={category.name}
+                    <NavLink key={category.name}
                       to={`/category/${category.path}`}
-                      onClick={() => {this.onSelectCategory(category.name)}}>
-                      <li className="selected"
-                          key={category.name}
+                      onClick={() => {this.onSelectCategory(category.name)}}
+                      activeClassName="selected"
                           >{category.name}
-                      </li>
-                    </Link>
+                      <li key={category.name}></li>
+                    </NavLink>
                   )
                 })}
               </ul>
@@ -93,22 +102,27 @@ function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
     getPosts: (category) => dispatch(fetchPosts(category)),
-    changeView: (category) => dispatch(changeView({ category })),
+    changeView: (id, url) => dispatch(changeView({ id, url })),
+    changeViewByCategory: (category) => dispatch(changeView({ category })),
     // selectCategory: (category) => dispatch(selectCategory(category)),
   })
 }
 
 function mapStoreToProps ( store ) {
+  console.log('store.categories:', store.categories)
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
-  const allCategories = {name: 'all', path: '/'};
+  console.log('store.categories:', store.categories)
+
+  const categoryAll = {name: '', path: ''}; // or path=null or '/' or ''
+  console.log('to be props.category:', store.viewData.category, 'or categoryAll:', categoryAll);
 
   return {
       categories: categoriesArray || null,
       // categoriesPlus: categoriesArray.concat[allCategories],
-      category: store.viewData.category || '',
-      sortBy: store.viewData.ssortBy || 'date',
+      category: store.viewData.category || categoryAll,
+      sortBy:   store.viewData.sortBy   || 'date',
   }
 };
 
