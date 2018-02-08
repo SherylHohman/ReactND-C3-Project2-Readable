@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { editPost } from '../store/posts';
-import { changeView } from '../store/viewData';
+import { changeView, HOME } from '../store/viewData';
 import { fetchPost } from '../store/posts';
 import PropTypes from 'prop-types';
 
@@ -12,7 +12,7 @@ export class EditPost extends Component {
   state = {
     title: '',
     body:  '',
-    category: '',
+    categoryName: '',
   }
 
   componentDidMount(){
@@ -35,11 +35,14 @@ export class EditPost extends Component {
         ? false : true;
     }
 
+    // console.log('havePostId:', havePostId, 'postId:', postId, 'havePost:', havePost);
+
     if (!havePostId && !havePost){
-      this.loadHomePage();
+      // this.loadHomePage();
     }
 
     if (havePostId && !havePost){
+      console.log('in EditPost, going to fetchPost for postId:', postId, havePostId, havePost)
         this.props.fetchPost(postId)
     }
 
@@ -48,7 +51,7 @@ export class EditPost extends Component {
       this.setState({
         title: this.props.post.title,
         body : this.props.post.body,
-        category: this.props.post.category,
+        categoryName: this.props.post.category,
       });
       // (if !havePostId) just to be complete - no holes left open. Unlikely, but..
       postId = this.props.post.id;  // make sure postId and post data are synched !
@@ -72,63 +75,64 @@ export class EditPost extends Component {
   controlledBodyField(e, currentText){
     this.setState({body: currentText});
   }
-  controlledCategoryField(selectedCategory){
-    this.setState({category: selectedCategory});
+  controlledCategoryField(categoryName){
+    this.setState({ categoryName });
   }
 
-  loadHomePage(){
-    // used when cannot get the post, (not in store/props, could not fetch/nopostId)
-    // These are the values viewData is initialized with for the home page.
-    const selectedItem = '';
-    const postUrl = '/';
+  // loadHomePage(){
+  //   // use when cannot get the post, (not in store/props, could not fetch/nopostId)
 
-    this.props.onChangeView(postUrl, selectedItem);
-    this.props.history.push(postUrl);
+  //   // null id will load persistent category, use
+  //   // HOME.id to load AllCategories
+  //   this.props.changeView(HOME.url, null);
+  //   this.props.history.push(HOME.url);
+  // }
+
+  onSave(){
+    //  sending only changed values, rather than the whole post, hence the name
+    // console.log('___onSave EditPost');
+    // console.log('state:', this.state, 'this.props.categories', this.props.categories);
+
+    const editedPostData = {
+      title: this.state.title,
+      category: this.state.categoryName,
+      body: this.state.body,
+    }
+    this.props.onSave(this.props.postId, editedPostData);
+    // console.log('onSave:, editedPostData', editedPostData);
+
+    const category = this.props.categoriesObject[this.state.categoryName]
+    this.props.changeViewByCategory(category);
   }
 
-  returnToPost(){
+  onCancel(){
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
 
-    this.props.onChangeView(postUrl, postId);
-    // TODO: put and get history from Store, rather than passed as prop from Route
-    this.props.history.push(postUrl);
-  }
-  onCancel(){
-    this.returnToPost();
-  }
-  onSave(){
-    //  sending only changed values, rather than the whole post, hence the name
-    const editedPostData = {
-      title: this.state.title,
-      category: this.state.category,
-      body: this.state.body,
-    }
-
-    this.props.onSave(this.props.postId, editedPostData);
-    this.returnToPost();
+    this.props.changeView(postUrl, postId);
   }
 
   render(){
 
-    if (this.props.postId === '' || this.props.postId === null){
-      return (
-        <div>
-          <p>I do not know that post id.. Can you find it for me ?</p>
-          <p> ..going to the home page now ;-D </p>
-          <Redirect to="/" />
-        </div>
-      )
-    }
+    // if (this.props.postId === '' || this.props.postId === null){
+    //   return (
+    //     <div>
+    //       <p>I do not know that post id.. Can you find it for me ?</p>
+    //       <p> ..going to the home page now ;-D </p>
+    //       <Redirect to="/" />
+    //     </div>
+    //   )
+    // }
 
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
+    // console.log('render, postId:', postId, 'postUrl:', postUrl);
 
-      if (!this.props || !this.props.post || !this.props.post.id){
-      return (
-        <div><h2> Hold On.. I'm getting your Post </h2></div>
-      )
-    }
+    //   if (!this.props || !this.props.post || !this.props.post.id){
+    //   return (
+    //     <div><h2> Hold On.. I'm getting your Post </h2></div>
+    //   )
+    // }
 
     return  (
       <div>
@@ -143,12 +147,13 @@ export class EditPost extends Component {
 
             <div>
               <select
-                value={this.state.category}
+                className="edit-category"
+                value={this.state.categoryName}
                 onChange={(e)=>this.controlledCategoryField(e.target.value)}
                 >
-                {this.props.categories.map((category) => {
+                {this.props.categoryNames.map((categoryName) => {
                   return (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={categoryName} value={categoryName}>{categoryName}</option>
                   )
                 })}
               </select>
@@ -176,15 +181,20 @@ export class EditPost extends Component {
           <hr />
           {/* uses props */}
           {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
-          <h4> Rendered Edited Post </h4>
-          <h3> {this.state.title} </h3>
-          <p>  Category: {this.state.category}  </p>
-          <p>  {this.state.body}  </p>
+          <div className="edit-active">
+            <h4> Rendered Edited post </h4>
+            <h3> {this.state.title} </h3>
+            <p>  Category: {this.state.categoryName}  </p>
+            <p>  {this.state.body}  </p>
+          </div>
           <hr />
-          <h4> Original Post </h4>
-          <p> {this.props.post.title} </p>
-          <p>  Category: {this.props.post.category}  </p>
-          <p>  {this.props.post.body}  </p>
+          <hr />
+          <div className="edit-orig">
+            <p> Original Post </p>
+            <h3> {this.props.post.title} </h3>
+            <p> Category: {this.props.post.category}  </p>
+            <p> {this.props.post.body}  </p>
+          </div>
       </div>
     )
   };
@@ -196,29 +206,32 @@ EditPost.propTypes = {
     // TODO: how to require specific keys to exist on an (required) object
     postId: PropTypes.string,
     post : PropTypes.object,    // required keys: title, body, category
-    categories: PropTypes.array,
-    history: PropTypes.object,
+    categoryNames: PropTypes.array,
+    categoriesObject: PropTypes.object,
+    // history: PropTypes.object,
 }
 
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
-    onChangeView: (url, selected) => dispatch(changeView({ url, selected })),
+    changeView: (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
+    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
   })
 }
 
-function mapStoreToProps ( store ) {
-  const postId = store.viewData.selected;
+function mapStoreToProps ( store, ...ownProps ) {
+  // console.log('store:', store)
 
+  const postId = store.viewData.currentId;
   const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
-
   return {
-    postId: store.viewData.selected || null,
-    post: store.posts[postId] || null,
-    categories: categoryNames || null,
+    categoriesObject: store.categories,
+    categoryNames,
+    postId,
+    post: store.posts[postId],
   }
 };
 
