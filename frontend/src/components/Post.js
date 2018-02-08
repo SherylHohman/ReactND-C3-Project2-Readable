@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { changeView } from '../store/viewData';
-import { upVotePost, downVotePost, deletePost } from '../store/posts';
+import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 // import { pullFromStore, l } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -16,10 +16,13 @@ export class Post extends Component {
 
     // TODO if page is loaded from saved url,
     //  fetch the post, based on post.id that's in the url
+    if (this.props.postId && !this.props.post){
+      this.props.fetchPost(this.props.postId);
+    }
 
     // re-direct to home page if don't have the post (until implement above)
 
-    // if (this.props.post === null) {
+    // if (this.props.postId === null) {
     //   <Redirect to="/" push />
     // }
     // else {console.log('post.id: ', this.props.post.id);}
@@ -41,6 +44,15 @@ export class Post extends Component {
 
   render(){
 
+    // // for exploring history when must rely on url
+    // if (props && props.location) {  // && props.location.state) {
+    //   console.log('Post props.location');
+    // }
+    // if (props && props.match) {
+    //   console.log('Post, url match', props.match);
+    // }
+
+
     const props = this.props;
     if (!this.props){console.log('Post props is undefined');}
 
@@ -49,15 +61,6 @@ export class Post extends Component {
       (props && props.location && props.location.state && props.location.state.post) ||
       (props && props.match && props.match.params && props.match.params.post) ||
       null;
-
-    // for exploring history when must rely on url
-    if (props && props.location) {  // && props.location.state) {
-      console.log('Post props.location');
-    }
-    if (props && props.match) {
-      console.log('Post, url match', props.match);
-    }
-
 
     // If page is loaded from a saved url. Store is empty. Redirect
     // A better solution would be to read the post id from the url.. fetch data.
@@ -75,9 +78,9 @@ export class Post extends Component {
     const postId = props.post.id;  // change to == post.id ?  //see above, and below.
     const {title, voteScore, commentCount, author, timestamp } = this.props.post;
 
-    // disambiguity:
-    // category is also an object (on store.categories array),
-    // the category field on a post is a category.name
+    // disambiguate:
+    // category is an {name, path} on categories,
+    // category is a name on post
     const categoryName = this.props.post.category;
 
     return (
@@ -137,34 +140,29 @@ Post.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    onChangeView:  (url, id) => dispatch(changeView({ url, id })),
+    onChangeView:  (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
     onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
 
-    changeViewByCategory: (category) => dispatch(changeView({ category })),
+    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     deletePost: (postId) => dispatch(deletePost(postId)),
+
+    fetchPost: (id) => dispatch(fetchPost(id)),
   })
 }
 
 function mapStoreToProps ( store ) {
-  const postId = store.viewData.id;
-  const post = store.posts[postId] || null;
+  const postId = store.viewData.currentId;
+  const post = store.posts[postId];
 
-  // post.category is a categoryName
-  // grab it's path from the categories object
-
-  const categoriesArray = Object.keys(store.categories)
-    .reduce((acc, categoryKey) => {
-      return acc.concat([store.categories[categoryKey]]);
-    }, []);
-
-  const categoryPath = categoriesArray
-    .find(categoryId => (categoryId.name === post.category))
-    .path;
-
-  // TODO read from url instead. Especially if post==null because of fresh page load.
+  // disambiguate: category is an object with name and path
+  // but on a post category refers to the name only
+  const categoryName = (post && post.category) || null;
+  const categoryPath = (store.categories[categoryName] &&
+                        store.categories[categoryName].path) || null;
 
   return {
+    postId,
     post,
     categoryPath,
   }
