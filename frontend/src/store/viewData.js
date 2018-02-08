@@ -34,10 +34,10 @@ export const SORT_BY = 'SORT_BY';
   // "category.path" is a url-safe string for the category url. Not including'/''
 
   // ensure consistancy
-  const ALL_POSTS_CATEGORY= {name: '', path: ''}
+  const ALL_POSTS_CATEGORY= {name: '', path: ''} // name '' or null ??
   const ALL_POSTS_ID  = '' ;  // or null ??
   const ALL_POSTS_URL = '/';
-  const DEFAULT_SORT_BY = 'date';
+  export const DEFAULT_SORT_BY = 'date';
 
   export const HOME  = {
     id: ALL_POSTS_ID,
@@ -48,15 +48,15 @@ export const SORT_BY = 'SORT_BY';
 // ACTION CREATORS
 
   export const changeView = (newViewData=HOME) => {
-    // console.log('___in changeView, newViewData:', newViewData);
+      // console.log('____entering viewData.changeView, newViewData:', newViewData.category);
 
     // changeView By Category
-
-    if (newViewData.category) {
+    const newCategory = newViewData.persistentCategory //|| null
+    if (newCategory) {
       // console.log('___in changeView By Category, newViewData.category:', newViewData.category);
 
-      const category = (newViewData.category.name)  // '' or null
-        ? newViewData.category
+      const category = (newCategory.name)  // '' or null
+        ? newCategory
         : ALL_POSTS_CATEGORY;
 
       // url and id are NOT independant of category, set them to ensure in synch
@@ -67,34 +67,36 @@ export const SORT_BY = 'SORT_BY';
 
       return ({
         type: SELECT_CATEGORY,
-        url,
-        id,
-        category,
+        currentUrl: url,
+        currentId: id,
+        persistentCategory: category,
       });
 
     // changeView By: url, id
 
     } else {
-      // console.log('___in changeView, via id, url:', newViewData);
+      // console.log('___in changeView-via-id,-rl, newViewData:', newViewData);
+
       // potential issue: if url is a category url, and/or id is a category..
       // the sticky category (object) won't get updated !!
       // The fix: parse URL. If it is '/category/:category', then treat it as
       // changeViewBCagetory ('SELECT_CATEGORY' above)
       return ({
         type: CHANGE_VIEW,
-        url:  newViewData.url,
-        id:   newViewData.id,
+        currentUrl:  newViewData.currentUrl,
+        // if not supplied, 'null' tells reducer to use "persistentCategory"
+        currentId:   newViewData.currentId || null,
       })
     }
   }
 
-  export const sortBy = (sortBy='date') => ({
+  export const sortBy = (persistentSortBy='date') => ({
     // TODO: add this field to (browser) url ??
     //   if so, then would need to push the new URL
     // TODO: either validate the param given,
     //       or use sortByMethods to populate Component
     type: SORT_BY,
-    sortBy,
+    persistentSortBy,
   })
 
   // export const sortOrder = ({  }) => ({
@@ -122,37 +124,45 @@ export const SORT_BY = 'SORT_BY';
   }
 
 function viewData(state=initialState_ViewData, action){
-  switch (action.type) {
+  // console.log('entering reducer viewData, action:', action, 'prevState');
 
+  let id;
+  let url;
+  switch (action.type) {
     case CHANGE_VIEW:
-      // console.log("CHANGE_VIEW, action:", action);
+      // console.log("__CHANGE_VIEW, action:", action);
+
       // potential issue: if url is a category route, or id is category.name
       //       then viewData's "category" (object) won't get updated.
       // TODO: parse URL and call selectCategory action creator instead.
+      id = (action.currentId === null)
+        ? state.persistentCategory.name
+        : action.currentId
       return ({
                 ...state,
-                url: action.url,
-                id: action.id,
+                currentUrl: action.currentUrl,
+                currentId: id,
               });
 
     case SELECT_CATEGORY:
       // console.log('SELECT_CATEGORY, action:', action);
-      let url = (action.category.name)
-                  ? `/category/${action.category.path}`
-                  : '/'    // home page: all categories
-      let id = action.category.name;
+      let category = action.persistentCategory;
+      url = (category.name)
+                ? `/category/${category.path}`
+                : '/'    // home page: all categories
+      id = category.name;
       return ({
                 ...state,
-                url,
-                id,
-                category: action.category,
+                currentUrl: url,
+                currentId: id,
+                persistentCategory: category,
             });
 
     case SORT_BY:
       return ({
                 ...state,
                 // TODO sort method stored in url ??
-                sortBy: action.sortBy,
+                persistentSortBy: action.persistentSortBy,
             });
 
     // case DELETE_POST_SUCCESS:
