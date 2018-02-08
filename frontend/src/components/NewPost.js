@@ -255,8 +255,8 @@ NewPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (newPostData) => dispatch(addPost(newPostData)),
-    changeViewByUrlId: (url, id) => dispatch(changeView({ url, id })),
-    changeViewByCategory: (category) => dispatch(changeView({ category })),
+    changeViewByUrlId: (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
+    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     fetchCategories:  (postId) => dispatch(fetchCategories(postId)),
   })
 }

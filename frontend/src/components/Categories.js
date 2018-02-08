@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { fetchCategories } from '../store/categories';
 import { fetchPosts } from '../store/posts';
-import { changeView, HOME } from '../store/viewData';
+import { changeView, HOME, DEFAULT_SORT_BY } from '../store/viewData';
 
 
 export class Categories extends Component {
@@ -15,9 +15,8 @@ export class Categories extends Component {
   }
 
   getCategoryFromName(categoryName){
-    if (!categoryName || categoryName === null || categoryName === ''){
-      console.log('error: categoryName is invalid, Categories.js: getCategoryFromName, setting to categories[0]', this.props.categories[0]);
-      return {name: '', path: ''};  // home page, show all categories
+    if (!categoryName){
+      return HOME.category;  // home page, show all categories
     } else {
       return this.props.categories.find((category) => {
         return category.name === categoryName;
@@ -27,9 +26,8 @@ export class Categories extends Component {
 
   onSelectCategory(categoryName){
     const category = this.getCategoryFromName(categoryName);
-    // console.log('__category for changeView:', category);
     this.props.changeViewByCategory(category);
-    this.props.getPosts(category.path || null);
+    this.props.getPosts(category.path);
   }
 
   render() {
@@ -45,7 +43,7 @@ export class Categories extends Component {
             (
               <ul className="nav">
                 <NavLink to="/"
-                      onClick={() => {this.onSelectCategory('')}}
+                      onClick={() => {this.onSelectCategory(HOME.category.name)}}
                       activeClassName={"selected"}
                       isActive={isExactPath}
                       >
@@ -91,13 +89,11 @@ function mapStoreToProps ( store ) {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
 
-  const categoryAll = {name: '', path: ''}; // or path=null or '/' or ''
-
   return {
       categories: categoriesArray || null,
       // categoriesPlus: categoriesArray.concat[allCategories],
-      category: store.viewData.category || categoryAll,
-      sortBy:   store.viewData.sortBy   || 'date',
+      category: store.viewData.category || HOME.category,
+      sortBy:   store.viewData.sortBy   || DEFAULT_SORT_BY,
   }
 };
 

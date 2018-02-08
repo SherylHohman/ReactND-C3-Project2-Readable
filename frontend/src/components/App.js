@@ -7,7 +7,7 @@ import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
 // import { fetchCategories } from '../store/categories';
-import { changeView } from '../store/viewData';
+import { changeView, HOME } from '../store/viewData';
 // import { pullFromStore } from '../utils/helpers';
 
 class App extends Component {
@@ -25,7 +25,8 @@ class App extends Component {
         <header className="app-header">
 
           <Link to="/" onClick={() => {
-            this.props.onChangeView('/', '')}}>
+            this.props.onChangeView(HOME.url)
+          }}>
             <h1 className="app-title">Readable</h1>
           </Link>
           <div className="app-intro">
