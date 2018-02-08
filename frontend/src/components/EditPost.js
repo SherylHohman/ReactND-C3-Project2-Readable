@@ -31,7 +31,7 @@ export class EditPost extends Component {
     }
     else {
       postId = this.props.postId;
-      havePostId = (postId === '') || (postId === null) //|| (postId.length<20)
+      havePostId = (!postId) //|| (postId.length<20) // magic number: length of id
         ? false : true;
     }
 
@@ -79,37 +79,33 @@ export class EditPost extends Component {
     this.setState({ categoryName });
   }
 
-  // loadHomePage(){
-  //   // use when cannot get the post, (not in store/props, could not fetch/nopostId)
+  loadHomePage(){
+    // use if cannot get the post, (not in store/props, could not fetch/nopostId)
 
-  //   // null id will load persistent category, use
-  //   // HOME.id to load AllCategories
-  //   this.props.changeView(HOME.url, null);
-  //   this.props.history.push(HOME.url);
-  // }
+    // null id will load persistent category,
+    // HOME.id will load All Categories
+    this.props.changeView(HOME.url, null);
+    this.props.history.push(HOME.url);
+  }
 
-  onSave(){
+  setPostView(postUrl){
+    // postUrl purpose is to ensure changeView uses the same as Link to""
+    this.props.changeView(postUrl, this.props.postId);
+  }
+
+  onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
-    // console.log('___onSave EditPost');
-    // console.log('state:', this.state, 'this.props.categories', this.props.categories);
-
     const editedPostData = {
       title: this.state.title,
       category: this.state.categoryName,
       body: this.state.body,
     }
     this.props.onSave(this.props.postId, editedPostData);
-    // console.log('onSave:, editedPostData', editedPostData);
-
-    const category = this.props.categoriesObject[this.state.categoryName]
-    this.props.changeViewByCategory(category);
+    this.setPostView(postUrl);
   }
 
-  onCancel(){
-    const postId = this.props.postId;
-    const postUrl = `/post/${postId}`;
-
-    this.props.changeView(postUrl, postId);
+  onCancel(postUrl){
+    this.setPostView(postUrl)
   }
 
   render(){
@@ -167,14 +163,14 @@ export class EditPost extends Component {
             />
           <Link
             to={postUrl}
-            onClick={() => {this.onSave();}}
+            onClick={() => {this.onSave(postUrl)}}
             >
             <button>Save</button>
           </Link>
           <Link
             to={postUrl}
-            onClick={() => {this.onCancel();
-            }}>
+            onClick={() => {this.onCancel(postUrl)}}
+            >
             <button>Cancel</button>
           </Link>
         </form>
