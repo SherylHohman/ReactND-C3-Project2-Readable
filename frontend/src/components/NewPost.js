@@ -131,21 +131,21 @@ export class NewPost extends Component {
     this.loadHomePage();
   }
 
-  const newPostDefaults =  {
-      id:     this.creatPostId(),
-      title:  '(untitled)',
-      body:   '(blank)',
-      author: '(anonymous)',
-        // TODO: automatically populate author from logged in user
-
-      category:  this.props.categoryNames[0] || HOME.category.name,
-        // this.props.categoryNames[0] - valid, but inaccurate value
-        // HOME.category.name - if could not load categories..
-        // ..is likely to cause an error elsewhere, as it cannot be found in
-        // "categories", but might otherwise render, unlike null.
-  }
-
   onSave(){
+    const newPostDefaults =  {
+        id:     this.creatPostId(),
+        title:  '(untitled)',
+        body:   '(blank)',
+        author: '(anonymous)',
+          // TODO: automatically populate author from logged in user
+
+        category:  this.props.categoryNames[0] || HOME.category.name,
+          // this.props.categoryNames[0] - valid, but inaccurate value
+          // HOME.category.name - if could not load categories..
+          // ..is likely to cause an error elsewhere, as it cannot be found in
+          // "categories", but might otherwise render, unlike null.
+    }
+
     const categoryName = this.state.categoryName;
 
     // "Full" Post object has additional fields, initialized by the server.
@@ -223,7 +223,7 @@ export class NewPost extends Component {
             placeholder="Your Name in Lights.."
             value={this.state.author}
             onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-            {/* TODO: add user field on Home/Page, that auto populates author field */}
+            /* TODO: add user field on Home/Page, that auto populates author field */
             />
 
             <div>

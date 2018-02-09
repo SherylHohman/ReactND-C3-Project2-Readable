@@ -35,6 +35,7 @@ export class Categories extends Component {
     const isExactPath = () => {
       return (this.props.category.name === HOME.category.name);
       // breaks when app is loaded from a saved url
+      // TODO: (the fix): match HOME.category.path against actual Browser URL
     }
 
     return (
@@ -42,7 +43,8 @@ export class Categories extends Component {
         {this.props && this.props.categories &&
             (
               <ul className="nav">
-                <NavLink to="/"
+                <NavLink key="all-categories-makeSureThisKeyIsUnique"
+                      to="HOME.category.path"
                       onClick={() => {this.onSelectCategory(HOME.category.name)}}
                       activeClassName={"selected"}
                       isActive={isExactPath}
