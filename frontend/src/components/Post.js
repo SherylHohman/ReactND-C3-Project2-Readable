@@ -93,36 +93,40 @@ export class Post extends Component {
               <h2>{title}</h2>
             </Link>
 
-            <p>Category: {categoryName} | By: {author} | On: {dateMonthYear(timestamp)} |
-              <Link
-                to={`/post/${postId}/edit`}
-                onClick={() => {this.props.onChangeView(`/post/${postId}/edit`, postId)
-              }}>
-                Edit Post
-              </Link>
-            </p>
+            <div>
+              <div> {post.body} </div>
+              <p> </p>
 
-            <div className="vote">
-              <div
-                className="post-up-vote"
-                onClick={() => {this.props.onUpVotePost(postId)}}>
-              </div>
-              <h2>{voteScore}</h2>
-              <div
-                className="post-down-vote"
-                onClick={() => {this.props.onDownVotePost(postId)}}>
+              <div className="vote">
+                <div
+                  className="post-up-vote"
+                  onClick={() => {this.props.onUpVotePost(postId)}}>
+                </div>
+                <h2>{voteScore}</h2>
+                <div
+                  className="post-down-vote"
+                  onClick={() => {this.props.onDownVotePost(postId)}}>
+                </div>
               </div>
             </div>
 
-            <Link
-              to={`/category/${this.props.categoryPath}`}
-              onClick={() => {this.onDelete(postId)}}
-            >
-              Delete Post
-            </Link>
-        </div>
+            <p>Category: {categoryName} | By: {author} | On: {dateMonthYear(timestamp)}</p>
 
-        <div> {post.body} </div>
+            <div>
+              <Link
+                to={`/category/${this.props.categoryPath}`}
+                onClick={() => {this.onDelete(postId)}}
+              >
+                Delete Post
+              </Link>
+                <Link
+                  to={`/post/${postId}/edit`}
+                  onClick={() => {this.props.onChangeView(`/post/${postId}/edit`, postId)
+                }}>
+                  Edit Post
+                </Link>
+            </div>
+        </div>
         <hr />
         <h3>{commentCount} Comments</h3>
         <Comments />
