@@ -38,6 +38,7 @@ export const SORT_BY = 'SORT_BY';
   const ALL_POSTS_ID  = '' ;  // or null ??
   const ALL_POSTS_URL = '/';
   export const DEFAULT_SORT_BY = 'date';
+  export const DEFAULT_SORT_ORDER = 'high_to_low';
 
   export const HOME  = {
     id: ALL_POSTS_ID,
@@ -120,7 +121,8 @@ export const SORT_BY = 'SORT_BY';
     // object eg: {name: 'react', path: 'react'}
     persistentCategory: HOME.category,
     // 'votes' or 'date'
-    persistentSortBy:   DEFAULT_SORT_BY,
+    persistentSortBy:    DEFAULT_SORT_BY,
+    persistentSortOrder: DEFAULT_SORT_ORDER,
   }
 
 function viewData(state=initialState_ViewData, action){

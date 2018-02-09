@@ -3,13 +3,31 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
-import { changeView, HOME } from '../store/viewData';
+import { changeView, HOME, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from '../store/viewData';
 
 export class Posts extends Component {
+
+  state = {
+    posts: [],
+    sortBy: DEFAULT_SORT_BY,
+    sortOrder: DEFAULT_SORT_ORDER,
+  }
 
   componentDidMount() {
     this.props.fetchPosts(this.props.selectedCategoryName);
     // console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
+  }
+  componentWillReceiveProps(nextProps){
+    // console.log('Posts cWRP nextProps:', nextProps);
+
+    if (nextProps.sortBy) {
+      this.setState({ sortBy: nextProps.sortBy });
+    }
+    if (nextProps.posts) {
+      const sortedPosts = sortPosts(nextProps.posts,
+                                    nextProps.sortBy || this.state.sortBy);
+      this.setState({ posts: sortedPosts });
+    }
   }
 
   render() {
@@ -29,6 +47,7 @@ export class Posts extends Component {
           }
       }
     }
+
 
     if (!havePosts){
       return (<div><p>{statusMessage}</p></div>);
@@ -53,25 +72,25 @@ export class Posts extends Component {
 
           <div> {/*posts*/}
             <ol>
-              {this.props.posts.map(post => {
-                return (
-                  <li key={post.id}>
-                    <div>
+              { this.state.posts.map(post => {
+                  return (
+                    <li key={post.id}>
+                      <div>
 
-                      <Link to={`/post/${post.id}`} onClick={() => {
-                        this.props.onChangeView(`/post/${post.id}`, post.id)
-                      }}>
-                        <h1>{post.title}</h1>
-                      </Link>
+                        <Link to={`/post/${post.id}`} onClick={() => {
+                          this.props.onChangeView(`/post/${post.id}`, post.id)
+                        }}>
+                          <h1>{post.title}</h1>
+                        </Link>
 
-                      <div>{post.voteScore} Votes | {post.commentCount} Comments</div>
-                      <p>{post.category}</p>
-                      {/* TODO move Link closing tag to here - after update styles*/}
-                      <div></div>
-                      <hr />
-                   </div>
-                  </li>
-                )
+                        <div>{post.voteScore} Votes | {post.commentCount} Comments</div>
+                        <p>{post.category}</p>
+                        {/* TODO move Link closing tag to here - after update styles*/}
+                        <div></div>
+                        <hr />
+                     </div>
+                    </li>
+                  )
               })}
             </ol>
           </div>
@@ -80,6 +99,28 @@ export class Posts extends Component {
     );
   }
 }
+
+function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER) {
+  // console.log('enter sortPosts, posts:', posts, 'sortMethod', sortMethod);
+  const isHIGH_TO_LOW = (orderBy === DEFAULT_SORT_ORDER) ? 1 : -1;
+
+  const sorted = posts.sort((postA, postB) => {
+    if (sortMethod === 'date'){
+      if (postA.timestamp === postB.timestamp) return 0;
+      if (postA.timestamp  <  postB.timestamp) return 1 * isHIGH_TO_LOW
+      else return -1 * isHIGH_TO_LOW
+    }
+    if (sortMethod === 'voteScore'){
+      if (postA.voteScore === postB.voteScore) return 0;
+      if (postA.voteScore  <  postB.voteScore) return 1 * isHIGH_TO_LOW
+      else return -1 * isHIGH_TO_LOW
+    }
+    return 0;  // no sort
+  });
+  // console.log('leaving sortBy, posts: ', posts);
+  return sorted;
+};
+
 
 function mapDispatchToProps(dispatch){
   return ({
@@ -95,13 +136,14 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store ) {
-  console.log('store:', store);
+  // console.log('store:', store);
 
   // object to array
   const posts = Object.keys(store.posts).reduce((acc, postId) => {
       return acc.concat([store.posts[postId]]);
     }, []);
-  console.log('posts:', posts)
+  const sortedPosts = sortPosts(posts, store.viewData.persistentSortBy);
+  // console.log('__mapStoreToProps, sortedPosts:', sortedPosts)
 
   const selectedCategoryName = (store && store.viewData
     && store.viewData.persistentCategory)
@@ -110,8 +152,10 @@ function mapStoreToProps ( store ) {
   // console.log('selectedCategoryName:', selectedCategoryName)
 
   return {
-    posts,
+    posts: sortedPosts,
     selectedCategoryName,
+    sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
+    sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
   }
 };
 
