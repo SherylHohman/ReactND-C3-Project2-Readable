@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { editPost } from '../store/posts';
 import { changeView, HOME } from '../store/viewData';
 import { fetchPost } from '../store/posts';
@@ -35,10 +36,10 @@ export class EditPost extends Component {
         ? false : true;
     }
 
-    // console.log('havePostId:', havePostId, 'postId:', postId, 'havePost:', havePost);
+    console.log('havePostId:', havePostId, 'postId:', postId, 'havePost:', havePost);
 
     if (!havePostId && !havePost){
-      // this.loadHomePage();
+      this.loadHomePage();
     }
 
     if (havePostId && !havePost){
@@ -110,29 +111,33 @@ export class EditPost extends Component {
 
   render(){
 
-    // if (this.props.postId === '' || this.props.postId === null){
+    // // if (this.props.postId === '' || this.props.postId === null){
+    // if (!this.props.postId){
+    //   console.log('EditPost render, !postId, redirecting Home');
+    //   // should redirect to home or last viewed category page
+    //   // in that case, change HOME.id to null
+    //   this.props.changeView(HOME.url, HOME.id);
     //   return (
     //     <div>
-    //       <p>I do not know that post id.. Can you find it for me ?</p>
+    //       <p>I do not know that post.. Can you find it for me ?</p>
     //       <p> ..going to the home page now ;-D </p>
-    //       <Redirect to="/" />
+    //       <Redirect to={HOME.url} />
     //     </div>
     //   )
     // }
 
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
-    // console.log('render, postId:', postId, 'postUrl:', postUrl);
 
-    //   if (!this.props || !this.props.post || !this.props.post.id){
-    //   return (
-    //     <div><h2> Hold On.. I'm getting your Post </h2></div>
-    //   )
-    // }
+    if (!this.props || !this.props.post || !this.props.post.id){
+      return (
+        <div><h2> Hold On.. I'm getting your Post </h2></div>
+      )
+    }
 
     return  (
       <div>
-        <form>
+        <form className="edit">
           {/* uses state */}
           <input
             className="edit-title"
@@ -143,7 +148,7 @@ export class EditPost extends Component {
             />
 
           <textarea
-            className="edit-post-body"
+            className="post-body"
             type="text"
             value={this.state.body}
             onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
@@ -153,7 +158,7 @@ export class EditPost extends Component {
 
             <div>
               <select
-                className="edit-category"
+                className="category"
                 value={this.state.categoryName}
                 onChange={(e)=>this.controlledCategoryField(e.target.value)}
                 >
@@ -181,7 +186,7 @@ export class EditPost extends Component {
           <hr />
           {/* uses props */}
           {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
-          <div className="edit-active">
+          <div className="render-edit">
             <h4> Rendered Edited post </h4>
             <h3> {this.state.title} </h3>
             <p>  {this.state.body}  </p>
@@ -189,12 +194,14 @@ export class EditPost extends Component {
           </div>
           <hr />
           <hr />
-          <div className="edit-orig">
-            <p> Original Post </p>
-            <h3> {this.props.post.title} </h3>
-            <p> {this.props.post.body}  </p>
-            <p> Category: {this.props.post.category}</p>
-          </div>
+          { this.props.post && (
+            <div className="render-orig">
+              <p> Original Post </p>
+              <h3> {this.props.post.title} </h3>
+              <p>  {this.props.post.body}  </p>
+              <p> Category: {this.props.post.category}</p>
+            </div>
+          )}
       </div>
     )
   };

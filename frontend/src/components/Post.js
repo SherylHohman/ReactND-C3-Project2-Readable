@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
-import { changeView } from '../store/viewData';
+import { changeView, HOME } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 // import { pullFromStore, l } from '../utils/helpers';
@@ -14,18 +14,17 @@ export class Post extends Component {
   componentDidMount() {
     console.log('in Post componentDidMount');
 
+    // re-direct to home page if don't have the post, and can't read from url)
+    if (!this.props.postId){
+      <Redirect to={HOME.ulr} push />
+    }
+
     // TODO if page is loaded from saved url,
     //  fetch the post, based on post.id that's in the url
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
     }
 
-    // re-direct to home page if don't have the post (until implement above)
-
-    // if (this.props.postId === null) {
-    //   <Redirect to="/" push />
-    // }
-    // else {console.log('post.id: ', this.props.post.id);}
   }
 
   onDelete(postId){
