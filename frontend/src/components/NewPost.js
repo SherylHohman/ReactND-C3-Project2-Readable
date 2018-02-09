@@ -151,10 +151,10 @@ export class NewPost extends Component {
     // "Full" Post object has additional fields, initialized by the server.
     const newPostData = {
       id:     this.creatPostId(),
-      title:  this.state.title  || '(untitled)',
-      body:   this.state.body   || '(blank)',
+      title:  this.state.title.trim()  || '(untitled)',
+      body:   this.state.body.trim()   || '(blank)',
       // TODO: automatically populate author from logged in user
-      author: this.state.author || '(anonymous)',
+      author: this.state.author.trim() || '(anonymous)',
       category:  categoryName   || newPostDefaults.categoryName,
       timestamp: Date.now(),
     }

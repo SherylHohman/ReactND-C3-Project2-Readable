@@ -97,9 +97,9 @@ export class EditPost extends Component {
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
-      title: this.state.title,
+      title: this.state.title.trim(),
       category: this.state.categoryName,
-      body: this.state.body,
+      body: this.state.body.trim(),
     }
     this.props.onSave(this.props.postId, editedPostData);
     this.setPostView(postUrl);
