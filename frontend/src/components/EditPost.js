@@ -139,6 +139,16 @@ export class EditPost extends Component {
             type="text"
             value={this.state.title}
             onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
+            style={{width:'100%'}}
+            />
+
+          <textarea
+            className="edit-post-body"
+            type="text"
+            value={this.state.body}
+            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+            style={{width:'98%'}}
+            rows={'5'}
             />
 
             <div>
@@ -155,14 +165,6 @@ export class EditPost extends Component {
               </select>
             </div>
 
-          <textarea
-            className="edit-post-body"
-            type="text"
-            value={this.state.body}
-            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-            style={{width:'100%'}}
-            rows={'5'}
-            />
           <Link
             to={postUrl}
             onClick={() => {this.onSave(postUrl)}}
@@ -182,16 +184,16 @@ export class EditPost extends Component {
           <div className="edit-active">
             <h4> Rendered Edited post </h4>
             <h3> {this.state.title} </h3>
-            <p>  Category: {this.state.categoryName}  </p>
             <p>  {this.state.body}  </p>
+            <p>  Category: {this.state.categoryName}</p>
           </div>
           <hr />
           <hr />
           <div className="edit-orig">
             <p> Original Post </p>
             <h3> {this.props.post.title} </h3>
-            <p> Category: {this.props.post.category}  </p>
             <p> {this.props.post.body}  </p>
+            <p> Category: {this.props.post.category}</p>
           </div>
       </div>
     )
