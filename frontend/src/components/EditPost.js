@@ -155,11 +155,13 @@ export class EditPost extends Component {
               </select>
             </div>
 
-          <input
+          <textarea
             className="edit-post-body"
             type="text"
             value={this.state.body}
             onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+            style={{width:'100%'}}
+            rows={'5'}
             />
           <Link
             to={postUrl}
