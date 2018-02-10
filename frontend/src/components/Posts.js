@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
-import { changeView, HOME, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from '../store/viewData';
+import { changeView, HOME, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from '../store/viewData';
 
 export class Posts extends Component {
 
@@ -28,6 +29,11 @@ export class Posts extends Component {
                                     nextProps.sortBy || this.state.sortBy);
       this.setState({ posts: sortedPosts });
     }
+  }
+
+  onChangeSort(e, sortBy){
+    e.preventDefault();
+    this.props.onChangeSort(sortBy);
   }
 
   render() {
@@ -55,8 +61,22 @@ export class Posts extends Component {
 
     return (
       <div>
-          <div> {/*sort by*/}
-          <ul className="nav"><li>Sort Posts By:</li> <li>Most Recent</li><li>Highest Votes</li></ul>
+          <div> {/*sort by  TODO map over constants in viewData instead */}
+          <ul className="nav">
+            <li>Sort Posts By:</li>
+            <li
+              className={`${this.state.sortBy==='date' ? "selected" : ""}`}
+              onClick={(e) => {this.onChangeSort(e, 'date')}}
+              >
+              Most Recent
+            </li>
+            <li
+              className={(this.state.sortBy==='voteScore' ? "selected" : "")}
+              onClick={(e) => {this.onChangeSort(e, 'voteScore')}}
+            >
+              Highest Votes
+            </li>
+          </ul>
           </div>
 
           {/*Categories*/}
@@ -132,6 +152,7 @@ function mapDispatchToProps(dispatch){
     onChangeViewByCategory: (category) => dispatch(changeView({
       persistentCategory:category
     })),
+    onChangeSort: (sortBy) => dispatch(changeSort(sortBy)),
   })
 }
 

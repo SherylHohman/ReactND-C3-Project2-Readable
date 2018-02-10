@@ -15,6 +15,10 @@ export const SORT_BY = 'SORT_BY';
     {sortBy: "date", text: 'Most Recent'},
     {sortBy: "voteScore", text: 'Highest Votes'}
   ];
+  export const sortOrder = [
+    {sortOrder: "descending", text: 'High to Low'},
+    {sortOrder: "ascending",  text: 'Low to High'}
+  ];
 
   // export const sortOrder = ['decending', 'ascending'];
 
@@ -91,7 +95,7 @@ export const SORT_BY = 'SORT_BY';
     }
   }
 
-  export const sortBy = (persistentSortBy='date') => ({
+  export const changeSort = (persistentSortBy='date') => ({
     // TODO: add this field to (browser) url ??
     //   if so, then would need to push the new URL
     // TODO: either validate the param given,
