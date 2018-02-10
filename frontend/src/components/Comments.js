@@ -4,6 +4,8 @@ import { fetchComments } from '../store/comments';
 import { upVoteComment, downVoteComment, editComment, deleteComment } from '../store/comments';
 import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
 import NewComment from './NewComment';
+import EditComment from './EditComment';
+import Modal from 'react-responsive-modal';
 import PropTypes from 'prop-types';
 
 
@@ -13,6 +15,11 @@ export class Comments extends Component {
     post: PropTypes.string,//.isRequired,
     comments: PropTypes.array,
   }
+
+  state = {
+    isOpenModal: false,
+    commentBodyEdits: '',
+  };
 
   componentDidMount(){
     const postId = this.props.postId;
@@ -28,9 +35,21 @@ export class Comments extends Component {
   }
 
   onEditComment(id){
-    // Modal
-    this.props.onEditComment(id);
+    this.setState({ isOpenModal: true });
   }
+
+  // onSaveComment(id){
+  //   // Modal
+  //   this.props.onEditComment({
+  //     id,
+  //     body: this.state.commentBody.trim(),
+  //     timestamp: Date.now(),   // updates timestamp ?
+  //   });
+  // }
+
+  onCloseModal = () => {
+    this.setState({ isOpenModal: false });
+  };
 
   render() {
     const { comments, postId } = this.props;
@@ -93,6 +112,17 @@ export class Comments extends Component {
                   <span onClick={(e) => {this.onEditComment(e, comment.id)}}>edit</span>
                    |
                   <span onClick={() => {this.props.onDeleteComment(comment.id)}}>delete</span></p>
+
+                <div>
+                  <Modal little
+                    open={this.state.isOpenModal}
+                    onClose={this.onCloseModal}
+                    >
+                    <EditComment commentId={comment.id} />
+                  </Modal>
+                </div>
+
+
                 <hr />
               </li>
             );
@@ -110,7 +140,7 @@ function mapDispatchToProps(dispatch){
     fetchComments:       (postId)    => dispatch(fetchComments(postId)),
     onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
     onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),
-    onEditComment:     (commentId) => dispatch(editComment(commentId)),
+    onEditComment:     (editCommentData) => dispatch(editComment(editCommentData)),
     onDeleteComment:   (commentId) => dispatch(deleteComment(commentId)),
   })
 }

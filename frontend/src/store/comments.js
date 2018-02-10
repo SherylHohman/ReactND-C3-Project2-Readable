@@ -9,7 +9,9 @@ import * as ReaderAPI from '../utils/api';
   export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
   const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
 
-  export const EDIT_COMMENT = 'EDIT_COMMENT';
+  export const REQUEST_EDIT_COMMENT = 'REQUEST_EDIT_COMMENT';
+  const EDIT_COMMENT_SUCCESS = 'EDIT_COMMENT_SUCCESS';
+  const EDIT_COMMENT_FAILURE = 'EDIT_COMMENT_FAILURE';
 
   export const REQUEST_DELETE_COMMENT = 'REQUEST_DELETE_COMMENT';
   export const DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS';
@@ -113,20 +115,44 @@ import * as ReaderAPI from '../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
+  export function editComment({ id, body, timestamp }){
+    return (dispatch) => {
 
-  export function editComment({ id, title, body }){
-    return ({
-      type: EDIT_COMMENT,
-      id,
-      // these are the items that can be edited
-      title,
-      body,
-      // may also need to pass in all info off the object, so can populate
-      // the 'edit' dialog box ? OR only show (an prepopulate) the values
-      // that can be edited by the user?
-      // on that note: datetime stays as Orig time, nor Edit time, right?
-    });
+      dispatch({
+        type: REQUEST_EDIT_COMMENT,
+        id,
+        body,
+        timestamp,
+      });
+
+      ReaderAPI.editComment(id, { body, timestamp })
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, Delete Comment');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+        .then(response => response.json())
+        .then(data => {
+          dispatch({
+            type: ADD_COMMENT_SUCCESS,
+            id: data.id,
+            body: data.body,
+            timestamp: data.timestamp,
+          })
+        })
+        .catch(err => {
+          dispatch({
+            type: EDIT_COMMENT_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
   };
+
 
   export function deleteComment(commentId){
     // just needs a commentID, or the wholeComment object?
@@ -285,17 +311,21 @@ import * as ReaderAPI from '../utils/api';
         // TODO: UI error message
         return state;
 
-      case EDIT_COMMENT:
+      case REQUEST_EDIT_COMMENT:
+        // TODO:
+        return state;
+      case EDIT_COMMENT_SUCCESS:
         return ({
           ...state,
            [id]: {
             ...[id],
-            // do I keep the original comment time, or update to time of latest edit ?
-            // timestamp: action.timestamp,
             body: action.body,
-            title: action.title,
+            timestamp: action.timestamp,
            }
         });
+      case EDIT_COMMENT_FAILURE:
+        // TODO: UI error message
+        return state;
 
       case REQUEST_DELETE_COMMENT:
         // TODO
