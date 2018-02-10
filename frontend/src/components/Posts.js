@@ -46,16 +46,11 @@ export class Posts extends Component {
     if (this.props) {
       statusMessage = 'No Posts Data';
       if (this.props.posts) {
-        statusMessage = 'No Posts Available';
+        statusMessage = 'Be the first to write a post..';
           if (!Array.isArray(this.props.posts)) {
             statusMessage = 'Posts are contained in an object. I need them transformed into an array, so I can map over them!';
           }
       }
-    }
-
-
-    if (!havePosts){
-      return (<div><p>{statusMessage}</p></div>);
     }
 
     return (
@@ -89,30 +84,35 @@ export class Posts extends Component {
             <div><h2>Add New Post</h2><hr /></div>
           </Link>
 
-          <div> {/*posts*/}
-            <ol>
-              { this.state.posts.map(post => {
-                  return (
-                    <li key={post.id}>
-                      <div>
+          {/*posts*/}
+          {( (!havePosts) &&
+             (<div><p>{statusMessage}</p></div>)
+           ) || (
+             <div>
+              <ol>
+                { this.state.posts.map(post => {
+                    return (
+                      <li key={post.id}>
+                        <div>
 
-                        <Link to={`/post/${post.id}`} onClick={() => {
-                          this.props.onChangeView(`/post/${post.id}`, post.id)
-                        }}>
-                          <h1>{post.title}</h1>
-                        </Link>
+                          <Link to={`/post/${post.id}`} onClick={() => {
+                            this.props.onChangeView(`/post/${post.id}`, post.id)
+                          }}>
+                            <h1>{post.title}</h1>
+                          </Link>
 
-                        <div>{post.voteScore} Votes | {post.commentCount} Comments</div>
-                        <p>{post.category}</p>
-                        {/* TODO move Link closing tag to here - after update styles*/}
-                        <div></div>
-                        <hr />
-                     </div>
-                    </li>
-                  )
-              })}
-            </ol>
-          </div>
+                          <div>{post.voteScore} Votes | {post.commentCount} Comments</div>
+                          <p>{post.category}</p>
+                          {/* TODO move Link closing tag to here - after update styles*/}
+                          <div></div>
+                          <hr />
+                       </div>
+                      </li>
+                    )
+                })}
+              </ol>
+            </div>
+          )}
 
       </div>
     );
