@@ -72,12 +72,14 @@ export class Comments extends Component {
                 <div className="vote">
                   <div
                     className="comment-up-vote"
-                    onClick={() => {this.props.onUpVoteComment(comment.id)}}>
+                    onClick={() => {this.props.onUpVoteComment(comment.id)}}
+                  >
                   </div>
                   {comment.voteScore}
                   <div
                     className="comment-down-vote"
-                    onClick={() => {this.props.onDownVoteComment(comment.id)}}>
+                    onClick={() => {this.props.onDownVoteComment(comment.id)}}
+                  >
                   </div>
                 </div>
 
@@ -106,7 +108,7 @@ function mapDispatchToProps(dispatch){
   return ({
     getComments:       (postId)    => dispatch(fetchComments(postId)),
     onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
-    onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),    onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
+    onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),
     onEditComment:     (commentId) => dispatch(editComment(commentId)),
     onDeleteComment:   (commentId) => dispatch(deleteComment(commentId)),
   })

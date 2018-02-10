@@ -161,12 +161,6 @@ import * as ReaderAPI from '../utils/api';
           else {
             console.log('comment returned as deleted: false');
             throw Error('comment returned as deleted: false');
-            return (
-              dispatch({
-                type: DELETE_COMMENT_FAILURE,
-                error: true,
-              })
-            );
           }
         })
 
@@ -287,7 +281,7 @@ import * as ReaderAPI from '../utils/api';
             ...action.comment,
           }
         });
-      case REQUEST_ADD_COMMENT:
+      case ADD_COMMENT_FAILURE:
         // TODO: UI error message
         return state;
 

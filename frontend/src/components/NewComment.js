@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { addComment } from '../store/comments';
 import { connect } from 'react-redux';
 import { createId } from '../utils/helpers';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 
 
 export class NewComment extends Component {
@@ -10,16 +10,6 @@ export class NewComment extends Component {
   state = {
     body   : '',
     author : '',  // TODO auto fill by logged in User
-  }
-
-  componentDidMount(){
-      <form>
-        <textarea
-          value = {this.state.newComment}
-          style = {{width: "98%"}}
-          row={"2"}
-        />
-      </form>
   }
 
   controlledBodyField(e, currentText){
@@ -39,8 +29,8 @@ export class NewComment extends Component {
       author: this.state.author.trim() || '(anonymous)',
     }
     console.log(newCommentData);
-    this.resetFormFields();
     this.props.onSave(newCommentData);
+    this.resetFormFields();
   }
 
   onCancel(){

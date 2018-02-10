@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
 import { changeView, HOME, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from '../store/viewData';

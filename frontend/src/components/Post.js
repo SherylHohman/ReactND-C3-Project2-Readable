@@ -16,7 +16,8 @@ export class Post extends Component {
 
     // re-direct to home page if don't have the post, and can't read from url)
     if (!this.props.postId){
-      <Redirect to={HOME.ulr} push />
+      this.props.history.push(HOME.url);
+      // <Redirect to={HOME.ulr} />
     }
 
     // TODO if page is loaded from saved url,
@@ -154,7 +155,7 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store ) {
+function mapStoreToProps (store) {
   const postId = store.viewData.currentId;
   const post = store.posts[postId];
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 import { editPost } from '../store/posts';
 import { changeView, HOME } from '../store/viewData';
 import { fetchPost } from '../store/posts';
@@ -211,10 +211,13 @@ export class EditPost extends Component {
 EditPost.propTypes = {
     // TODO: how to make required, when using redux.store
     // TODO: how to require specific keys to exist on an (required) object
+    categoriesObject: PropTypes.object,
+    categoryNames: PropTypes.array,
     postId: PropTypes.string,
     post : PropTypes.object,    // required keys: title, body, category
-    categoryNames: PropTypes.array,
-    categoriesObject: PropTypes.object,
+    fetchPost: PropTypes.func,
+    editPost: PropTypes.func,
+    changeView: PropTypes.func,
     // history: PropTypes.object,
 }
 

@@ -42,7 +42,7 @@ class App extends Component {
         )} />
 
         <Route path="/category/:category" render={({ history }) => (
-          <Posts />
+          <Posts history={history} />
         )} />
 
         <Switch>
