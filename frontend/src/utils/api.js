@@ -75,7 +75,6 @@ const headers = {
   // Adds a post:
   //  {id, timestap, title, body, author, category===existingCategory}
   export const addPost = (addPostData) => {
-    console.log('in my api, addPost, addPostData:', addPostData);
     return fetch(`${api}/posts`, {
       method: 'POST',
       headers,

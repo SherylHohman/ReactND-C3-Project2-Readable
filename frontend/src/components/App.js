@@ -13,7 +13,7 @@ import { changeView, HOME } from '../store/viewData';
 class App extends Component {
 
   componentDidMount() {
-    console.log("in App componentDidMount");
+    // console.log("in App componentDidMount");
     // this.props.fetchCategories();
   }
 

@@ -30,7 +30,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 // FAT ACTION CREATORS
 
   export function fetchPosts(category=null){
-    console.log('..in fetchPosts, category:', category);
     //  fetches ALL posts:   fetchPosts(), or fetchPosts(null)
     //  fetches by category: fetchPosts(category.path)
     return (dispatch) => {
@@ -361,7 +360,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
           ...state,
         });
       case ADD_POST_SUCCESS:
-        console.log('action:', action);
         return ({
           ...state,
           // adds a new id and object to the posts object (quasi-list)

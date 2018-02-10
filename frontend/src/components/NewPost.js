@@ -37,7 +37,7 @@ export class NewPost extends Component {
   }
 
   componentDidMount(){
-    console.log('in NewPost componentDidMount');
+    // console.log('in NewPost componentDidMount');
 
     if (!this.haveCategories()){
         this.props.fetchCategories();

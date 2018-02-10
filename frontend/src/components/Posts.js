@@ -15,7 +15,7 @@ export class Posts extends Component {
 
   componentDidMount() {
     this.props.fetchPosts(this.props.selectedCategoryName);
-    // console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
+    console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
   }
   componentWillReceiveProps(nextProps){
     // console.log('Posts cWRP nextProps:', nextProps);

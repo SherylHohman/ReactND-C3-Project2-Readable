@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 export class Post extends Component {
 
   componentDidMount() {
-    console.log('in Post componentDidMount');
+    // console.log('in Post componentDidMount');
 
     // re-direct to home page if don't have the post, and can't read from url)
     if (!this.props.postId){
@@ -38,7 +38,6 @@ export class Post extends Component {
       name: this.props.post.category,
       path: this.props.categoryPath,
     }
-    console.log(category);
     this.props.changeViewByCategory(category);
   }
 

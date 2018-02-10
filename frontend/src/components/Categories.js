@@ -11,7 +11,7 @@ export class Categories extends Component {
   componentDidMount() {
     // may need to move this to App.js
     this.props.fetchCategories();
-    console.log('Categories componentDidMount ..(re)fetching, categories');
+    console.log('Categories componentDidMount ..fetching, categories');
   }
 
   getCategoryFromName(categoryName){

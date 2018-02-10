@@ -20,7 +20,8 @@ export class Comments extends Component {
     // console.log('postId', postId, 'comments', this.props.comments);
 
     // if (postId !== null){
-      this.props.getComments(postId);
+      console.log('Comments componentDidMount ..fetching, comments');
+      this.props.fetchComments(postId);
     // } else {
       // console.log('Comments, postId === null');
     // }
@@ -106,7 +107,7 @@ export class Comments extends Component {
 
 function mapDispatchToProps(dispatch){
   return ({
-    getComments:       (postId)    => dispatch(fetchComments(postId)),
+    fetchComments:       (postId)    => dispatch(fetchComments(postId)),
     onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
     onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),
     onEditComment:     (commentId) => dispatch(editComment(commentId)),

@@ -17,7 +17,7 @@ export class EditPost extends Component {
   }
 
   componentDidMount(){
-    console.log('in EditPost componentDidMount');
+    // console.log('in EditPost componentDidMount');
 
     let havePost = true;
     let havePostId = true;
@@ -36,7 +36,7 @@ export class EditPost extends Component {
         ? false : true;
     }
 
-    console.log('havePostId:', havePostId, 'postId:', postId, 'havePost:', havePost);
+    // console.log('havePostId:', havePostId, 'postId:', postId, 'havePost:', havePost);
 
     if (!havePostId && !havePost){
       this.loadHomePage();
