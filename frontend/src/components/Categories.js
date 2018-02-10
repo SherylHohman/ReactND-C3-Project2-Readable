@@ -33,9 +33,7 @@ export class Categories extends Component {
   render() {
 
     const isExactPath = () => {
-      return (this.props.category.name === HOME.category.name);
-      // breaks when app is loaded from a saved url
-      // TODO: (the fix): match HOME.category.path against actual Browser URL
+      return (('/' + this.props.category.path) === this.props.history.location.pathname);
     }
 
     return (
@@ -44,7 +42,7 @@ export class Categories extends Component {
             (
               <ul className="nav">
                 <NavLink key="all-categories-makeSureThisKeyIsUnique"
-                      to="HOME.category.path"
+                      to={HOME.category.path}
                       onClick={() => {this.onSelectCategory(HOME.category.name)}}
                       activeClassName={"selected"}
                       isActive={isExactPath}
@@ -80,8 +78,8 @@ function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
     getPosts: (category) => dispatch(fetchPosts(category)),
-    changeView: (id, url) => dispatch(changeView({ id, url })),
-    changeViewByCategory: (category) => dispatch(changeView({ category })),
+    changeView: (id, url) => dispatch(changeView({ currentId: id, currentUrl: url })),
+    changeViewByCategory: (category) => dispatch(changeView(category)),
   })
 }
 
@@ -93,7 +91,6 @@ function mapStoreToProps ( store ) {
 
   return {
       categories: categoriesArray || null,
-      // categoriesPlus: categoriesArray.concat[allCategories],
       category: store.viewData.category || HOME.category,
       sortBy:   store.viewData.sortBy   || DEFAULT_SORT_BY,
   }

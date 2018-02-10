@@ -38,7 +38,7 @@ class App extends Component {
 
       {/* Routes */}
         <Route exact path="/" render={({ history }) => (
-          <Posts />
+          <Posts history={history} />
         )} />
 
         <Route path="/category/:category" render={({ history }) => (

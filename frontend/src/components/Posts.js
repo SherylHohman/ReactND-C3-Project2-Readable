@@ -79,7 +79,7 @@ export class Posts extends Component {
           </div>
 
           {/*Categories*/}
-          <Categories />
+          <Categories history={this.props.history}/>
           <hr />
 
           {/*New Post*/}
