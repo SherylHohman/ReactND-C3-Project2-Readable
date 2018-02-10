@@ -53,6 +53,11 @@ export class Comments extends Component {
       <div>
         <hr />
         {comments.filter((comment) => !comment.deleted && !comment.parentDeleted)
+          .sort((commentA, commentB) => {
+            if (commentA === commentB) return 0;
+            if (commentA.timestamp < commentB.timestamp) return 1;
+            return -1;
+          })
           .map((comment) => {
             return (
               <li key={comment.id}>
