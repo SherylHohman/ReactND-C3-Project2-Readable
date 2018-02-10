@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { addPost } from '../store/posts';
 import { changeView, HOME } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
+import { createId } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 
@@ -81,14 +82,6 @@ export class NewPost extends Component {
     this.setState({author: currentText});
     return false;
   }
-  creatPostId(){
-    return  Math.random().toString(36).substring(2, 20)
-          + Math.random().toString(36).substring(2, 20);
-    // Base-36 gives 10 digits plus 26 alphabet characters (lower case)
-    //   Start at index 2 to skip the leading zero and decimal point
-    //   Use 20 characters
-    //   Perhaps not necessary to add; might limit the possibility of getting 0.
-  }
 
   onSubmit(e){
     e.preventDefault();
@@ -133,7 +126,7 @@ export class NewPost extends Component {
 
   onSave(){
     const newPostDefaults =  {
-        id:     this.creatPostId(),
+        id:     createId(),
         title:  '(untitled)',
         body:   '(blank)',
         author: '(anonymous)',
@@ -150,7 +143,7 @@ export class NewPost extends Component {
 
     // "Full" Post object has additional fields, initialized by the server.
     const newPostData = {
-      id:     this.creatPostId(),
+      id:     createId(),
       title:  this.state.title.trim()  || '(untitled)',
       body:   this.state.body.trim()   || '(blank)',
       // TODO: automatically populate author from logged in user

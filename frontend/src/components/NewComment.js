@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { addComment } from '../store/comments';
 import { connect } from 'react-redux';
+import { createId } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 
@@ -27,17 +28,11 @@ export class NewComment extends Component {
   controlledAuthorField(e, currentText){
     this.setState({author: currentText});
   }
-  createId(){
-    // TODO refactor to helper file (NewPost also uses (a better version))
-    return  Math.random().toString(36).substring(2, 20)
-          + Math.random().toString(36).substring(2, 20);
-  }
-
 
   onSave(){
     //  sending only changed values, rather than the whole post, hence the name
     const newCommentData = {
-      id:   this.createId(),
+      id: createId(),
       parentId: this.props.postId,
       timestamp: Date.now(),
       body: this.state.body.trim() || '(no comment)',
