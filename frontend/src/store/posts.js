@@ -1,4 +1,5 @@
 import * as ReaderAPI from '../utils/api';
+import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
 // ACTION TYPES
   export const REQUEST_POSTS = 'REQUEST_POSTS';
@@ -414,6 +415,24 @@ import * as ReaderAPI from '../utils/api';
       case VOTE_ON_POST_FAILURE:
           // TODO: UI error message
           return state;
+
+      case ADD_COMMENT_SUCCESS:
+        return ({
+          ...state,
+          [action.postId]: {
+            ...state[action.postId],
+            commentCount: state[action.postId].commentCount + 1,
+          }
+        });
+      case DELETE_COMMENT_SUCCESS:
+        return ({
+          ...state,
+          [action.postId]: {
+            ...state[action.postId],
+            commentCount: state[action.postId].commentCount - 1,
+          }
+        });
+
 
       default:
         return state;

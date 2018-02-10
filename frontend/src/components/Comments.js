@@ -115,7 +115,6 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps ( store ) {
 
   const postId = store.viewData.currentId || null;
-  console.log();
 
   //  TODO: if there is already a comments array in store,
   //    double check that it is for *this* post

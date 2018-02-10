@@ -6,13 +6,13 @@ import * as ReaderAPI from '../utils/api';
    const FETCH_COMMENTS_FAILURE = 'FETCH_COMMENTS_FAILURE';
 
   export const REQUEST_ADD_COMMENT = 'REQUEST_ADD_COMMENT';
-   const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
-   const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
+  export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
+  const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
 
   export const EDIT_COMMENT = 'EDIT_COMMENT';
 
   export const REQUEST_DELETE_COMMENT = 'REQUEST_DELETE_COMMENT';
-  const DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS';
+  export const DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS';
   const DELETE_COMMENT_FAILURE = 'DELETE_COMMENT_FAILURE';
 
   export const GET_COMMENTS = 'GET_COMMENTS';
@@ -96,6 +96,7 @@ import * as ReaderAPI from '../utils/api';
             dispatch({
               type: ADD_COMMENT_SUCCESS,
               comment: data,
+              postId: data.parentId,  // increment commentCounter on Post object
             })
           )}
         )
@@ -152,7 +153,8 @@ import * as ReaderAPI from '../utils/api';
             return (
               dispatch({
                 type: DELETE_COMMENT_SUCCESS,
-                commentId, // or data.id,
+                commentId: data.id,
+                postId:    data.parentId,  // to update commentCount on Post object
               })
             );
           }
