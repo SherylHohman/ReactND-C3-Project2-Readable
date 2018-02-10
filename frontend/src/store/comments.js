@@ -10,7 +10,11 @@ import * as ReaderAPI from '../utils/api';
    const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
 
   export const EDIT_COMMENT = 'EDIT_COMMENT';
-  export const DELETE_COMMENT = 'DELETE_COMMENT';
+
+  export const REQUEST_DELETE_COMMENT = 'REQUEST_DELETE_COMMENT';
+  const DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS';
+  const DELETE_COMMENT_FAILURE = 'DELETE_COMMENT_FAILURE';
+
   export const GET_COMMENTS = 'GET_COMMENTS';
 
   export const REQUEST_VOTE_ON_COMMENT = 'REQUEST_VOTE_ON_COMMENT';
@@ -68,7 +72,6 @@ import * as ReaderAPI from '../utils/api';
   };
 
   export function addComment(newCommentData){
-    console.log('addComment - newCommentData', newCommentData);
     // newCommenData does not contain fields that are initialized by the server
     return (dispatch) => {
 
@@ -88,7 +91,7 @@ import * as ReaderAPI from '../utils/api';
         .then((response) => response.json())
         .then((data) => {
           // data is the full comment
-          console.log('Comment Success, data:', data);
+
           return (
             dispatch({
               type: ADD_COMMENT_SUCCESS,
@@ -124,17 +127,57 @@ import * as ReaderAPI from '../utils/api';
     });
   };
 
-  export function deleteComment(id){
+  export function deleteComment(commentId){
     // just needs a commentID, or the wholeComment object?
-    return ({
-      type: DELETE_COMMENT,
-      id,
-    });
-    // (set in DB and state)
-    // doesn't actually DELETE comment from database
-    // it sets it's and it's "deletedComment" flag to True, hence it won't be returned by an SPI query ?
-    //  OR, I need to check the returned Query, and Only Display comments where its "deletedComment" AND its  "deletedPost" flags are both false.
-    //
+    return (dispatch) => {
+
+      dispatch({
+        type: REQUEST_DELETE_COMMENT
+      });
+
+      ReaderAPI.deleteComment(commentId)
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, Delete Comment');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+          // data is the full comment
+
+          if (data.deleted === true){
+            return (
+              dispatch({
+                type: DELETE_COMMENT_SUCCESS,
+                commentId, // or data.id,
+              })
+            );
+          }
+          else {
+            console.log('comment returned as deleted: false');
+            throw Error('comment returned as deleted: false');
+            return (
+              dispatch({
+                type: DELETE_COMMENT_FAILURE,
+                error: true,
+              })
+            );
+          }
+        })
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: DELETE_COMMENT_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
   };
 
   function voteOnComment(commentId, vote){
@@ -257,15 +300,18 @@ import * as ReaderAPI from '../utils/api';
             title: action.title,
            }
         });
-      case DELETE_COMMENT:
+
+      case REQUEST_DELETE_COMMENT:
+        // TODO
+        return state;
+      case DELETE_COMMENT_SUCCESS:
         // needs the comment ID
-        return ({
-          ...state,
-          [id]: {
-            ...state[id],
-            deleted: true,
-          }
-        });
+        let newState = {...state};
+        delete newState[action.commentId]
+        return newState;
+      case DELETE_COMMENT_FAILURE:
+        // TODO
+        return state;
 
       case REQUEST_VOTE_ON_COMMENT:
         // TODO: do I need a spinner ?

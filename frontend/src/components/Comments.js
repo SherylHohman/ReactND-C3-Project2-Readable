@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchComments } from '../store/comments';
-import { upVoteComment, downVoteComment } from '../store/comments';
+import { upVoteComment, downVoteComment, editComment, deleteComment } from '../store/comments';
 import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
 import NewComment from './NewComment';
 import PropTypes from 'prop-types';
@@ -24,6 +24,11 @@ export class Comments extends Component {
     // } else {
       // console.log('Comments, postId === null');
     // }
+  }
+
+  onEditComment(id){
+    // Modal
+    this.props.onEditComment(id);
   }
 
   render() {
@@ -79,6 +84,12 @@ export class Comments extends Component {
                 <p>by {comment.author},
                 <small> {dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</small>
                 </p>
+
+              {/*TODO: link styling, change cursor to hand on hover*/}
+                <p className="edit-delete-comment">
+                  <span onClick={(e) => {this.onEditComment(e, comment.id)}}>edit</span>
+                   |
+                  <span onClick={() => {this.props.onDeleteComment(comment.id)}}>delete</span></p>
                 <hr />
               </li>
             );
@@ -95,7 +106,9 @@ function mapDispatchToProps(dispatch){
   return ({
     getComments:       (postId)    => dispatch(fetchComments(postId)),
     onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
-    onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),
+    onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),    onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
+    onEditComment:     (commentId) => dispatch(editComment(commentId)),
+    onDeleteComment:   (commentId) => dispatch(deleteComment(commentId)),
   })
 }
 
