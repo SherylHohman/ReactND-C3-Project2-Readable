@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { fetchComments } from '../store/comments';
 import { upVoteComment, downVoteComment } from '../store/comments';
 import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
+import NewComment from './NewComment';
 import PropTypes from 'prop-types';
 
 
@@ -83,6 +84,7 @@ export class Comments extends Component {
             );
           })
         }
+      <NewComment />
       </div>
     )
   }

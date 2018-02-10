@@ -2,10 +2,13 @@ import * as ReaderAPI from '../utils/api';
 
 // ACTION TYPES
   export const REQUEST_COMMENTS = 'REQUEST_COMMENTS';
-  export const FETCH_COMMENTS_SUCCESS = 'FETCH_COMMENTS_SUCCESS';
-  export const FETCH_COMMENTS_FAILURE = 'FETCH_COMMENTS_FAILURE';
+   const FETCH_COMMENTS_SUCCESS = 'FETCH_COMMENTS_SUCCESS';
+   const FETCH_COMMENTS_FAILURE = 'FETCH_COMMENTS_FAILURE';
 
-  export const ADD_COMMENT = 'ADD_COMMENT';
+  export const REQUEST_ADD_COMMENT = 'REQUEST_ADD_COMMENT';
+   const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
+   const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
+
   export const EDIT_COMMENT = 'EDIT_COMMENT';
   export const DELETE_COMMENT = 'DELETE_COMMENT';
   export const GET_COMMENTS = 'GET_COMMENTS';
@@ -63,6 +66,49 @@ import * as ReaderAPI from '../utils/api';
 
     };  // anon function(dispatch) wrapper
   };
+
+  export function addComment(newCommentData){
+    console.log('addComment - newCommentData', newCommentData);
+    // newCommenData does not contain fields that are initialized by the server
+    return (dispatch) => {
+
+      dispatch({
+        type: REQUEST_ADD_COMMENT
+      });
+
+      ReaderAPI.addComment(newCommentData)
+        .then((response) => {
+          if (!response.ok) {
+            console.log('__response NOT OK, addComment');
+            throw Error(response.statusText);
+          }
+          return response;
+        })
+
+        .then((response) => response.json())
+        .then((data) => {
+          // data is the full comment
+          console.log('Comment Success, data:', data);
+          return (
+            dispatch({
+              type: ADD_COMMENT_SUCCESS,
+              comment: data,
+            })
+          )}
+        )
+
+        .catch(err => {
+          console.error(err);  //  in case of render error
+          dispatch({
+            type: ADD_COMMENT_FAILURE,
+            err,
+            error: true,
+          })
+        });
+
+    };  // anon function(dispatch) wrapper
+  };
+
 
   export function editComment({ id, title, body }){
     return ({
@@ -186,20 +232,20 @@ import * as ReaderAPI from '../utils/api';
           // TODO: UI error message
           return state;
 
-      case ADD_COMMENT:
+      case REQUEST_ADD_COMMENT:
+        // TODO:
+        return state;
+      case ADD_COMMENT_SUCCESS:
         return ({
           ...state,
-          [action.comment]: {
-            id,
-            parentId: action.parentId,
-            timestamp: action.timestamp,
-            body: action.body,
-            author: action.author,
-            voteScore: 1,
-            deleted: false,
-            parentDeleted: false,
+          [action.comment.id]: {
+            ...action.comment,
           }
         });
+      case REQUEST_ADD_COMMENT:
+        // TODO: UI error message
+        return state;
+
       case EDIT_COMMENT:
         return ({
           ...state,
