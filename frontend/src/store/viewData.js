@@ -53,7 +53,7 @@ export const SORT_BY = 'SORT_BY';
 // ACTION CREATORS
 
   export const changeView = (newViewData=HOME) => {
-      // console.log('____entering viewData.changeView, newViewData:', newViewData.category);
+      console.log('____entering viewData.changeView, newViewData:', newViewData);
 
     // changeView By Category
     const newCategory = newViewData.persistentCategory //|| null
@@ -65,9 +65,10 @@ export const SORT_BY = 'SORT_BY';
         : ALL_POSTS_CATEGORY;
 
       // url and id are NOT independant of category, set them to ensure in synch
+      console.log('category.name:', category.name, 'category:', category)
       const url = (category.name)
                   ? `/category/${category.path}`
-                  : ALL_POSTS_URL
+                  : `${HOME.category.path}`;
       const id = category.name;
 
       return ({
