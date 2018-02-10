@@ -43,7 +43,6 @@ export class NewComment extends Component {
 
   onSubmit(e){
     e.preventDefault();
-    this.onSave();
     return false;
   }
 
