@@ -48,7 +48,7 @@ export class Posts extends Component {
       if (this.props.posts) {
         statusMessage = 'Be the first to write a post..';
           if (!Array.isArray(this.props.posts)) {
-            statusMessage = 'Posts are contained in an object. I need them transformed into an array, so I can map over them!';
+            statusMessage = 'Posts are not in an array - they canot be mapped over !';
           }
       }
     }
