@@ -152,24 +152,28 @@ export class Comments extends Component {
             <div>
               <form onSubmit={(e)=> {this.onSubmit(e)}}>
 
-                <textarea
-                  className="comment-body"
-                  type="text"
-                  placeholder="Your insightful comment.."
-                  value={this.state.body}
-                  onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-                  style={{width:'100%'}}
-                  rows={'2'}
-                  />
+                <p><small>Comment:</small>
+                  <textarea
+                    className="comment-body"
+                    type="text"
+                    placeholder="Your insightful comment.."
+                    value={this.state.body}
+                    onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+                    style={{width:'98%'}}
+                    rows={'2'}
+                    />
+                </p>
 
-                <input
-                  className="comment-author"
-                  type="text"
-                  placeholder="Your name in lights.."
-                  value={this.state.author}
-                  onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-                  style={{width:'100%'}}
-                  />
+                <p><small>Author:</small>
+                  <input
+                    className="comment-author"
+                    type="text"
+                    placeholder="Your name in lights.."
+                    value={this.state.author}
+                    onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+                    style={{width:'100%'}}
+                    />
+                </p>
 
                 <button
                   className="on-save"
