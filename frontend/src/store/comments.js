@@ -281,8 +281,6 @@ import * as ReaderAPI from '../utils/api';
 
   function comments(state={}, action) {
 
-    const { id } = action
-
     switch (action.type){
       case REQUEST_COMMENTS:
         // TODO set loading spinner on
