@@ -4,7 +4,7 @@ import { fetchComments } from '../store/comments';
 import { upVoteComment, downVoteComment, editComment, deleteComment } from '../store/comments';
 import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
 import NewComment from './NewComment';
-import EditComment from './EditComment';
+// import EditComment from './EditComment';
 import Modal from 'react-responsive-modal';
 import PropTypes from 'prop-types';
 
@@ -12,30 +12,52 @@ import PropTypes from 'prop-types';
 export class Comments extends Component {
 
   static propTypes = {
-    post: PropTypes.string,//.isRequired,
+    postId: PropTypes.string,//.isRequired,
     comments: PropTypes.array,
   }
 
   state = {
     isOpenModal: false,
-    commentBodyEdits: '',
+    id: '',
+    body: '',
   };
 
   componentDidMount(){
     const postId = this.props.postId;
     // console.log('...in Comments ComponentDidMount, props', this.props);
-    // console.log('postId', postId, 'comments', this.props.comments);
-
-    // if (postId !== null){
-      console.log('Comments componentDidMount ..fetching, comments');
-      this.props.fetchComments(postId);
-    // } else {
-      // console.log('Comments, postId === null');
-    // }
+    console.log('Comments componentDidMount ..fetching, comments');
+    this.props.fetchComments(postId);
   }
 
-  onEditComment(id){
-    this.setState({ isOpenModal: true });
+  controlledBodyField(e, currentText){
+    e.preventDefault();
+    this.setState({body: currentText});
+  }
+  onEditComment(comment){
+      this.setState({
+        id: comment.id,
+        body: comment.body,
+        isOpenModal: true,
+      });
+  }
+  onSave(){
+    this.props.updateComment({
+      id:this.state.id, //id, //: this.props.id,
+      body: this.state.body.trim(),
+      timestamp: Date.now(),   // supposed to update timestamp ?
+    });
+    this.closeModal();
+  }
+  onCancel(){
+    this.closeModal();
+  }
+  closeModal = () => {
+    this.setState({id:'', body:'', isOpenModal: false});
+    // this.setState({ isOpenModal: false });
+  };
+  onSubmit(e){
+    e.preventDefault();
+    // return false;
   }
 
   // onSaveComment(id){
@@ -46,10 +68,6 @@ export class Comments extends Component {
   //     timestamp: Date.now(),   // updates timestamp ?
   //   });
   // }
-
-  onCloseModal = () => {
-    this.setState({ isOpenModal: false });
-  };
 
   render() {
     const { comments, postId } = this.props;
@@ -107,28 +125,55 @@ export class Comments extends Component {
                 <small> {dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</small>
                 </p>
 
-              {/*TODO: link styling, change cursor to hand on hover*/}
-                <p className="edit-delete-comment">
-                  <span onClick={(e) => {this.onEditComment(e, comment.id)}}>edit</span>
+                {/*TODO: link styling, change cursor to hand on hover*/}
+                <p className="edit-delete-comment-links">
+                  <span onClick={(e) => {this.onEditComment(comment)}}> edit </span>
                    |
-                  <span onClick={() => {this.props.onDeleteComment(comment.id)}}>delete</span></p>
-
-                <div>
-                  <Modal little
-                    open={this.state.isOpenModal}
-                    onClose={this.onCloseModal}
-                    >
-                    <EditComment commentId={comment.id} />
-                  </Modal>
-                </div>
-
-
+                  <span onClick={() => {this.props.onDeleteComment(comment.id)}}> delete </span></p>
                 <hr />
               </li>
             );
           })
         }
-      <NewComment />
+
+        <NewComment />
+
+        <div>
+          <Modal little
+            open={this.state.isOpenModal}
+            onClose={this.onCancel}
+            >
+            <div>
+              <form onSubmit={(e)=> {this.onSubmit(e)}}>
+
+                <textarea
+                  className="comment-body"
+                  type="text"
+                  placeholder="Your insightful comment.."
+                  value={this.state.body}
+                  onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+                  style={{width:'100%'}}
+                  rows={'2'}
+                  />
+
+                <button
+                  className="on-save"
+                  onClick={() => {this.onSave()}}
+                  >
+                  Save
+                </button>
+                <button
+                  className="on-cancel"
+                  onClick={() => {this.onCancel();
+                }}>
+                  Cancel
+                </button>
+
+              </form>
+            </div>
+          </Modal>
+        </div>
+
       </div>
     )
   }
@@ -140,8 +185,8 @@ function mapDispatchToProps(dispatch){
     fetchComments:       (postId)    => dispatch(fetchComments(postId)),
     onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
     onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),
-    onEditComment:     (editCommentData) => dispatch(editComment(editCommentData)),
     onDeleteComment:   (commentId) => dispatch(deleteComment(commentId)),
+    updateComment:     (editCommentData) => dispatch(editComment(editCommentData)),
   })
 }
 

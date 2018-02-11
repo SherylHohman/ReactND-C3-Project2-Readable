@@ -128,7 +128,7 @@ import * as ReaderAPI from '../utils/api';
       ReaderAPI.editComment(id, { body, timestamp })
         .then((response) => {
           if (!response.ok) {
-            console.log('__response NOT OK, Delete Comment');
+            console.log('__response NOT OK, Edit Comment');
             throw Error(response.statusText);
           }
           return response;
@@ -136,7 +136,7 @@ import * as ReaderAPI from '../utils/api';
         .then(response => response.json())
         .then(data => {
           dispatch({
-            type: ADD_COMMENT_SUCCESS,
+            type: EDIT_COMMENT_SUCCESS,
             id: data.id,
             body: data.body,
             timestamp: data.timestamp,
@@ -317,11 +317,11 @@ import * as ReaderAPI from '../utils/api';
       case EDIT_COMMENT_SUCCESS:
         return ({
           ...state,
-           [id]: {
-            ...[id],
+          [action.id]: {
+            ...state[action.id],
             body: action.body,
             timestamp: action.timestamp,
-           }
+          }
         });
       case EDIT_COMMENT_FAILURE:
         // TODO: UI error message

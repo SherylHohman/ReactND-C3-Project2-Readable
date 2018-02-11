@@ -3,27 +3,41 @@ import { editComment } from '../store/comments';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 
-export class EditComment extends Component {
+// NOT USING !
+// export
+class EditComment extends Component {
   state = {
-    body   : '',
+    body: '',
   }
 
   componentDidMount(){
-    this.setState({ body: this.props.comment.body });
+    console.log('cDM, props:', this.props);
+    if (this.props && this.props.body){
+    // if (this.props && this.props.comment){
+      // this.setState({ body: this.props.comment.body });
+      this.setState({ body: this.props.body });
+    }
   }
 
   controlledBodyField(e, currentText){
+    e.preventDefault();
     this.setState({body: currentText});
   }
-  controlledAuthorField(e, currentText){
-    this.setState({author: currentText});
-  }
-  onSaveComment(id){
+
+  onSave(){
     this.props.saveComment({
-      id,
-      body: this.state.commentBody.trim(),
+      id:this.props.comment.id, //id, //: this.props.id,
+      body: this.state.body.trim(),
       timestamp: Date.now(),   // supposed to update timestamp ?
     });
+    this.props.closeModal();
+  }
+  onCancel(){
+    this.props.closeModal();
+  }
+  onSubmit(e){
+    e.preventDefault();
+    // return false;
   }
 
   render() {
@@ -44,7 +58,7 @@ export class EditComment extends Component {
 
           <button
             className="on-save"
-            onClick={() => {this.onSave();}}
+            onClick={() => {this.onSave()}}
             >
             Save
           </button>
@@ -64,18 +78,27 @@ export class EditComment extends Component {
 
 function mapDispatchToProps(dispatch){
   return ({
-    saveComment: (commentId, editedCommentData) => {
-      dispatch(editComment(commentId, editedCommentData))
+    saveComment: (editedCommentData) => {
+      dispatch(editComment(editedCommentData))
     },
+    // closeModal: () => dispatch();
   })
 }
 
 function mapStoreToProps (store, ownProps) {
+  console.log('ownProps:', ownProps);
+  // console.log('store.comments[ownProps.commentId]:', store.comments[ownProps.commentId]);
+  console.log('store.comments[ownProps.comment]:', store.comments[ownProps.comment]);
   return {
-    comment: store.comments[ownProps.commentId],
+    // comment: store.comments[ownProps.commentId],
+    // body: store.comments[ownProps.commentId].body,
+    // id: ownProps.commentId,
+    body: store.comments[ownProps.comment.id].body,
+    id: ownProps.comment.id,
   }
 };
 
 
-export default connect(mapStoreToProps, mapDispatchToProps)(EditComment);
+// export default connect(mapStoreToProps, mapDispatchToProps)(EditComment);
+export default connect(null, mapDispatchToProps)(EditComment);
 
