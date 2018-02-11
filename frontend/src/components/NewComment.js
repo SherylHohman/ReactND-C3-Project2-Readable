@@ -53,7 +53,8 @@ export class NewComment extends Component {
       <div
           style={{width:"60%", margin:"0 auto"}}
 
-      > New Comment Component
+      >
+        <h3>Your Comment:</h3>
         <form onSubmit={(e)=> {this.onSubmit(e)}}>
 
           <textarea
