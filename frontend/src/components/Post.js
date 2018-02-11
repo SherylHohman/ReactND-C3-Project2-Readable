@@ -15,7 +15,7 @@ export class Post extends Component {
     // console.log('in Post componentDidMount');
 
     // re-direct to home page if don't have the post, and can't read from url)
-    if (!this.props.postId){
+    if (this.props.history && !this.props.postId){
       this.props.history.push(HOME.url);
       // <Redirect to={HOME.ulr} />
     }
