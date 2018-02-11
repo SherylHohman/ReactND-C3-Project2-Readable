@@ -20,6 +20,7 @@ export class Comments extends Component {
     isOpenModal: false,
     id: '',
     body: '',
+    author: '',
   };
 
   componentDidMount(){
@@ -33,10 +34,15 @@ export class Comments extends Component {
     e.preventDefault();
     this.setState({body: currentText});
   }
+  controlledAuthorField(e, currentText){
+    e.preventDefault();
+    this.setState({author: currentText});
+  }
   onEditComment(comment){
       this.setState({
         id: comment.id,
         body: comment.body,
+        author: comment.author,
         isOpenModal: true,
       });
   }
@@ -44,6 +50,7 @@ export class Comments extends Component {
     this.props.updateComment({
       id:this.state.id, //id, //: this.props.id,
       body: this.state.body.trim(),
+      author: this.state.author,
       timestamp: Date.now(),   // supposed to update timestamp ?
     });
     this.closeModal();
@@ -52,8 +59,7 @@ export class Comments extends Component {
     this.closeModal();
   }
   closeModal = () => {
-    this.setState({id:'', body:'', isOpenModal: false});
-    // this.setState({ isOpenModal: false });
+    this.setState({id:'', body:'', author: '', isOpenModal: false});
   };
   onSubmit(e){
     e.preventDefault();
@@ -154,6 +160,15 @@ export class Comments extends Component {
                   onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
                   style={{width:'100%'}}
                   rows={'2'}
+                  />
+
+                <input
+                  className="comment-author"
+                  type="text"
+                  placeholder="Your name in lights.."
+                  value={this.state.author}
+                  onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+                  style={{width:'100%'}}
                   />
 
                 <button

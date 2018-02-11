@@ -115,17 +115,18 @@ import * as ReaderAPI from '../utils/api';
     };  // anon function(dispatch) wrapper
   };
 
-  export function editComment({ id, body, timestamp }){
+  export function editComment({ id, body, author, timestamp }){
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_EDIT_COMMENT,
         id,
         body,
+        author,
         timestamp,
       });
 
-      ReaderAPI.editComment(id, { body, timestamp })
+      ReaderAPI.editComment(id, { body, timestamp, author })
         .then((response) => {
           if (!response.ok) {
             console.log('__response NOT OK, Edit Comment');
@@ -137,9 +138,9 @@ import * as ReaderAPI from '../utils/api';
         .then(data => {
           dispatch({
             type: EDIT_COMMENT_SUCCESS,
-            id: data.id,
-            body: data.body,
-            timestamp: data.timestamp,
+            comment: {
+              ...data
+            }
           })
         })
         .catch(err => {
@@ -315,10 +316,8 @@ import * as ReaderAPI from '../utils/api';
       case EDIT_COMMENT_SUCCESS:
         return ({
           ...state,
-          [action.id]: {
-            ...state[action.id],
-            body: action.body,
-            timestamp: action.timestamp,
+          [action.comment.id]: {
+            ...action.comment,
           }
         });
       case EDIT_COMMENT_FAILURE:
