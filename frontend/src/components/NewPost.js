@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { addPost } from '../store/posts';
 import { changeView, HOME } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
-import { createId } from '../utils/helpers';
+import { createId, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 
@@ -66,7 +66,7 @@ export class NewPost extends Component {
 
   controlledTitleField(e, currentText){
     e.preventDefault();
-    this.setState({title: currentText});
+    this.setState({title: titleCase(currentText)});
     return false;
   }
   controlledBodyField(e, currentText){
@@ -79,7 +79,7 @@ export class NewPost extends Component {
   }
   controlledAuthorField(e, currentText){
     e.preventDefault();
-    this.setState({author: currentText});
+    this.setState({author: titleCase(currentText)});
     return false;
   }
 

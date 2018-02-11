@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { editComment } from '../store/comments';
 import { connect } from 'react-redux';
+import { titleCase } from '../utils/helpers';
 // import PropTypes from 'prop-types';
 
 // NOT USING !

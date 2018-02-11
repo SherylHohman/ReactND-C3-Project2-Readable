@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchComments } from '../store/comments';
 import { upVoteComment, downVoteComment, editComment, deleteComment } from '../store/comments';
-import { dateMonthYear, timeIn12HourFormat } from '../utils/helpers';
+import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 import NewComment from './NewComment';
 // import EditComment from './EditComment';
 import Modal from 'react-responsive-modal';
@@ -36,7 +36,7 @@ export class Comments extends Component {
   }
   controlledAuthorField(e, currentText){
     e.preventDefault();
-    this.setState({author: currentText});
+    this.setState({author: titleCase(currentText)});
   }
   onEditComment(comment){
       this.setState({

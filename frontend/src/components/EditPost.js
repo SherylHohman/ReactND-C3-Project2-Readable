@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { editPost } from '../store/posts';
 import { changeView, HOME } from '../store/viewData';
 import { fetchPost } from '../store/posts';
+import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 
@@ -71,7 +72,7 @@ export class EditPost extends Component {
   }
 
   controlledTitleField(e, currentText){
-    this.setState({title: currentText});
+    this.setState({title: titleCase(currentText)});
   }
   controlledBodyField(e, currentText){
     this.setState({body: currentText});

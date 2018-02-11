@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { addComment } from '../store/comments';
 import { connect } from 'react-redux';
-import { createId } from '../utils/helpers';
+import { createId, titleCase } from '../utils/helpers';
 // import PropTypes from 'prop-types';
 
 
@@ -16,7 +16,7 @@ export class NewComment extends Component {
     this.setState({body: currentText});
   }
   controlledAuthorField(e, currentText){
-    this.setState({author: currentText});
+    this.setState({author: titleCase(currentText)});
   }
 
   onSave(){
