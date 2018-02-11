@@ -140,36 +140,40 @@ export class EditPost extends Component {
       <div>
         <form className="edit">
           {/* uses state */}
-          <input
-            className="edit-title"
-            type="text"
-            value={this.state.title}
-            onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
-            style={{width:'100%'}}
-            />
+          <p><small>Title </small>
+            <input
+              className="edit-title"
+              type="text"
+              value={this.state.title}
+              onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
+              style={{width:'100%'}}
+              />
+          </p>
 
-          <textarea
-            className="post-body"
-            type="text"
-            value={this.state.body}
-            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-            style={{width:'98%'}}
-            rows={'5'}
-            />
+          <p><small>Body </small>
+            <textarea
+              className="post-body"
+              type="text"
+              value={this.state.body}
+              onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+              style={{width:'98%'}}
+              rows={'5'}
+              />
+          </p>
 
-            <div>
-              <select
-                className="category"
-                value={this.state.categoryName}
-                onChange={(e)=>this.controlledCategoryField(e.target.value)}
-                >
-                {this.props.categoryNames.map((categoryName) => {
-                  return (
-                    <option key={categoryName} value={categoryName}>{categoryName}</option>
-                  )
-                })}
-              </select>
-            </div>
+          <p><small>Category: </small>
+            <select
+              className="category"
+              value={this.state.categoryName}
+              onChange={(e)=>this.controlledCategoryField(e.target.value)}
+              >
+              {this.props.categoryNames.map((categoryName) => {
+                return (
+                  <option key={categoryName} value={categoryName}>{categoryName}</option>
+                )
+              })}
+            </select>
+          </p>
 
           <Link
             to={postUrl}
