@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -93,7 +93,9 @@ export class Post extends Component {
             </Link>
 
             <div>
-              <div> {post.body} </div>
+              <div className="post-body">
+                {post.body}
+              </div>
               <p> </p>
 
               <div className="vote">

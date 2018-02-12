@@ -140,28 +140,29 @@ export class EditPost extends Component {
       <div>
         <form className="edit">
           {/* uses state */}
-          <p><small>Title </small>
+          <div>
+            <p className="field-label-left">Title: </p>
             <input
               className="edit-title"
               type="text"
               value={this.state.title}
               onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
-              style={{width:'100%'}}
               />
-          </p>
+          </div>
 
-          <p><small>Body </small>
+          <div>
+           <p className="field-label-left">Body: </p>
             <textarea
               className="post-body"
               type="text"
               value={this.state.body}
               onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-              style={{width:'98%'}}
               rows={'5'}
               />
-          </p>
+          </div>
 
-          <p><small>Category: </small>
+          <div className="field-label-left">
+          <span> Category: </span>
             <select
               className="category"
               value={this.state.categoryName}
@@ -173,7 +174,7 @@ export class EditPost extends Component {
                 )
               })}
             </select>
-          </p>
+          </div>
 
           <Link
             to={postUrl}
@@ -192,10 +193,10 @@ export class EditPost extends Component {
           {/* uses props */}
           {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
           <div className="edited">
-            <h4> Edited post </h4>
+            {/* <h4> Edited post </h4> */}
             <h3> {this.state.title} </h3>
-            <p>  {this.state.body}  </p>
-            <p>  Category: {this.state.categoryName}</p>
+            <p className="post-body">  {this.state.body}  </p>
+            <p className="italic">  Category: {this.state.categoryName}</p>
           </div>
           <hr />
           <hr />
@@ -203,7 +204,7 @@ export class EditPost extends Component {
             <div className="orig">
               <p> Original Post </p>
               <h3> {this.props.post.title} </h3>
-              <p>  {this.props.post.body}  </p>
+              <p className="post-body">  {this.props.post.body}  </p>
               <p> Category: {this.props.post.category}</p>
             </div>
           )}

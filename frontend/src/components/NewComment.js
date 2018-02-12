@@ -63,7 +63,6 @@ export class NewComment extends Component {
             placeholder="Your insightful comment.."
             value={this.state.body}
             onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-            style={{width:'100%'}}
             rows={'2'}
             />
 

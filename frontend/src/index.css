@@ -28,12 +28,24 @@
     /*background-color: lightyellow;*/
     /*border: 2px solid green;*/
   }
+  input, textarea, option {
+    width: 100%;
+    background: white;
+    border-color: lightgray;
+  }
+  select {
+    background: white;
+  }
   input {
     width: 100%;
   }
-
   textarea {
     width: 98%;
+  }
+  textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus select, select:focus{
+    border-color: rgba(229, 103, 23, 0.8);
+    box-shadow: 0 1px 1px rgba(229, 103, 23, 0.075) inset, 0 0 8px rgba(229, 103, 23, 0.6);
+    outline: 0 none;
   }
 
   .app-container {
@@ -65,7 +77,12 @@
     color: orange;
   }
 
-  .nav .no-link {
+  .link {
+    color: orange;
+    cursor: pointer;
+  }
+
+  .nav .no-link, .no-link {
     cursor: text;
     color: black;
   }
@@ -74,22 +91,21 @@
     color: red;
     cursor: default;
   }
-  .nav .sort{
-    color: blue;
-  }
 
+/* NAVLINK default category for "active" (aka "selected") items
+   NavLink will automatically use this class if a className is not provided
   .nav .active {
     color: blue;
   }
-
+*/
   .orig {
-    color: dimgray;
+    color: dimgrey;
   }
   .edited {
     color: black;
   }
 
-  .post {
+  .post-body {
     white-space: pre-line;  /* or pre-wrap to preserve all whitespace*/
   }
 
@@ -113,10 +129,17 @@
     edit-comment  -- any reasonable size will do here.
 */
   .orig {
-    color: darkgray;
+    color: dimgray;
   }
-  .label {
-    color: darkorange;
+  .field-label-left {
+    text-align: left;
+    color: goldenrod; /*goldenrod to match placeholder text*/ /*darkorange;*/
+    font-size: smaller;
+  }
+  .field-label-centered {
+    text-align: center;
+    color: goldenrod; /*goldenrod to match placeholder text*/ /*darkorange;*/
+    font-size: smaller;
   }
   .edit-delete-comment-links {
     color: dimgrey;

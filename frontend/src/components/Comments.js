@@ -132,9 +132,9 @@ export class Comments extends Component {
                 </p>
 
                 {/*TODO: link styling, change cursor to hand on hover*/}
-                <p className="edit-delete-comment-links">
+                <p className="link">
                   <span onClick={() => {this.props.onDeleteComment(comment.id)}}> delete </span>
-                   |
+                   <span className="no-link"> | </span>
                   <span onClick={(e) => {this.onEditComment(comment)}}> edit </span>
                 </p>
                 <hr />
@@ -153,28 +153,28 @@ export class Comments extends Component {
             <div>
               <form onSubmit={(e)=> {this.onSubmit(e)}}>
 
-                <p><small>Comment:</small>
+                <div>
+                  <p className="field-label-left">Comment:</p>
                   <textarea
                     className="comment-body"
                     type="text"
                     placeholder="Your insightful comment.."
                     value={this.state.body}
                     onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-                    style={{width:'98%'}}
                     rows={'2'}
                     />
-                </p>
+                </div>
 
-                <p><small>Author:</small>
+                <div>
+                  <p className="field-label-left">Author:</p>
                   <input
                     className="comment-author"
                     type="text"
                     placeholder="Your name in lights.."
                     value={this.state.author}
                     onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-                    style={{width:'100%'}}
                     />
-                </p>
+                </div>
 
                 <button
                   className="on-save"

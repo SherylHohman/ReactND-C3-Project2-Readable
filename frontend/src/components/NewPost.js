@@ -206,7 +206,6 @@ export class NewPost extends Component {
             placeholder="Write Something Amazing.."
             value={this.state.body}
             onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-            style={{width:'100%'}}
             rows={'5'}
             />
 
