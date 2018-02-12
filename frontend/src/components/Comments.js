@@ -58,7 +58,7 @@ export class Comments extends Component {
   onCancel(){
     this.closeModal();
   }
-  closeModal = () => {
+  closeModal(){
     this.setState({id:'', body:'', author: '', isOpenModal: false});
   };
   onSubmit(e){
