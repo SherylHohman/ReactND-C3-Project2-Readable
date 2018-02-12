@@ -40,7 +40,8 @@ export class Categories extends Component {
       <div>
         {this.props && this.props.categories &&
             (
-              <ul className="nav">
+              <ul className="nav filter">
+                <li className="no-link"> Category: </li>
                 <NavLink key="all-categories-makeSureThisKeyIsUnique"
                       to={HOME.category.path}
                       onClick={() => {this.onSelectCategory(HOME.category.name)}}
@@ -48,7 +49,7 @@ export class Categories extends Component {
                       isActive={isExactPath}
                       >
                   <li key="all-categories-makeSureThisKeyIsUnique">
-                    All Categories
+                    All
                   </li>
                 </NavLink>
                 {this.props.categories.map(category => {

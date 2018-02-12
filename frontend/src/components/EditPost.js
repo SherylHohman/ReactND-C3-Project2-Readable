@@ -191,8 +191,8 @@ export class EditPost extends Component {
           <hr />
           {/* uses props */}
           {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
-          <div className="render-edit">
-            <h4> Rendered Edited post </h4>
+          <div className="edited">
+            <h4> Edited post </h4>
             <h3> {this.state.title} </h3>
             <p>  {this.state.body}  </p>
             <p>  Category: {this.state.categoryName}</p>
@@ -200,7 +200,7 @@ export class EditPost extends Component {
           <hr />
           <hr />
           { this.props.post && (
-            <div className="render-orig">
+            <div className="orig">
               <p> Original Post </p>
               <h3> {this.props.post.title} </h3>
               <p>  {this.props.post.body}  </p>

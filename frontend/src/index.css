@@ -1,5 +1,4 @@
-
-/* general */
+/* HTML tags */
   body {
     margin: 0;
     padding: 0;
@@ -15,19 +14,26 @@
   }
 
   a:link {
-      text-decoration: none;
-      padding: 10px 10px;
-      display: inline-block;
-      text-align: center;
-      color: darkorange;
+    text-decoration: none;
+    padding: 10px 10px;
+    display: inline-block;
+    text-align: center;
+    color: darkorange;
   }
   a:visited {
-      color: orange;
+    color: orange;
   }
- a:hover, a:active .post-title{
-      color: red;
-      /*background-color: lightyellow;*/
-      /*border: 2px solid green;*/
+  a:hover, a:active .post-title{
+    color: red;
+    /*background-color: lightyellow;*/
+    /*border: 2px solid green;*/
+  }
+  input {
+    width: 100%;
+  }
+
+  textarea {
+    width: 98%;
   }
 
   .app-container {
@@ -43,25 +49,55 @@
 
   .app-title {
     font-size: 1.4em;
-    color: white;
+    color: red;
   }
 
   .app-intro {
     font-size: small;
-    color: red;
+    color: white;
   }
 
-  .nav {
+  .nav{
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
+    color: orange;
   }
 
-  .nav .selected {
-    color: red;
+  .nav .no-link {
+    cursor: text;
+    color: black;
   }
+
+  .nav .selected, .nav .sort .selected, .nav .category .selected {
+    color: red;
+    cursor: default;
+  }
+  .nav .sort{
+    color: blue;
+  }
+
   .nav .active {
     color: blue;
+  }
+
+  .orig {
+    color: dimgray;
+  }
+  .edited {
+    color: black;
+  }
+
+  .post {
+    white-space: pre-line;  /* or pre-wrap to preserve all whitespace*/
+  }
+
+  .comment {
+  }
+
+  .comment-author, .italic {
+    font-style: italic;
   }
 
 /* TODO: need styles for these classnames
@@ -76,6 +112,18 @@
   (EditComment, NewComment)
     edit-comment  -- any reasonable size will do here.
 */
+  .orig {
+    color: darkgray;
+  }
+  .label {
+    color: darkorange;
+  }
+  .edit-delete-comment-links {
+    color: dimgrey;
+  }
+  .counts {
+    color: black;
+  }
 
 
 /* TODO: test (logged in user's) votes on posts and comments,

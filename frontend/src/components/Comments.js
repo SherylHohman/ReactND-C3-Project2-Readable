@@ -133,9 +133,10 @@ export class Comments extends Component {
 
                 {/*TODO: link styling, change cursor to hand on hover*/}
                 <p className="edit-delete-comment-links">
-                  <span onClick={(e) => {this.onEditComment(comment)}}> edit </span>
+                  <span onClick={() => {this.props.onDeleteComment(comment.id)}}> delete </span>
                    |
-                  <span onClick={() => {this.props.onDeleteComment(comment.id)}}> delete </span></p>
+                  <span onClick={(e) => {this.onEditComment(comment)}}> edit </span>
+                </p>
                 <hr />
               </li>
             );

@@ -56,8 +56,8 @@ export class Posts extends Component {
     return (
       <div>
           <div> {/*sort by  TODO map over constants in viewData instead */}
-          <ul className="nav">
-            <li>Sort Posts By:</li>
+          <ul className="nav sort">
+            <li className="no-link"> Sort By : </li>
             <li
               className={`${this.state.sortBy==='date' ? "selected" : ""}`}
               onClick={(e) => {this.onChangeSort(e, 'date')}}
@@ -101,7 +101,9 @@ export class Posts extends Component {
                             <h1>{post.title}</h1>
                           </Link>
 
-                          <div>{post.voteScore} Votes | {post.commentCount} Comments</div>
+                          <div className="counts">
+                            {post.voteScore} Votes | {post.commentCount} Comments
+                          </div>
                           <p>{post.category}</p>
                           {/* TODO move Link closing tag to here - after update styles*/}
                           <div></div>
