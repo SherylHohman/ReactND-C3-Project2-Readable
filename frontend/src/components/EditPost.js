@@ -191,7 +191,6 @@ export class EditPost extends Component {
         </form>
           <hr />
           {/* uses props */}
-          {/* TODO: css to make orig in light gray and smaller. Make above larger*/}
           <div className="edited">
             {/* <h4> Edited post </h4> */}
             <h3> {this.state.title} </h3>

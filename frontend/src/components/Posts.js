@@ -105,7 +105,6 @@ export class Posts extends Component {
                             {post.voteScore} Votes | {post.commentCount} Comments
                           </div>
                           <p>{post.category}</p>
-                          {/* TODO move Link closing tag to here - after update styles*/}
                           <div></div>
                           <hr />
                        </div>
@@ -170,8 +169,7 @@ function mapStoreToProps ( store ) {
   const selectedCategoryName = (store && store.viewData
     && store.viewData.persistentCategory)
      ? store.viewData.persistentCategory.name
-     : HOME.category.name;
-  // console.log('selectedCategoryName:', selectedCategoryName)
+     : HOME.category.name;  // console.log('selectedCategoryName:', selectedCategoryName)
 
   return {
     posts: sortedPosts,

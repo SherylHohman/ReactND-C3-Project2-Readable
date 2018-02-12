@@ -24,16 +24,13 @@ export function timeIn12HourFormat(unixTimestamp){
   return `${hours}:${minutes} ${suffix}`;
 };
 
-// export function titleCase(someString){
-//   let words = someString.split(' ');
-//   return words.map((word) => {
-//     return word.replace(word[0], word[0].toUpperCase());
-//   }).join(' ');
-// };
-
 export function titleCase(str) {
+  // doesn't allow for all caps.. or CamelCase words :-/
   return str.toLowerCase().split(' ').map(function(word) {
-    if (!word || word.length < 1) {console.log('_'+word+'_'); return word;}  //
+    if (!word || word.length < 1) {
+      console.log('cannot titleCase _'+word+'_');
+      return word;
+    }
     return word.replace(word[0], word[0].toUpperCase());
   }).join(' ');
 }

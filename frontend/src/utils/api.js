@@ -15,7 +15,7 @@ const headers = {
   // for server, aka request - GET
   'Accept': 'application/json',
 
-  // TODO: only put this header on POST an PUT requests
+  // TODO: only put this header on POST and PUT requests
   // for app, aka response! - for POST/PUT: sends body
   'Content-Type': 'application/json',
 };
@@ -129,8 +129,8 @@ const headers = {
   };
 
   // TODO:
-  // QUESTION: editing a comment, we *change* the timestamp ?
-  //    But editing a Post, we do *Not* change the timestamp ?
+  // QUESTION: editing a comment, we *Do     change* the timestamp ?
+  //    But editing a Post,       we *do Not change* the timestamp ?
 
   // Edit a post
   //  {title, body}

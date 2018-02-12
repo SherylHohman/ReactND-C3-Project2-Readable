@@ -327,7 +327,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         return state;
       case FETCH_POSTS_SUCCESS:
         // This is for fetch returning All Posts,
-        // and fetch returning Posts by Category
+        // And for fetch returning Posts by Category
         // REPLACES all posts in store with current fetch results
         return ({
           //...state,
@@ -388,8 +388,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         // TODO:
         return state;
       case DELETE_POST_SUCCESS:
-        // TODO:
-        // action data should be a post item with an id field
         let newState = {...state};
         console.log('copy of State', newState);
         delete newState[action.id]

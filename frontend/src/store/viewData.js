@@ -1,7 +1,3 @@
-// import { DELETE_POST_SUCCESS } from './posts';
-// import { DELETE_COMMENT_SUCCESS } from './comments';
-
-
 // ACTION TYPES
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SELECT_CATEGORY = 'SELECT_CATEGORY';
@@ -87,6 +83,7 @@ export const SORT_BY = 'SORT_BY';
       // the sticky category (object) won't get updated !!
       // The fix: parse URL. If it is '/category/:category', then treat it as
       // changeViewBCagetory ('SELECT_CATEGORY' above)
+
       return ({
         type: CHANGE_VIEW,
         currentUrl:  newViewData.currentUrl,
@@ -142,6 +139,7 @@ function viewData(state=initialState_ViewData, action){
       // potential issue: if url is a category route, or id is category.name
       //       then viewData's "category" (object) won't get updated.
       // TODO: parse URL and call selectCategory action creator instead.
+
       id = (action.currentId === null)
         ? state.persistentCategory.name
         : action.currentId
@@ -171,31 +169,6 @@ function viewData(state=initialState_ViewData, action){
                 // TODO sort method stored in url ??
                 persistentSortBy: action.persistentSortBy,
             });
-
-    // case DELETE_POST_SUCCESS:
-    //     // Show "posts" page for category from deleted post.
-    //     // Sending a "changeView" from the deletePost handler in Post Component
-    //     // instead, because I don't have access to the categories Array here
-    //     // Although, maybe Categories reducer could dispatch changeView
-    //     //   in reaction to DELETE_POST_SUCCESS, using post.categoryName
-    //     //   to dispatch another DELETE_POST_SUCCESS, or CHANGE_VIEW
-    //     //   with action.categories AND action.categoryName..
-    //     // That sounds too convoluted.
-    //     //   and I prefer (currently) to use reducers for changing state data
-    //     //   only.  Hmm.. maybe calling action creators from reducers is OK.
-
-    //     // // TODO: how to access store.categories ??
-    //     const categoryPath = store.categories  // TODO ??
-    //         .find((category) =>  category.name === action.categoryName)
-    //         .path;
-    //     return ({
-    //           ...state,
-    //           url: `/category/${categoryPath}`,  // (path can differ from name)
-    //           id: `${action.categoryName}`,
-    //         });
-    // case DELETE_COMMENT_SUCCESS:
-    //   // TODO
-    //   return state;
 
     default:
       return state;
