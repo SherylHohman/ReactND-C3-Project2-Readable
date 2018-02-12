@@ -55,12 +55,12 @@ export class Comments extends Component {
     });
     this.closeModal();
   }
-  onCancel(){
-    this.closeModal();
-  }
   closeModal(){
     this.setState({id:'', body:'', author: '', isOpenModal: false});
   };
+  onCancel(){
+    this.closeModal();
+  }
   onSubmit(e){
     e.preventDefault();
     // return false;
@@ -148,7 +148,7 @@ export class Comments extends Component {
         <div>
           <Modal little
             open={this.state.isOpenModal}
-            onClose={this.onCancel}
+            onClose={ ()=>this.onCancel() }
             >
             <div>
               <form onSubmit={(e)=> {this.onSubmit(e)}}>
