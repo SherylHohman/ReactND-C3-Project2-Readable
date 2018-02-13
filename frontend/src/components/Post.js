@@ -33,34 +33,36 @@ export class Post extends Component {
     }
 
     if (this.props.uri){
-      console.log('have uri, will I call changeView ?');
-      if (this.props.uri.route === "/category/:category") {
-        this.onChangeViewByCategory(this.props.uri.params.categoryName)
-      } // else
-      if ((this.props.uri.route === "/post/:postId") ||
-          (this.props.uri.route === "/post/:postId/edit")) {
-        this.onChangeView(this.props.uri.pathname, this.props.params.postId)
-      }
+      // console.log('have uri, will I call changeView ?');
+      // if (this.props.uri.route === "/category/:category") {
+      //   this.onChangeViewByCategory(this.props.uri.postId.categoryName)
+      // } // else
+      // if ((this.props.uri.route === "/post/:postId") ||
+      //     (this.props.uri.route === "/post/:postId/edit")) {
+      //   this.onChangeView(this.props.uri.pathname, this.props.uri.postId)
+      // }
+      this.updateLocation(this.props.uri)
     }
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('Post, nextProps:', nextProps);
-    if (nextProps.routerInfo && (nextProps.routerInfo.url!==null) &&
-        this.props.uri && nextProps.uri !== this.props.uri
-       ){
-        this.updateLocation(nextProps.uri)
-    }
+    console.log('__Post, nextProps:', nextProps);
+
+    // if (nextProps.uri && (nextProps.uri.url) &&
+    //     nextProps.uri !== this.props.uri   // shallow check
+    //    ){
+    //     this.updateLocation(nextProps.uri)
+    // }
   }
 
   updateLocation(uri) {
-    console.log('have new uri, will I call changeView ?');
+    console.log('___have new uri:', uri);
     if (uri.route === "/category/:category") {
-      this.onChangeViewByCategory(uri.params.categoryName)
+      this.props.onChangeViewByCategory(uri.params.categoryName)
     } // else
     if ((uri.route === "/post/:postId") ||
         (uri.route === "/post/:postId/edit")) {
-      this.onChangeView(uri.pathname, this.props.params.postId)
+      this.props.onChangeView(uri.url, uri.postId)
     }
   }
 
@@ -92,11 +94,11 @@ export class Post extends Component {
     const props = this.props;
     if (!this.props){console.log('Post props is undefined');}
 
-    const post =
-      (props && props.post) ||
-      (props && props.location && props.location.state && props.location.state.post) ||
-      (props && props.match && props.match.params && props.match.params.post) ||
-      null;
+    // const post =
+    //   (props && props.post) ||
+    //   (props && props.location && props.location.state && props.location.state.post) ||
+    //   (props && props.match && props.match.params && props.match.params.post) ||
+    //   null;
 
     // If page is loaded from a saved url. Store is empty. Redirect
     // A better solution would be to read the post id from the url.. fetch data.
@@ -112,7 +114,8 @@ export class Post extends Component {
       )
     }
   */
-    if (!post) {
+
+    if (!this.props.post) {
       console.log('Post: post wasn\'t present in props, do I have the postID?:', this.props.postId);
       return (
         <div>
@@ -121,8 +124,8 @@ export class Post extends Component {
       )
     }
 
-    const postId = props.post.id;  // change to == post.id ?  //see above, and below.
-    const {title, voteScore, commentCount, author, timestamp } = this.props.post;
+    const postId = this.props.postId;  // change to == post.id ?  //see above, and below.
+    const {title, body, voteScore, commentCount, author, timestamp } = this.props.post;
 
     // disambiguate:
     // category is an {name, path} on categories,
@@ -141,7 +144,7 @@ export class Post extends Component {
 
             <div>
               <div className="post-body">
-                {post.body}
+                {body}
               </div>
               <p> </p>
 
@@ -221,21 +224,21 @@ function mapStoreToProps (store, ownProps) {
                         store.categories[categoryName].path) || null;
 
 
-  const history = (ownProps && ownProps.history) || null;
+  const routerInfo = (ownProps && ownProps.routerInfo) || null;
   const uri = {
-    pathname: (history && history.location && history.location.query) || null,
-    params:   (history && history.match && history.match.params) || null,
-    // route:    (history && history.match && history.match.path)   || null,
-    url:      (history && history.match && history.match.url)    || null,
-    // query:    (history && history.location && history.location.query) || null,
-    // hash:     (history && history.location && history.location.hash)  || null,
+    route:  (routerInfo && routerInfo.match && routerInfo.match.path)   || null,
+    url:    (routerInfo && routerInfo.match && routerInfo.match.url)    || null,
+    params: (routerInfo && routerInfo.match && routerInfo.match.params) || null,
+    postId: (routerInfo && routerInfo.match && routerInfo.match.params.postId) || null
+    // search:    (routerInfo && routerInfo.location && routerInfo.location.search) || null,
+    // hash:     (routerInfo && routerInfo.location && routerInfo.location.hash)  || null,
   }
-  console.log('App, uri:', uri);
+  console.log('__Post, uri:', uri);
 
   return {
-    postId,
-    post,
-    categoryPath,
+    postId: uri.postId,
+    post:   store.posts[uri.postId],
+    // categoryPath,
 
     // if loaded from saved URL
     uri,
