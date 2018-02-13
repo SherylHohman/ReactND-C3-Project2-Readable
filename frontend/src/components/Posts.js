@@ -156,8 +156,9 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store ) {
+function mapStoreToProps (store, ownProps) {
   // console.log('store:', store);
+  console.log('Posts ownProps:', ownProps);
 
   // object to array
   const posts = Object.keys(store.posts).reduce((acc, postId) => {

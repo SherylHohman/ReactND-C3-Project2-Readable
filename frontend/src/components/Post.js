@@ -6,7 +6,6 @@ import Comments from './Comments';
 import { changeView, HOME } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
-// import { pullFromStore, l } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 export class Post extends Component {
@@ -16,7 +15,8 @@ export class Post extends Component {
 
     // re-direct to home page if don't have the post, and can't read from url)
     if (this.props.history && !this.props.postId){
-      this.props.history.push(HOME.url);
+      console.log(' don\'t have postId yet.. but let\'s wait for cWillRprops before redirecting')
+      // this.props.history.push(HOME.url);
       // <Redirect to={HOME.ulr} />
     }
 
@@ -24,9 +24,46 @@ export class Post extends Component {
     //  fetch the post, based on post.id that's in the url
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
+
+      // // App "assumes" its loaded using the root url, update viewData with actual url
+      // // also set viewData to reflect page that actually on - maybe do this in App.js?
+      // if (this.props && this.props.match & this.props.match.url) {
+      //   this.changeView(this.props.match.url, this.props.match.params.postId)
+      // }
     }
 
+    if (this.props.uri){
+      console.log('have uri, will I call changeView ?');
+      if (this.props.uri.route === "/category/:category") {
+        this.onChangeViewByCategory(this.props.uri.params.categoryName)
+      } // else
+      if ((this.props.uri.route === "/post/:postId") ||
+          (this.props.uri.route === "/post/:postId/edit")) {
+        this.onChangeView(this.props.uri.pathname, this.props.params.postId)
+      }
+    }
   }
+
+  componentWillReceiveProps(nextProps){
+    console.log('Post, nextProps:', nextProps);
+    if (nextProps.routerInfo && (nextProps.routerInfo.url!==null) &&
+        this.props.uri && nextProps.uri !== this.props.uri
+       ){
+        this.updateLocation(nextProps.uri)
+    }
+  }
+
+  updateLocation(uri) {
+    console.log('have new uri, will I call changeView ?');
+    if (uri.route === "/category/:category") {
+      this.onChangeViewByCategory(uri.params.categoryName)
+    } // else
+    if ((uri.route === "/post/:postId") ||
+        (uri.route === "/post/:postId/edit")) {
+      this.onChangeView(uri.pathname, this.props.params.postId)
+    }
+  }
+
 
   onDelete(postId){
     // must call deletePost before changeView
@@ -64,12 +101,22 @@ export class Post extends Component {
     // If page is loaded from a saved url. Store is empty. Redirect
     // A better solution would be to read the post id from the url.. fetch data.
 
+    /*
     if (post === null) {
       console.log('Post: post wasn\'t present in props, redirecting to home page.');
       return (
         <div>
           <p>post wasn't present in props:</p>
           <Redirect to="/" push />
+        </div>
+      )
+    }
+  */
+    if (!post) {
+      console.log('Post: post wasn\'t present in props, do I have the postID?:', this.props.postId);
+      return (
+        <div>
+          <p>looking for your Post:</p>
         </div>
       )
     }
@@ -156,8 +203,15 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps (store) {
-  const postId = store.viewData.currentId;
+function mapStoreToProps (store, ownProps) {
+  console.log('Post store:', store);
+  console.log('Post ownProps:', ownProps);
+
+  // const postId = store.viewData.currentId;
+  const postId = //store.viewData.currentId ||  // primary source of truth due to asynch of url
+    ownProps.routerInfo.match.params.PostId || null;  // fallback in case load from saved URL
+    console.log('Post mapStoreToProps, postId', postId);
+
   const post = store.posts[postId];
 
   // disambiguate: category is an object with name and path
@@ -166,10 +220,27 @@ function mapStoreToProps (store) {
   const categoryPath = (store.categories[categoryName] &&
                         store.categories[categoryName].path) || null;
 
+
+  const history = (ownProps && ownProps.history) || null;
+  const uri = {
+    pathname: (history && history.location && history.location.query) || null,
+    params:   (history && history.match && history.match.params) || null,
+    // route:    (history && history.match && history.match.path)   || null,
+    url:      (history && history.match && history.match.url)    || null,
+    // query:    (history && history.location && history.location.query) || null,
+    // hash:     (history && history.location && history.location.hash)  || null,
+  }
+  console.log('App, uri:', uri);
+
   return {
     postId,
     post,
     categoryPath,
+
+    // if loaded from saved URL
+    uri,
+    viewDataUrl: store.viewData.currentUrl || null,
+    viewDataId:  store.viewData.currentId  || null,
   }
 };
 
