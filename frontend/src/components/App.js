@@ -24,7 +24,7 @@ class App extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('App, nextProps:', nextProps)
+    // console.log('App, nextProps:', nextProps)
 
     // if (nextProps.routerInfo && (nextProps.routerInfo.url!==null) &&
     //     this.props.uri && nextProps.uri !== this.props.uri
@@ -40,20 +40,6 @@ class App extends Component {
     // what about if nextProps-match-url and nextProps.viewData both are changing?
     // or if viewData changed beore match (is that even possible ?)
   }
-
-  // THIS VERSION MAY WORK IN POSTS, etc, But NOT in APP
-  // IN APP, the param is {filter: post}, and path is path: /:filter? and url is /post
-  //
-  // updateLocation(uri) {
-  //   console.log('have new uri, will I call changeView ?');
-  //   if (uri.route === "/category/:category") {
-  //     this.onChangeViewByCategory(uri.params.categoryName)
-  //   } // else
-  //   if ((uri.route === "/post/:postId") ||
-  //       (uri.route === "/post/:postId/edit")) {
-  //     this.onChangeView(uri.pathname, this.props.params.postId)
-  //   }
-  // }
 
   // IN APP, the params:{filter: post}, and path: /:filter? and url: /post
   // This differs significantly to what the "Route"s or other Components see/get

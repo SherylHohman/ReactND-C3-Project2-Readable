@@ -87,7 +87,7 @@ export const SORT_BY = 'SORT_BY';
 
         // by uri: category
         if (uri.route === "/category/:categoryPath") {
-        // TODO: instead see if categoryPath is the param
+        // TODO: instead, check against if categoryPath is in the param list - don't hard code the route
 
           // TODO access store.categories to get "categories" from the Path
           //  OR (better) REFACTOR so I only need the Path for changeView !!
