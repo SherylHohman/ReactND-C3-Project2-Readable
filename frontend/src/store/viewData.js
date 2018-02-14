@@ -48,6 +48,27 @@ export const SORT_BY = 'SORT_BY';
 
 // ACTION CREATORS
 
+  export function getUri(routerInfo){
+    const match    = (routerInfo && routerInfo.match)    || null;
+    const location = (routerInfo && routerInfo.location) || null;
+    return ({
+      route:  match.path   || null,
+      url:    match.url    || null,
+      params: match.params || null,
+      postId:       match.params.postId       || null,
+      categoryPath: match.params.categoryPath || null,
+
+      // TESTING to replace postId and categoryPath above
+      currentId: match.params.postId || match.params.categoryPath || null,
+
+      // TODO: store currentSort info in url (persistent shall still be in viewData)
+      // search: location.search || null,
+
+      //TODO: so can link to location on page (top of comments, add comment, etc)
+      // hash:   location.hash   || null,
+    })
+  }
+
   export const changeView = (newViewData=HOME) => {
       // console.log('____entering viewData.changeView, newViewData:', newViewData);
 

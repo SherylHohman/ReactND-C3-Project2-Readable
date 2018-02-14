@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
-import { changeView, HOME } from '../store/viewData';
+import { changeView, HOME, getUri } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -211,28 +211,6 @@ function mapStoreToProps (store, ownProps) {
   const categoryName = (post && post.category) || null;
   const categoryPath = (store.categories[categoryName] &&
                         store.categories[categoryName].path) || null;
-
-
-  function getUri(routerInfo){
-    const match    = (ownProps && ownProps.routerInfo && routerInfo.match)    || null;
-    const location = (ownProps && ownProps.routerInfo && routerInfo.location) || null;
-    return ({
-      route:  match.path   || null,
-      url:    match.url    || null,
-      params: match.params || null,
-      postId:       match.params.postId       || null,
-      categoryPath: match.params.categoryPath || null,
-
-      // TESTING to replace postId and categoryPath above
-      currentId: match.params.postId || match.params.categoryPath || null,
-
-      // TODO: store currentSort info in url (persistent shall still be in viewData)
-      // search: location.search || null,
-
-      //TODO: so can link to location on page (top of comments, add comment, etc)
-      // hash:   location.hash   || null,
-    })
-  }
 
   const uri = getUri(ownProps.routerInfo) || null;
 
