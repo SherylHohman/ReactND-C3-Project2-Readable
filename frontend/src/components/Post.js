@@ -213,15 +213,29 @@ function mapStoreToProps (store, ownProps) {
                         store.categories[categoryName].path) || null;
 
 
-  const routerInfo = (ownProps && ownProps.routerInfo) || null;
-  const uri = {
-    route:  (routerInfo && routerInfo.match && routerInfo.match.path)   || null,
-    url:    (routerInfo && routerInfo.match && routerInfo.match.url)    || null,
-    params: (routerInfo && routerInfo.match && routerInfo.match.params) || null,
-    postId: (routerInfo && routerInfo.match && routerInfo.match.params.postId) || null
-    // search:    (routerInfo && routerInfo.location && routerInfo.location.search) || null,
-    // hash:     (routerInfo && routerInfo.location && routerInfo.location.hash)  || null,
+  function getUri(routerInfo){
+    const match    = (ownProps && ownProps.routerInfo && routerInfo.match)    || null;
+    const location = (ownProps && ownProps.routerInfo && routerInfo.location) || null;
+    return ({
+      route:  match.path   || null,
+      url:    match.url    || null,
+      params: match.params || null,
+      postId:       match.params.postId       || null,
+      categoryPath: match.params.categoryPath || null,
+
+      // TESTING to replace postId and categoryPath above
+      currentId: match.params.postId || match.params.categoryPath || null,
+
+      // TODO: store currentSort info in url (persistent shall still be in viewData)
+      // search: location.search || null,
+
+      //TODO: so can link to location on page (top of comments, add comment, etc)
+      // hash:   location.hash   || null,
+    })
   }
+
+  const uri = getUri(ownProps.routerInfo) || null;
+
   // console.log('__Post, uri:', uri);
 
   return {
