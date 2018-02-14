@@ -210,7 +210,7 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store ) {
+function mapStoreToProps (store, ownProps) {
 
   const postId = store.viewData.currentId || null;
 

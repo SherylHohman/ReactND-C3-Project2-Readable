@@ -33,6 +33,11 @@ export class Categories extends Component {
   render() {
 
     const isExactPath = () => {
+      // TEMP
+      if (!this.props.history || !this.props.history.location || !this.props.history.location.pathname){
+        return false;
+      }
+
       return (('/' + this.props.category.path) === this.props.history.location.pathname);
     }
 
@@ -84,16 +89,23 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store ) {
+function mapStoreToProps (store, ownProps) {
   // console.log('store.categories:', store.categories)
+  console.log('Categories, ownProps:', ownProps)
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
+
+  // TEMP
+  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
 
   return {
       categories: categoriesArray || null,
       category: store.viewData.category || HOME.category,
       sortBy:   store.viewData.sortBy   || DEFAULT_SORT_BY,
+
+      // TEMP during refactor, so this.props.history.push() still works
+      history,
   }
 };
 

@@ -223,7 +223,7 @@ EditPost.propTypes = {
     fetchPost: PropTypes.func,
     editPost: PropTypes.func,
     changeView: PropTypes.func,
-    // history: PropTypes.object,
+    history: PropTypes.object,
 }
 
 function mapDispatchToProps(dispatch){
@@ -242,11 +242,18 @@ function mapStoreToProps ( store, ...ownProps ) {
   const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
+
+  // TEMP during refactor, so this.props.history.push() still works
+  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
+
   return {
     categoriesObject: store.categories,
     categoryNames,
     postId,
     post: store.posts[postId],
+
+    // TEMP during refactor, so this.props.history.push() still works
+    history,
   }
 };
 

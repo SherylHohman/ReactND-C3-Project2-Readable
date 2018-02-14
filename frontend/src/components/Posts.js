@@ -172,11 +172,18 @@ function mapStoreToProps (store, ownProps) {
      ? store.viewData.persistentCategory.name
      : HOME.category.name;  // console.log('selectedCategoryName:', selectedCategoryName)
 
+  // TEMP during refactor, so this.props.history.push() still works
+  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
+
+
   return {
     posts: sortedPosts,
     selectedCategoryName,
     sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
     sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
+
+    // TEMP during refactor, so this.props.history.push() still works
+    history: ownProps.routerInfo.history // so can use history.push
   }
 };
 

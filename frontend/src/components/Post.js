@@ -166,6 +166,8 @@ function mapStoreToProps (store, ownProps) {
     // uri: {url, route, params{postId, categoryPath}}
     // uri: {currentId, postId, categoryPath}  //currentId replaces postId & categoryPath
     uri,
+
+    history: ownProps.routerInfo.history  // so can history.push if have bad postId
   }
 };
 

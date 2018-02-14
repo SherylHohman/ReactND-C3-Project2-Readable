@@ -80,25 +80,25 @@ class App extends Component {
 
 
       {/* Routes */}
-        <Route exact path="/" render={({ history }) => (
-          <Posts history={history} />
+        <Route exact path="/" render={(routerProps) => (
+          <Posts     routerInfo={ routerProps } />
         )} />
 
-        <Route path="/category/:categoryPath" render={({ history }) => (
-          <Posts history={history} />
+        <Route path="/category/:categoryPath" render={(routerProps) => (
+          <Posts     routerInfo={ routerProps } />
         )} />
 
         <Switch>
-          <Route exact path="/post/new" render={({ history }) => (
-            <NewPost history={history} />
+          <Route exact path="/post/new" render={(routerProps) => (
+            <NewPost  routerInfo={ routerProps } />
           )} />
 
-          <Route path="/post/:postId/edit" render={({ history }) => (
-            <EditPost history={history}/>
+          <Route path="/post/:postId/edit" render={(routerProps) => (
+            <EditPost routerInfo={ routerProps }/>
           )} />
 
-          <Route exact path="/post/:postId" render={(props) => (
-            <Post routerInfo={ props } />
+          <Route exact path="/post/:postId" render={(routerProps) => (
+            <Post     routerInfo={ routerProps } />
           )} />
         </Switch>
 
