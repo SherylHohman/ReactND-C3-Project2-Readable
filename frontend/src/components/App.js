@@ -14,6 +14,7 @@ class App extends Component {
 
   componentDidMount() {
     console.log("in App componentDidMount");
+
     this.props.fetchCategories();
     this.props.fetchPosts();
 
@@ -24,6 +25,7 @@ class App extends Component {
 
   componentWillReceiveProps(nextProps){
     console.log('App, nextProps:', nextProps)
+
     // if (nextProps.routerInfo && (nextProps.routerInfo.url!==null) &&
     //     this.props.uri && nextProps.uri !== this.props.uri
     //    ){
@@ -57,6 +59,7 @@ class App extends Component {
   // This differs significantly to what the "Route"s or other Components see/get
   updateLocation(matchAppUrl) {
     console.log('have new uri, will I call changeView ?');
+
     if (matchAppUrl === "/") {
       this.onChangeViewByCategory(HOME.category)
     } // else
@@ -95,7 +98,7 @@ class App extends Component {
           <Posts history={history} />
         )} />
 
-        <Route path="/category/:categoryName" render={({ history }) => (
+        <Route path="/category/:categoryPath" render={({ history }) => (
           <Posts history={history} />
         )} />
 
@@ -135,8 +138,8 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  console.log('App store:', store);
-  console.log('App ownProps:', ownProps);
+  // console.log('App store:', store);
+  // console.log('App ownProps:', ownProps);
 
   // object to array
   const postsArray = Object.keys(store.posts).reduce((acc, postId) => {
@@ -150,7 +153,7 @@ function mapStoreToProps (store, ownProps) {
   // IN APP, eg.{ params: {filter: 'post'}, path: '/:filter?' url:'/post' }
   const history = (ownProps && ownProps.history) || null;
   const urlBase = (history.match && history.match.url) || null;
-  console.log('App, urlBase:', urlBase);
+  // console.log('App, urlBase:', urlBase);
 
   return {
     posts: postsArray,
