@@ -48,6 +48,18 @@ export const SORT_BY = 'SORT_BY';
 
 // ACTION CREATORS
 
+  export const updateLocation = (uri=null) => {
+    console.log('___have new uri:', uri);
+    if (uri.route === "/category/:category") {
+      changeView(uri.params.categoryName)
+    } // else
+    if ((uri.route === "/post/:postId") ||
+        (uri.route === "/post/:postId/edit")) {
+      changeView(uri.url, uri.postId)
+    }
+  }
+
+
   export const changeView = (newViewData=HOME) => {
       // console.log('____entering viewData.changeView, newViewData:', newViewData);
 
