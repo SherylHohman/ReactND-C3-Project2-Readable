@@ -48,22 +48,67 @@ export const SORT_BY = 'SORT_BY';
 
 // ACTION CREATORS
 
-  export const updateLocation = (uri=null) => {
-    console.log('___have new uri:', uri);
-    if (uri.route === "/category/:category") {
-      changeView(uri.params.categoryName)
-    } // else
-    if ((uri.route === "/post/:postId") ||
-        (uri.route === "/post/:postId/edit")) {
-      changeView(uri.url, uri.postId)
-    }
-  }
-
-
   export const changeView = (newViewData=HOME) => {
       // console.log('____entering viewData.changeView, newViewData:', newViewData);
 
+    // TODO: refactor app so that "by uri" is the ONLY way this func is called
+    // TODO: also, change persistentCategory (a category object {name, path})
+    //       to persistentCategoryPath (string)
+
+    // TODO: (I can also get rid of currentUrl and currentId, but it's convenient
+    // to have them around.. or replace them with
+    //  - a helper function to pull the values off the router history/match objects)
+
+    // changeView By uri
+    const uri = newViewData.uri;
+    if (uri){
+      // console.log('__have new uri:', uri);
+
+        // by uri: category
+        if (uri.route === "/category/:categoryPath") {
+        // TODO: instead see if categoryPath is the param
+
+          // TODO access store.categories to get "categories" from the Path
+          //  OR (better) REFACTOR so I only need the Path for changeView !!
+          //  AND all Components Expect that viewData holds the Path,
+          //  not the whole category
+
+          // const category = (newCategory.name)  // '' or null
+          //   ? newCategory
+          //   : ALL_POSTS_CATEGORY;
+
+          return ({
+            type: CHANGE_VIEW,
+            currentUrl: uri.url,
+            currentId:  uri.params.categoryPath,
+            // TODO: this is technically incorrect, the path is *notNecessarily*
+            //  the same as the name.  Using a cheating shortcut here, since I have
+            //  no access to the list of categories objects, to pull the name,
+            //  given the path (which I have)
+            // TODO: instead of saving persistentCategory, since I'm now using
+            //  url's, instead store the persistentCategoryPath!
+            persistentCategory: {
+              name: uri.params.categoryPath,  //{ name, path }
+              path: uri.params.categoryPath,  //{ name, path }
+            }
+            // TODO: refactor components to use this instead
+            // persistentCategoryPath: uri.params.categoryPath,  //string
+          })
+        }
+
+        // by uri: Url, Id
+        if ((uri.route === "/post/:postId") ||
+            (uri.route === "/post/:postId/edit")) {
+          return ({
+            type: CHANGE_VIEW,
+            currentUrl: uri.url,
+            currentId:  uri.postId,
+          })
+        }
+      }
+
     // changeView By Category
+
     const newCategory = newViewData.persistentCategory //|| null
     if (newCategory) {
       // console.log('___in changeView By Category, newViewData.category:', newViewData.category);
@@ -89,7 +134,7 @@ export const SORT_BY = 'SORT_BY';
     // changeView By: url, id
 
     } else {
-      // console.log('___in changeView-via-id,-rl, newViewData:', newViewData);
+      // console.log('___in changeView-via-id/url, newViewData:', newViewData);
 
       // potential issue: if url is a category url, and/or id is a category..
       // the sticky category (object) won't get updated !!
@@ -141,6 +186,7 @@ export const SORT_BY = 'SORT_BY';
 
 function viewData(state=initialState_ViewData, action){
   // console.log('entering reducer viewData, action:', action, 'prevState');
+  // console.log('_ entering reducer viewData, action:', action);
 
   let id;
   let url;
@@ -155,6 +201,7 @@ function viewData(state=initialState_ViewData, action){
       id = (action.currentId === null)
         ? state.persistentCategory.name
         : action.currentId
+      // console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
       return ({
                 ...state,
                 currentUrl: action.currentUrl,
@@ -190,16 +237,4 @@ function viewData(state=initialState_ViewData, action){
 export default viewData
 
 
-//  NOTE, I only need either url OR filters: id/cateogry/sortBy.
-//
-//  The other option is to pull it off the history object. or Window object.
-//  Finally, this app is simple, so I can "just" pass the url whenever the
-//  user clicks a link. That's duplicating logic, but probably easy enough.
-
-//  Tougher question is getting the initial URL when the app is fired up.
-//  Or if user types an address into the address bar. Or presses the
-//  "back" button.. all the things react-router-dom is giving me !!
-
-//  Really don't want to duplicate Router logic.
-//  Best would be to access URL from Router's Source Of Truth.
-//  Both these other options could fall out of synch when the address changes, outside a "<Link>" (or push) action from WITHIN my app.
+//  NOTE, I only need either currentUrl OR currentId.

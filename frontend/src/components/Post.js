@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
-import { changeView, HOME, updateLocation } from '../store/viewData';
+import { changeView, HOME } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -41,12 +41,12 @@ export class Post extends Component {
       //     (this.props.uri.route === "/post/:postId/edit")) {
       //   this.onChangeView(this.props.uri.pathname, this.props.uri.postId)
       // }
-      updateLocation(this.props.uri)
+      this.props.updateLocation(this.props.uri)
     }
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('__Post, nextProps:', nextProps);
+    // console.log('__Post, nextProps:', nextProps);
 
     // if (nextProps.uri && (nextProps.uri.url) &&
     //     nextProps.uri !== this.props.uri   // shallow check
@@ -54,18 +54,6 @@ export class Post extends Component {
     //     this.updateLocation(nextProps.uri)
     // }
   }
-
-  // updateLocation(uri) {
-  //   console.log('___have new uri:', uri);
-  //   if (uri.route === "/category/:category") {
-  //     this.props.onChangeViewByCategory(uri.params.categoryName)
-  //   } // else
-  //   if ((uri.route === "/post/:postId") ||
-  //       (uri.route === "/post/:postId/edit")) {
-  //     this.props.onChangeView(uri.url, uri.postId)
-  //   }
-  // }
-
 
   onDelete(postId){
     // must call deletePost before changeView
@@ -203,17 +191,18 @@ function mapDispatchToProps(dispatch){
     deletePost: (postId) => dispatch(deletePost(postId)),
 
     fetchPost: (id) => dispatch(fetchPost(id)),
+    updateLocation: (uri) => dispatch(changeView({ uri: uri })),
   })
 }
 
 function mapStoreToProps (store, ownProps) {
-  console.log('Post store:', store);
-  console.log('Post ownProps:', ownProps);
+  // console.log('Post store:', store);
+  // console.log('Post ownProps:', ownProps);
 
   // const postId = store.viewData.currentId;
   const postId = //store.viewData.currentId ||  // primary source of truth due to asynch of url
     ownProps.routerInfo.match.params.PostId || null;  // fallback in case load from saved URL
-    console.log('Post mapStoreToProps, postId', postId);
+    // console.log('Post mapStoreToProps, postId', postId);
 
   const post = store.posts[postId];
 
@@ -233,7 +222,7 @@ function mapStoreToProps (store, ownProps) {
     // search:    (routerInfo && routerInfo.location && routerInfo.location.search) || null,
     // hash:     (routerInfo && routerInfo.location && routerInfo.location.hash)  || null,
   }
-  console.log('__Post, uri:', uri);
+  // console.log('__Post, uri:', uri);
 
   return {
     postId: uri.postId,
