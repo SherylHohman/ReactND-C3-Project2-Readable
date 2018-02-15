@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
-import { changeView, HOME, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from '../store/viewData';
+import { changeView, HOME, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 
 export class Posts extends Component {
 
@@ -14,8 +14,16 @@ export class Posts extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchPosts(this.props.selectedCategoryName);
-    console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
+    // this.props.fetchPosts(this.props.selectedCategoryName);
+    // console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
+    this.props.fetchPosts(this.props.categoryPath);
+    console.log('....____Posts cDM ..fetching, posts for category:', this.props.categoryPath);
+
+    if (this.props.uri){
+      console.log('__Posts cDM calling changeView, this.props.uri', this.props.uri);
+      this.props.changeViewByUri(this.props.uri)
+    }
+
   }
   componentWillReceiveProps(nextProps){
     // console.log('Posts cWRP nextProps:', nextProps);
@@ -28,6 +36,29 @@ export class Posts extends Component {
                                     nextProps.sortBy || this.state.sortBy);
       this.setState({ posts: sortedPosts });
     }
+
+    if (this.props.uri && nextProps.uri && nextProps.uri.url !== this.props.uri.url){
+      console.log('__Posts cWRprops calling changeView, this.props.uri', this.props.uri);
+      this.props.changeViewByUri(nextProps.uri)
+    }
+    else {
+      console.log('__Posts cWRprops NOT calling changeView, nextProps.uri', nextProps.uri.url, this.props.uri.url);
+    }
+
+    // fetch new posts when category in the url changes ??
+    //  currently, this is done in "categories" onClick handlers: onSelectCategory
+    // if (this.props.uri && nextProps.uri && nextProps.uri.url !== this.props.uri.url){
+    // if (this.props.viewData && nextProps.viewData &&
+    //   nextProps.viewData.persistentCategoryPath !== this.props.viewData.persistentCategoryPath){
+    //   console.log('____Posts cWRprops fetchinhgnew posts, ', nextProps.viewData.persistentCategoryPath);
+    //   this.props.fetchPosts(nextProps.viewData.persistentCategoryPath);
+    // }
+    if (nextProps.categoryPath && this.props.categoryPath &&
+        nextProps.categoryPath !== this.props.categoryPath){
+          console.log('....____Posts cWRprops, fetching..new posts, categoryPath:', nextProps.categoryPath);
+          this.props.fetchPosts(nextProps.categoryPath);
+    }
+
   }
 
   onChangeSort(e, sortBy){
@@ -74,13 +105,13 @@ export class Posts extends Component {
           </div>
 
           {/*Categories*/}
-          <Categories history={this.props.history}/>
+          <Categories routerInfo={ this.props.routerInfo }/>
           <hr />
 
           {/*New Post*/}
-          <Link to={`/post/new`} onClick={() => {
-            this.props.onChangeView(`/new`, 'newPostIdPlaceholder')
-          }}>
+          <Link to={`/post/new`}
+            /*onClick={() => {this.props.onChangeView(`/new`, 'newPostIdPlaceholder')}}*/
+          >
             <div><h2>Add New Post</h2><hr /></div>
           </Link>
 
@@ -95,9 +126,9 @@ export class Posts extends Component {
                       <li key={post.id}>
                         <div>
 
-                          <Link to={`/post/${post.id}`} onClick={() => {
-                            this.props.onChangeView(`/post/${post.id}`, post.id)
-                          }}>
+                          <Link to={`/post/${post.id}`}
+                          /*onClick={() => {this.props.onChangeView(`/post/${post.id}`, post.id)}}*/
+                          >
                             <h1>{post.title}</h1>
                           </Link>
 
@@ -145,13 +176,14 @@ function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER
 function mapDispatchToProps(dispatch){
   return ({
     fetchPosts: (category) => dispatch(fetchPosts(category)),
-    onChangeView: (url, id) => dispatch(changeView({
-      currentUrl:url,
-      currentId: id
-    })),
-    onChangeViewByCategory: (category) => dispatch(changeView({
-      persistentCategory:category
-    })),
+    // onChangeView: (url, id) => dispatch(changeView({
+    //   currentUrl:url,
+    //   currentId: id
+    // })),
+    changeViewByUri: (uri) => dispatch(changeView({ uri })),
+    // onChangeViewByCategory: (category) => dispatch(changeView({
+    //   persistentCategory:category
+    // })),
     onChangeSort: (sortBy) => dispatch(changeSort(sortBy)),
   })
 }
@@ -167,23 +199,26 @@ function mapStoreToProps (store, ownProps) {
   const sortedPosts = sortPosts(posts, store.viewData.persistentSortBy);
   // console.log('__mapStoreToProps, sortedPosts:', sortedPosts)
 
-  const selectedCategoryName = (store && store.viewData
-    && store.viewData.persistentCategory)
-     ? store.viewData.persistentCategory.name
-     : HOME.category.name;  // console.log('selectedCategoryName:', selectedCategoryName)
+  // const selectedCategoryName = (store && store.viewData
+  //   && store.viewData.persistentCategory)
+  //    ? store.viewData.persistentCategory.name
+  //    : HOME.category.name;  // console.log('selectedCategoryName:', selectedCategoryName)
 
   // TEMP during refactor, so this.props.history.push() still works
   const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
-
+  const uri = getUri(ownProps.routerInfo) || null;
+  console.log('___categoryPath:', uri.currentId)
 
   return {
     posts: sortedPosts,
-    selectedCategoryName,
+    // selectedCategoryName,
     sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
     sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
 
     // TEMP during refactor, so this.props.history.push() still works
-    history: ownProps.routerInfo.history // so can use history.push
+    history: ownProps.routerInfo.history, // so can use history.push
+    uri,
+    categoryPath: uri.currentId,
   }
 };
 

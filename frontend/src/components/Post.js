@@ -32,7 +32,6 @@ export class Post extends Component {
     }
     else {
       console.log('__Post cDM NOT calling changeView, this.props.uri', this.props.uri);
-
     }
   }
 
@@ -41,7 +40,10 @@ export class Post extends Component {
   }
 
   onDelete(postId){
-    // must call deletePost before changeView
+    // console.log('deleteing post, postId:', this.props.postId);
+    // console.log('this post\'s categoryPath:', this.props.categoryPath);
+    // console.log('(old uri):', this.props.uri);
+
     this.props.deletePost(postId);
     // Link redirects to category that this post previously appeared
     // viewData musht store this same info to keep in synch
@@ -84,10 +86,7 @@ export class Post extends Component {
     return (
       <div>
         <div>
-            <Link
-              to={`/post/${postId}`}
-                /*onClick={() => {this.props.onChangeView(`/post/${postId}`, postId)}*/
-            >
+            <Link to={`/post/${postId}`}>
               <h2>{title}</h2>
             </Link>
 
@@ -119,10 +118,7 @@ export class Post extends Component {
               >
                 Delete Post
               </Link>
-                <Link
-                  to={`/post/${postId}/edit`}
-                    /*onClick={() => {this.props.onChangeView(`/post/${postId}/edit`, postId)}*/
-                >
+                <Link to={`/post/${postId}/edit`}>
                   Edit Post
                 </Link>
             </div>
@@ -144,16 +140,13 @@ Post.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    changeView:  (uri) => dispatch(changeView({ uri })),
-    // onChangeView:  (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
     onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
 
-    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     deletePost: (postId) => dispatch(deletePost(postId)),
+    changeView: (uri) => dispatch(changeView({ uri })),
 
-    fetchPost: (id) => dispatch(fetchPost(id)),
-    updateLocation: (uri) => dispatch(changeView({ uri: uri })),
+    fetchPost:  (id) => dispatch(fetchPost(id)),
   })
 }
 
@@ -163,17 +156,21 @@ function mapStoreToProps (store, ownProps) {
 
   const uri = getUri(ownProps.routerInfo) || null;
   const postId = uri.postId  || null;
-  // so can redirect to Post's (former) category when deleting the post
-  const categoryPath = (store.categories[postId] && store.categories[postId].path) || null;
+  const post = store.posts[postId] || null;
 
+  // so can redirect to Post's (former) category when deleting the post
+  const categoryName = (post && post.category) || null;
+  const category = categoryName && store.categories[categoryName];
+  const categoryPath = (category && store.categories[categoryName].path) || null //HOME.category.path || null;
+  // console.log('_____________categoryPath:', categoryPath, categoryName, category, post, postId);
 
   return {
     postId,
-    post: store.posts[postId],
+    post,
     categoryPath,
 
-    // uri: {url, route, params, currentId}
-    // uri.params is either: postId OR categoryPath  //currentId replaces postId & categoryPath
+    // uri: {url, currentId, route, params}
+    // params: is either: postId OR categoryPath  //currentId replaces postId & categoryPath
     uri,
 
     // so don't have to refactor former history.push references (if have bad postId)

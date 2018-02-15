@@ -20,11 +20,11 @@ export const SORT_BY = 'SORT_BY';
 
   // TODO: get paths from App.js, then use to populate App.js
   export const routes = [
-    {path: '/', label: 'home'}, // or 'posts' ?
-    {path: '/', label: 'home'},
-    {path: '/', label: 'home'},
-    {path: '/', label: 'home'},
-    {path: '/', label: 'home'},
+    {route: '/',                       label: 'home'}, // or 'posts' ?
+    {route: '/category/:categoryPath', label: 'category'},
+    {route: '/post/:postId',           label: 'post'},
+    {route: '/post/:postId/edit',      label: 'edit-post'},
+    {route: '/post/new',               label: 'new-post'},
   ];
 
   // "id" is one of: post.id, comment.id, category.name
@@ -46,28 +46,42 @@ export const SORT_BY = 'SORT_BY';
     category: ALL_POSTS_CATEGORY,
   }
 
-// ACTION CREATORS
+  // export const getPersistentCategory(){
+  //   return store.viewData.persistentCategoryPath;
+  // };
+  // export const getPersistentSort(){
+  //   return store.viewData.persistentCategoryPath;
+  // };
 
+  // TODO: delete this one in favor of uri.js
   export function getUri(routerInfo){
     const match    = (routerInfo && routerInfo.match)    || null;
     const location = (routerInfo && routerInfo.location) || null;
     return ({
-      route:  match.path   || null,
-      url:    match.url    || null,
+      route:  match.path   || HOME.url,
+      url:    match.url    || location.pathname || null,
       params: match.params || null,
       postId:       match.params.postId       || null,
       categoryPath: match.params.categoryPath || null,
 
       // TESTING to replace postId and categoryPath above
-      currentId: match.params.postId || match.params.categoryPath || null,
+      currentId: match.params.postId || match.params.categoryPath || HOME.category.path,
 
-      // TODO: store currentSort info in url (persistent shall still be in viewData)
+      // // TESTING this is viewData, but it's related to params. Not sure if it makes
+      // //  good or bad sense to have "here" also/instead of viewData
+      // //  it should get updated whenever the route is a category route, and
+      // //    the currentCategoryPath is different from the stored persistentCategoryPath
+      // persistentCategoryPath: match.params.categoryPath || store.viewData.persistentCategoryPath || HOME.category.path,
+
+      // TODO: store currentSort info in url (persistent shall still be in Uri)
       // search: location.search || null,
 
       //TODO: so can link to location on page (top of comments, add comment, etc)
       // hash:   location.hash   || null,
     })
   }
+
+// ACTION CREATORS
 
   export const changeView = (newViewData=HOME) => {
       // console.log('____entering viewData.changeView, newViewData:', newViewData);
@@ -84,6 +98,18 @@ export const SORT_BY = 'SORT_BY';
     const uri = newViewData.uri;
     if (uri){
       // console.log('__have new uri:', uri);
+
+      if (uri.route ==="/"){
+          return ({
+            type: CHANGE_VIEW,
+            currentUrl: uri.url,
+            currentId:  HOME.category.path,
+
+            persistentCategory: HOME.category,  // category object
+            // TODO: refactor components to (below) this instead (of above)
+            persistentCategoryPath: HOME.category.path,  //string
+          })
+      }
 
         // by uri: category
         if (uri.route === "/category/:categoryPath") {
@@ -102,18 +128,15 @@ export const SORT_BY = 'SORT_BY';
             type: CHANGE_VIEW,
             currentUrl: uri.url,
             currentId:  uri.params.categoryPath,
-            // TODO: this is technically incorrect, the path is *notNecessarily*
-            //  the same as the name.  Using a cheating shortcut here, since I have
-            //  no access to the list of categories objects, to pull the name,
-            //  given the path (which I have)
-            // TODO: instead of saving persistentCategory, since I'm now using
-            //  url's, instead store the persistentCategoryPath!
+
             persistentCategory: {
-              name: uri.params.categoryPath,  //{ name, path }
+              name: uri.params.categoryPath,  // technically incorrect!!
+              // (above) don't have access to categories to parse this properly.
+              //  It's the same value in MY dataset (currently)
               path: uri.params.categoryPath,  //{ name, path }
-            }
-            // TODO: refactor components to use this instead
-            // persistentCategoryPath: uri.params.categoryPath,  //string
+            },
+            // TODO: refactor components to use below instead
+            persistentCategoryPath: uri.params.categoryPath,  //string
           })
         }
 
@@ -150,6 +173,8 @@ export const SORT_BY = 'SORT_BY';
         currentUrl: url,
         currentId: id,
         persistentCategory: category,
+        //  TODO refactor components to use below instead of above
+        persistentCategoryPath: category.path,
       });
 
     // changeView By: url, id
@@ -200,6 +225,8 @@ export const SORT_BY = 'SORT_BY';
     currentId:  HOME.id,
     // object eg: {name: 'react', path: 'react'}
     persistentCategory: HOME.category,
+    //  TODO refactor components to use below instead of above
+    persistentCategoryPath: HOME.category.path,
     // 'votes' or 'date'
     persistentSortBy:    DEFAULT_SORT_BY,
     persistentSortOrder: DEFAULT_SORT_ORDER,
@@ -220,10 +247,10 @@ function viewData(state=initialState_ViewData, action){
       // TODO: parse URL and call selectCategory action creator instead.
 
       id = (action.currentId === null)
-        ? state.persistentCategory.name
+        ? state.persistentCategory.path
         : action.currentId
       // console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
-      return ({
+      return  ({
                 ...state,
                 currentUrl: action.currentUrl,
                 currentId: id,
@@ -232,23 +259,24 @@ function viewData(state=initialState_ViewData, action){
     case SELECT_CATEGORY:
       // console.log('SELECT_CATEGORY, action:', action);
       let category = action.persistentCategory;
-      url = (category.name)
+      url = (category.path)
                 ? `/category/${category.path}`
                 : '/'    // home page: all categories
-      id = category.name;
-      return ({
+      id = category.path;
+      return  ({
                 ...state,
                 currentUrl: url,
                 currentId: id,
                 persistentCategory: category,
-            });
+                persistentCategoryPath: action.persistentCategoryPath,
+              });
 
     case SORT_BY:
-      return ({
+      return  ({
                 ...state,
                 // TODO sort method stored in url ??
                 persistentSortBy: action.persistentSortBy,
-            });
+              });
 
     default:
       return state;
