@@ -52,7 +52,8 @@ import * as ReaderAPI from '../utils/api';
             const categoriesObject = data.categories.reduce((acc, category)=>{
               return {
                 ...acc,
-                [category.name]: category,
+                // index categories on the path !!!, not the name
+                [category.path]: category,
               }
             }, {})
 

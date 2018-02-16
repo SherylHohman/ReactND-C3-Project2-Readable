@@ -3,37 +3,29 @@ import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { fetchCategories } from '../store/categories';
 import { fetchPosts } from '../store/posts';
-import { changeView, HOME, DEFAULT_SORT_BY } from '../store/viewData';
+import { changeView, HOME, DEFAULT_SORT_BY, getUri } from '../store/viewData';
 
 
 export class Categories extends Component {
 
   componentDidMount() {
-    // may need to move this to App.js
     this.props.fetchCategories();
-    console.log('Categories componentDidMount ..fetching, categories');
-  }
+    // console.log('Categories componentDidMount ..fetching, categories');
 
-  getCategoryFromName(categoryName){
-    if (!categoryName){
-      return HOME.category;  // home page, show all categories
-    } else {
-      return this.props.categories.find((category) => {
-        return category.name === categoryName;
-      });
+    if (this.props.uri){
+      // console.log('Categories cDM calling changeView, this.props.uri', this.props.uri);
+      this.props.changeView(this.props.uri)
     }
-  }
-
-  onSelectCategory(categoryName){
-    const category = this.getCategoryFromName(categoryName);
-    this.props.changeViewByCategory(category);
-    this.props.getPosts(category.path);
+    else {
+      // console.log('Categories cDM NOT calling changeView, this.props.uri', this.props.uri);
+    }
   }
 
   render() {
 
     const isExactPath = () => {
-      return (('/' + this.props.category.path) === this.props.history.location.pathname);
+      return (this.props.uri && this.props.uri.url) &&
+             (this.props.uri.url === HOME.url);
     }
 
     return (
@@ -44,7 +36,6 @@ export class Categories extends Component {
                 <li className="no-link"> Category: </li>
                 <NavLink key="all-categories-makeSureThisKeyIsUnique"
                       to={HOME.category.path}
-                      onClick={() => {this.onSelectCategory(HOME.category.name)}}
                       activeClassName={"selected"}
                       isActive={isExactPath}
                       >
@@ -56,7 +47,6 @@ export class Categories extends Component {
                   return (
                     <NavLink key={category.name}
                       to={`/category/${category.path}`}
-                      onClick={() => {this.onSelectCategory(category.name)}}
                       activeClassName="selected"
                           >{category.name}
                       <li key={category.name}></li>
@@ -79,21 +69,27 @@ function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
     getPosts: (category) => dispatch(fetchPosts(category)),
-    changeView: (id, url) => dispatch(changeView({ currentId: id, currentUrl: url })),
-    changeViewByCategory: (category) => dispatch(changeView(category)),
+    changeView: (uri) => dispatch(changeView({ uri })),
   })
 }
 
-function mapStoreToProps ( store ) {
+function mapStoreToProps (store, ownProps) {
   // console.log('store.categories:', store.categories)
+  // console.log('Categories, ownProps:', ownProps)
+
+  // so don't have to refactor former history references
+  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null;
+
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
 
+  const uri = getUri(ownProps.routerInfo) || null;
+
   return {
-      categories: categoriesArray || null,
-      category: store.viewData.category || HOME.category,
-      sortBy:   store.viewData.sortBy   || DEFAULT_SORT_BY,
+      categories: categoriesArray   || null,
+      sortBy: store.viewData.sortBy || DEFAULT_SORT_BY,
+      uri,
   }
 };
 

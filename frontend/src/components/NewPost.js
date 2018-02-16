@@ -273,16 +273,21 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store ) {
+function mapStoreToProps (store, ownProps) {
   const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
+
+    // TEMP during refactor, so this.props.history.push() still works
+  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
 
   return {
     categoriesObject: store.categories,
     categoryNames: categoryNames || null,
     categoryName: categoryNames[0] || HOME.category,
 
+    // TEMP during refactor, so this.props.history.push() still works
+    history,
   }
 };
 

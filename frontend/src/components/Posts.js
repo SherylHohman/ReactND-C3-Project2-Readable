@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
-import { changeView, HOME, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from '../store/viewData';
+import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 
 export class Posts extends Component {
 
@@ -14,8 +14,17 @@ export class Posts extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchPosts(this.props.selectedCategoryName);
-    console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
+    // this.props.fetchPosts(this.props.selectedCategoryName);
+    // console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
+
+    this.props.fetchPosts(this.props.categoryPath);
+    console.log('....____Posts cDM ..fetching, posts for category:', this.props.categoryPath);
+
+    if (this.props.uri){
+      console.log('__Posts cDM calling changeView, this.props.uri', this.props.uri);
+      this.props.changeViewByUri(this.props.uri)
+    }
+
   }
   componentWillReceiveProps(nextProps){
     // console.log('Posts cWRP nextProps:', nextProps);
@@ -28,6 +37,21 @@ export class Posts extends Component {
                                     nextProps.sortBy || this.state.sortBy);
       this.setState({ posts: sortedPosts });
     }
+
+    if (this.props.uri && nextProps.uri && nextProps.uri.url !== this.props.uri.url){
+      // console.log('__Posts cWRprops calling changeView, this.props.uri', this.props.uri);
+      this.props.changeViewByUri(nextProps.uri)
+    }
+    else {  // for monitoring how app works
+      // console.log('__Posts cWRprops NOT calling changeView, nextProps.uri', nextProps.uri.url, this.props.uri.url);
+    }
+
+    if (nextProps.categoryPath && this.props.categoryPath &&
+        nextProps.categoryPath !== this.props.categoryPath){
+          console.log('....____Posts cWRprops, fetching..new posts, categoryPath:', nextProps.categoryPath);
+          this.props.fetchPosts(nextProps.categoryPath);
+    }
+
   }
 
   onChangeSort(e, sortBy){
@@ -74,13 +98,11 @@ export class Posts extends Component {
           </div>
 
           {/*Categories*/}
-          <Categories history={this.props.history}/>
+          <Categories routerInfo={ this.props.routerInfo }/>
           <hr />
 
           {/*New Post*/}
-          <Link to={`/post/new`} onClick={() => {
-            this.props.onChangeView(`/new`, 'newPostIdPlaceholder')
-          }}>
+          <Link to={`/post/new`}>
             <div><h2>Add New Post</h2><hr /></div>
           </Link>
 
@@ -95,9 +117,7 @@ export class Posts extends Component {
                       <li key={post.id}>
                         <div>
 
-                          <Link to={`/post/${post.id}`} onClick={() => {
-                            this.props.onChangeView(`/post/${post.id}`, post.id)
-                          }}>
+                          <Link to={`/post/${post.id}`}>
                             <h1>{post.title}</h1>
                           </Link>
 
@@ -121,7 +141,6 @@ export class Posts extends Component {
 }
 
 function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER) {
-  // console.log('enter sortPosts, posts:', posts, 'sortMethod', sortMethod);
   const isHIGH_TO_LOW = (orderBy === DEFAULT_SORT_ORDER) ? 1 : -1;
 
   const sorted = posts.sort((postA, postB) => {
@@ -137,7 +156,6 @@ function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER
     }
     return 0;  // no sort
   });
-  // console.log('leaving sortBy, posts: ', posts);
   return sorted;
 };
 
@@ -145,38 +163,34 @@ function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER
 function mapDispatchToProps(dispatch){
   return ({
     fetchPosts: (category) => dispatch(fetchPosts(category)),
-    onChangeView: (url, id) => dispatch(changeView({
-      currentUrl:url,
-      currentId: id
-    })),
-    onChangeViewByCategory: (category) => dispatch(changeView({
-      persistentCategory:category
-    })),
+    changeViewByUri: (uri) => dispatch(changeView({ uri })),
     onChangeSort: (sortBy) => dispatch(changeSort(sortBy)),
   })
 }
 
 function mapStoreToProps (store, ownProps) {
   // console.log('store:', store);
-  console.log('Posts ownProps:', ownProps);
+  // console.log('Posts ownProps:', ownProps);
+
+  // So can still use this.props.history without refactoring its references
+  // const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
 
   // object to array
   const posts = Object.keys(store.posts).reduce((acc, postId) => {
       return acc.concat([store.posts[postId]]);
     }, []);
   const sortedPosts = sortPosts(posts, store.viewData.persistentSortBy);
-  // console.log('__mapStoreToProps, sortedPosts:', sortedPosts)
 
-  const selectedCategoryName = (store && store.viewData
-    && store.viewData.persistentCategory)
-     ? store.viewData.persistentCategory.name
-     : HOME.category.name;  // console.log('selectedCategoryName:', selectedCategoryName)
+  const uri = getUri(ownProps.routerInfo) || null;
 
   return {
     posts: sortedPosts,
-    selectedCategoryName,
     sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
     sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
+
+    uri,
+    categoryPath: uri.currentId,  // === uri.currentCategoryPath  TEMP
+
   }
 };
 

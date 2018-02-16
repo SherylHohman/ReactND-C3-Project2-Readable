@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
-import { changeView, HOME, updateLocation } from '../store/viewData';
+import { changeView, HOME, getUri } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -24,99 +24,49 @@ export class Post extends Component {
     //  fetch the post, based on post.id that's in the url
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
-
-      // // App "assumes" its loaded using the root url, update viewData with actual url
-      // // also set viewData to reflect page that actually on - maybe do this in App.js?
-      // if (this.props && this.props.match & this.props.match.url) {
-      //   this.changeView(this.props.match.url, this.props.match.params.postId)
-      // }
     }
 
     if (this.props.uri){
-      // console.log('have uri, will I call changeView ?');
-      // if (this.props.uri.route === "/category/:category") {
-      //   this.onChangeViewByCategory(this.props.uri.postId.categoryName)
-      // } // else
-      // if ((this.props.uri.route === "/post/:postId") ||
-      //     (this.props.uri.route === "/post/:postId/edit")) {
-      //   this.onChangeView(this.props.uri.pathname, this.props.uri.postId)
-      // }
-      updateLocation(this.props.uri)
+      console.log('__Post cDM calling changeView, this.props.uri', this.props.uri);
+      this.props.changeView(this.props.uri)
+    }
+    else {
+      console.log('__Post cDM NOT calling changeView, this.props.uri', this.props.uri);
     }
   }
 
   componentWillReceiveProps(nextProps){
-    console.log('__Post, nextProps:', nextProps);
-
-    // if (nextProps.uri && (nextProps.uri.url) &&
-    //     nextProps.uri !== this.props.uri   // shallow check
-    //    ){
-    //     this.updateLocation(nextProps.uri)
-    // }
+    // maybe check for 404 (deleted postId, bad postId), or network error here ?
   }
 
-  // updateLocation(uri) {
-  //   console.log('___have new uri:', uri);
-  //   if (uri.route === "/category/:category") {
-  //     this.props.onChangeViewByCategory(uri.params.categoryName)
-  //   } // else
-  //   if ((uri.route === "/post/:postId") ||
-  //       (uri.route === "/post/:postId/edit")) {
-  //     this.props.onChangeView(uri.url, uri.postId)
-  //   }
-  // }
-
-
   onDelete(postId){
-    // must call deletePost before changeView
+    // console.log('deleteing post, postId:', this.props.postId);
+    // console.log('this post\'s categoryPath:', this.props.categoryPath);
+    // console.log('(old uri):', this.props.uri);
+
     this.props.deletePost(postId);
     // Link redirects to category that this post previously appeared
     // viewData musht store this same info to keep in synch
     // Not Dry :/ - TODO: read and parse data from URL routes
-    const category = {
-      name: this.props.post.category,
-      path: this.props.categoryPath,
-    }
-    this.props.changeViewByCategory(category);
+
+    // const category = {
+    //   name: this.props.post.category,
+    //   path: this.props.categoryPath,
+    // }
+    // this.props.changeViewByCategory(category);
   }
 
   render(){
 
-    // // for exploring history when must rely on url
-    // if (props && props.location) {  // && props.location.state) {
-    //   console.log('Post props.location');
-    // }
-    // if (props && props.match) {
-    //   console.log('Post, url match', props.match);
-    // }
-
-
     const props = this.props;
     if (!this.props){console.log('Post props is undefined');}
 
-    // const post =
-    //   (props && props.post) ||
-    //   (props && props.location && props.location.state && props.location.state.post) ||
-    //   (props && props.match && props.match.params && props.match.params.post) ||
-    //   null;
-
-    // If page is loaded from a saved url. Store is empty. Redirect
-    // A better solution would be to read the post id from the url.. fetch data.
-
-    /*
-    if (post === null) {
-      console.log('Post: post wasn\'t present in props, redirecting to home page.');
-      return (
-        <div>
-          <p>post wasn't present in props:</p>
-          <Redirect to="/" push />
-        </div>
-      )
-    }
-  */
+    // TODO: show error message if error fetching post:
+    //  post Deleted, bad PostId, or network error
+    //  options: 404, retry, homePage
 
     if (!this.props.post) {
-      console.log('Post: post wasn\'t present in props, do I have the postID?:', this.props.postId);
+      // console.log('Post: post wasn\'t present in props, do I have the postID?:', this.props.postId);
       return (
         <div>
           <p>looking for your Post:</p>
@@ -124,21 +74,19 @@ export class Post extends Component {
       )
     }
 
-    const postId = this.props.postId;  // change to == post.id ?  //see above, and below.
+    const postId = this.props.postId;
     const {title, body, voteScore, commentCount, author, timestamp } = this.props.post;
 
     // disambiguate:
-    // category is an {name, path} on categories,
-    // category is a name on post
+    // category is an {name, path} object on categories, yet
+    // category on a post refers to a category.name
     const categoryName = this.props.post.category;
+    const categoryPath = this.props.categoryPath;
 
     return (
       <div>
         <div>
-            <Link
-              to={`/post/${postId}`}
-              onClick={() => {this.props.onChangeView(`/post/${postId}`, postId)
-            }}>
+            <Link to={`/post/${postId}`}>
               <h2>{title}</h2>
             </Link>
 
@@ -165,15 +113,12 @@ export class Post extends Component {
 
             <div>
               <Link
-                to={`/category/${this.props.categoryPath}`}
+                to={`/category/${categoryPath}`}
                 onClick={() => {this.onDelete(postId)}}
               >
                 Delete Post
               </Link>
-                <Link
-                  to={`/post/${postId}/edit`}
-                  onClick={() => {this.props.onChangeView(`/post/${postId}/edit`, postId)
-                }}>
+                <Link to={`/post/${postId}/edit`}>
                   Edit Post
                 </Link>
             </div>
@@ -195,68 +140,42 @@ Post.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    onChangeView:  (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
     onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
 
-    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     deletePost: (postId) => dispatch(deletePost(postId)),
+    changeView: (uri) => dispatch(changeView({ uri })),
 
-    fetchPost: (id) => dispatch(fetchPost(id)),
+    fetchPost:  (id) => dispatch(fetchPost(id)),
   })
 }
 
 function mapStoreToProps (store, ownProps) {
-  console.log('Post store:', store);
-  console.log('Post ownProps:', ownProps);
+  // console.log('Post store:', store);
+  // console.log('Post ownProps:', ownProps);
 
-  // const postId = store.viewData.currentId;
-  const postId = //store.viewData.currentId ||  // primary source of truth due to asynch of url
-    ownProps.routerInfo.match.params.PostId || null;  // fallback in case load from saved URL
-    console.log('Post mapStoreToProps, postId', postId);
+  const uri = getUri(ownProps.routerInfo) || null;
+  const postId = uri.postId  || null;
+  const post = store.posts[postId] || null;
 
-  const post = store.posts[postId];
-
-  // disambiguate: category is an object with name and path
-  // but on a post category refers to the name only
+  // so can redirect to Post's (former) category when deleting the post
   const categoryName = (post && post.category) || null;
-  const categoryPath = (store.categories[categoryName] &&
-                        store.categories[categoryName].path) || null;
-
-
-  const routerInfo = (ownProps && ownProps.routerInfo) || null;
-  const uri = {
-    route:  (routerInfo && routerInfo.match && routerInfo.match.path)   || null,
-    url:    (routerInfo && routerInfo.match && routerInfo.match.url)    || null,
-    params: (routerInfo && routerInfo.match && routerInfo.match.params) || null,
-    postId: (routerInfo && routerInfo.match && routerInfo.match.params.postId) || null
-    // search:    (routerInfo && routerInfo.location && routerInfo.location.search) || null,
-    // hash:     (routerInfo && routerInfo.location && routerInfo.location.hash)  || null,
-  }
-  console.log('__Post, uri:', uri);
+  const category = categoryName && store.categories[categoryName];
+  const categoryPath = (category && store.categories[categoryName].path) || null //HOME.category.path || null;
+  // console.log('_____________categoryPath:', categoryPath, categoryName, category, post, postId);
 
   return {
-    postId: uri.postId,
-    post:   store.posts[uri.postId],
-    // categoryPath,
+    postId,
+    post,
+    categoryPath,
 
-    // if loaded from saved URL
+    // uri: {url, currentId, route, params}
+    // params: is either: postId OR categoryPath  //currentId replaces postId & categoryPath
     uri,
-    viewDataUrl: store.viewData.currentUrl || null,
-    viewDataId:  store.viewData.currentId  || null,
+
+    // so don't have to refactor former history.push references (if have bad postId)
+    history: ownProps.routerInfo.history
   }
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Post);
-
-
-
-
-    // TODO IF post isn't in store, fetch it.
-    // props post accessed by query string
-    // https://github.com/ReactTraining/react-router/issues/4036
-
-    // const { post } = props.location.state;
-    // // prop passed in from a Link component
-    // // https://stackoverflow.com/a/45599159/5411817
-
