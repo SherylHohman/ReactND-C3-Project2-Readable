@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { getUri } from '../store/viewData';
 import { fetchComments } from '../store/comments';
-import { upVoteComment, downVoteComment, editComment, deleteComment } from '../store/comments';
+import { upVoteComment, downVoteComment } from '../store/comments';
+import { editComment, deleteComment } from '../store/comments';
 import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 import NewComment from './NewComment';
-// import EditComment from './EditComment';
 import Modal from 'react-responsive-modal';
 import PropTypes from 'prop-types';
 
@@ -26,7 +27,7 @@ export class Comments extends Component {
   componentDidMount(){
     const postId = this.props.postId;
     // console.log('...in Comments ComponentDidMount, props', this.props);
-    console.log('Comments componentDidMount ..fetching, comments');
+    // console.log('Comments componentDidMount ..fetching, comments');
     this.props.fetchComments(postId);
   }
 
@@ -58,22 +59,10 @@ export class Comments extends Component {
   closeModal(){
     this.setState({id:'', body:'', author: '', isOpenModal: false});
   };
-  onCancel(){
-    this.closeModal();
-  }
   onSubmit(e){
     e.preventDefault();
     // return false;
   }
-
-  // onSaveComment(id){
-  //   // Modal
-  //   this.props.onEditComment({
-  //     id,
-  //     body: this.state.commentBody.trim(),
-  //     timestamp: Date.now(),   // updates timestamp ?
-  //   });
-  // }
 
   render() {
     const { comments, postId } = this.props;
@@ -90,14 +79,6 @@ export class Comments extends Component {
         <div>Be the first to comment on this post</div>
       )
     }
-    // if (comments[0].parentDeleted) {
-    //   return (
-    //     <div>
-    //       <h3> ..Oops! This post has been deleted.</h3>
-    //       <p>No comments to show.</p>
-    //     </div>
-    //   )
-    // }
 
     return  (
       <div>
@@ -184,7 +165,7 @@ export class Comments extends Component {
                 </button>
                 <button
                   className="on-cancel"
-                  onClick={() => {this.onCancel();
+                  onClick={() => {this.closeModal();
                 }}>
                   Cancel
                 </button>
@@ -202,7 +183,7 @@ export class Comments extends Component {
 
 function mapDispatchToProps(dispatch){
   return ({
-    fetchComments:       (postId)    => dispatch(fetchComments(postId)),
+    fetchComments:     (postId)    => dispatch(fetchComments(postId)),
     onUpVoteComment:   (commentId) => dispatch(upVoteComment(commentId)),
     onDownVoteComment: (commentId) => dispatch(downVoteComment(commentId)),
     onDeleteComment:   (commentId) => dispatch(deleteComment(commentId)),
@@ -212,10 +193,19 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  const postId = store.viewData.currentId || null;
+  // const postId = store.viewData.currentId || null;
+  // const uri = getUri(ownProps.routerProps) || null;
 
-  //  TODO: if there is already a comments array in store,
-  //    double check that it is for *this* post
+  // passed as props from Post - change this when put uri into store
+  // const uri = ownProps.uri;
+
+  // either pass "store" in as second prop, or parent component needs to pass uri
+  // const uri = getUri(null, store) || null;
+  const uri = getUri(ownProps.routerProps) || null;
+
+
+  const postId = uri && uri.currentId;  // or uri.params.postId // or uri.postId
+  // console.log('Comments, mSTP, uri', uri);
 
   const commentIds = Object.keys(store.comments);
   const comments = commentIds.reduce((acc, commentId) => {
