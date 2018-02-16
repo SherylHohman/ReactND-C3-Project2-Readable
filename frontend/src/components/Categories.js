@@ -103,7 +103,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
   // console.log('store.categories:', store.categories)
-  console.log('Categories, ownProps:', ownProps)
+  // console.log('Categories, ownProps:', ownProps)
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
@@ -112,7 +112,7 @@ function mapStoreToProps (store, ownProps) {
   const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null;
 
   const uri = getUri(ownProps.routerInfo) || null;
-  console.log('uri:', uri);
+  // console.log('uri:', uri);
   // uri.currentId === uri.categoryPath === categories[uri.categoryPath].path
   const category = (uri.currentId && store.categories &&
                     store.categories[uri.currentId]) || HOME.category;

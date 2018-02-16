@@ -42,7 +42,7 @@ export class Posts extends Component {
       this.props.changeViewByUri(nextProps.uri)
     }
     else {
-      console.log('__Posts cWRprops NOT calling changeView, nextProps.uri', nextProps.uri.url, this.props.uri.url);
+      // console.log('__Posts cWRprops NOT calling changeView, nextProps.uri', nextProps.uri.url, this.props.uri.url);
     }
 
     // fetch new posts when category in the url changes ??
@@ -190,7 +190,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
   // console.log('store:', store);
-  console.log('Posts ownProps:', ownProps);
+  // console.log('Posts ownProps:', ownProps);
 
   // object to array
   const posts = Object.keys(store.posts).reduce((acc, postId) => {
@@ -207,7 +207,7 @@ function mapStoreToProps (store, ownProps) {
   // TEMP during refactor, so this.props.history.push() still works
   const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
   const uri = getUri(ownProps.routerInfo) || null;
-  console.log('___categoryPath:', uri.currentId)
+  // console.log('___categoryPath:', uri.currentId)
 
   return {
     posts: sortedPosts,

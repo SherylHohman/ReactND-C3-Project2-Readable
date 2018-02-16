@@ -8,57 +8,78 @@ import NewPost from './NewPost';
 import EditPost from './EditPost';
 import { fetchPosts } from '../store/posts';
 import { fetchCategories } from '../store/categories';
-import { changeView, HOME } from '../store/viewData';
+import { changeView, HOME, getUri } from '../store/viewData';
 
 class App extends Component {
 
   componentDidMount() {
-    console.log("in App componentDidMount");
+    console.log("__in App componentDidMount, props:", this.props);
 
     this.props.fetchCategories();
-    this.props.fetchPosts();
+    // this.props.fetchPosts();
+    // this.props.fetchPosts(this.props.categoryPath);
 
-    if (this.props.uri){
-      this.updateLocation(this.props.uri)
-    }
+    // if (this.props.uri){
+    //   this.updateLocation(this.props.uri)
+    // }
+
+    // MAYBE: DO NOT SET VIEWDATA/URI in  APP AT ALL
+    // if (this.props.uri){
+    //   this.props.changeView(this.props.uri)
+    // }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('App, nextProps:', nextProps)
+    // console.log('__App, nextProps:', nextProps);
+    // console.log('__App, this.props:', this.props);
+
+    // if (nextProps) console.log('__App, nextProps.uri:', nextProps.uri);
+    // if (this.props) console.log('__App, this.props.uri:', this.props.uri);
 
     // if (nextProps.routerInfo && (nextProps.routerInfo.url!==null) &&
     //     this.props.uri && nextProps.uri !== this.props.uri
     //    ){
     //     this.updateLocation(nextProps.uri)
     // }
-    if ( nextProps.history && nextProps.history.match &&
-       (nextProps.history.match.url !== this.props.viewDataUrl)
-       ){
-         this.updateLocation(nextProps.history.match.url);
-    }
+
+    // if ( nextProps.history && nextProps.history.match &&
+    //    (nextProps.history.match.url !== this.props.viewDataUrl)
+    //    ){
+    //      this.updateLocation(nextProps.history.match.url);
+    // }
+
+    // MAYBE: DO NOT SET VIEWDATA/URI in  APP AT ALL
+    // if ( nextProps.uri && this.props.uri &&
+    //    // (nextProps.uri.url !== this.props.uri.url)
+    //    (nextProps.uri.url !== this.props.uri.url)
+    //    ){
+    //       console.log('different urls, nextProps.uri.url', nextProps.uri.url, this.props.uri.url)
+    //      this.props.changeView(nextProps.uri);
+    // }
+
     // TODO: consider..
     // what about if nextProps-match-url and nextProps.viewData both are changing?
     // or if viewData changed beore match (is that even possible ?)
   }
 
-  // IN APP, the params:{filter: post}, and path: /:filter? and url: /post
-  // This differs significantly to what the "Route"s or other Components see/get
-  updateLocation(matchAppUrl) {
-    console.log('have new uri, will I call changeView ?');
+  // // IN APP, the params:{filter: post}, and path: /:filter? and url: /post
+  // // This differs significantly to what the "Route"s or other Components see/get
+  // updateLocation(matchAppUrl) {
+  //   console.log('have new uri, will I call changeView ?');
 
-    if (matchAppUrl === "/") {
-      this.onChangeViewByCategory(HOME.category)
-    } // else
+  //   if (matchAppUrl === "/") {
+  //     this.onChangeViewByCategory(HOME.category)
+  //   } // else
 
-    // I do NOT have access to categoryName inside App, would inside Post/Category though
-    // .. cannot PROPERLY set viewData without the Post/Category ID
-    if (matchAppUrl === "/category") {
-      this.onChangeView(matchAppUrl, null)
-    } // else
-    if (matchAppUrl === "/post"){
-      this.onChangeView(matchAppUrl, null)
-    }
-  }
+  //   // I do NOT have access to categoryName inside App, would inside Post/Category though
+  //   // .. cannot PROPERLY set viewData without the Post/Category ID
+  //   if (matchAppUrl === "/category") {
+  //     this.onChangeView(matchAppUrl, null)
+  //   } // else
+  //   if (matchAppUrl === "/post"){
+  //     this.onChangeView(matchAppUrl, null)
+  //   }
+  // }
 
   render() {
 
@@ -67,9 +88,9 @@ class App extends Component {
 
         <header className="app-header">
 
-          <Link to="/" onClick={() => {
-            this.props.onChangeView(HOME.url)
-          }}>
+          <Link to="/"
+          /*onClick={() => {this.props.onChangeView(HOME.url)}}*/
+          >
             <h1 className="app-title">Readable</h1>
           </Link>
           <div className="app-intro">
@@ -113,13 +134,14 @@ function mapDispatchToProps(dispatch){
   return ({
     fetchPosts: () => dispatch(fetchPosts()),
     fetchCategories: () => dispatch(fetchCategories()),
-    onChangeView: (url, id) => dispatch(changeView({
-      currentUrl:url,
-      currentId: id
-    })),
-    onChangeViewByCategory: (category) => dispatch(changeView({
-      persistentCategory:category
-    })),
+    // onChangeView: (url, id) => dispatch(changeView({
+    //   currentUrl:url,
+    //   currentId: id
+    // })),
+    // onChangeViewByCategory: (category) => dispatch(changeView({
+    //   persistentCategory:category
+    // })),
+    changeView: (uri) => dispatch(changeView({ uri })),
   })
 }
 
@@ -135,18 +157,38 @@ function mapStoreToProps (store, ownProps) {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
 
-  // format is different for APP than Post/Category
-  // IN APP, eg.{ params: {filter: 'post'}, path: '/:filter?' url:'/post' }
-  const history = (ownProps && ownProps.history) || null;
-  const urlBase = (history.match && history.match.url) || null;
-  // console.log('App, urlBase:', urlBase);
+
+ // MAYBE: DO NOT SET VIEWDATA/URI in  APP AT ALL
+  // // format is different for APP than Post/Category
+  // // IN APP, eg.{ params: {filter: 'post'}, path: '/:filter?' url:'/post' }
+  // const history = (ownProps && ownProps.history) || null;
+  // const urlBase = (history.match && history.match.url) || null;
+  // // console.log('App, urlBase:', urlBase);
+
+  // // unlike the other components, "router info" is passed in under "ownProps"
+  // //   not as "ownProps.routerInfo", so create routerInfo here..
+  // const routerInfo = {
+  //   match:    ownProps.match,
+  //   location: ownProps.location,
+  //   history:  ownProps.history,
+  // };
+  // const uri = getUri(routerInfo) || null;
+  // // // const uri = store.uri;
+  // const categoryPath = (uri && (uri.categoryPath || uri.params.categoryPath))
+  //                   || HOME.category.path;
 
   return {
     posts: postsArray,
     categories: categoriesArray,
-    urlBase,
-    viewDataUrl: store.viewData.currentUrl || null,
-    viewDataId:  store.viewData.currentId  || null,
+  //   // urlBase,
+  //   // viewDataUrl: store.viewData.currentUrl || null,
+  //   // viewDataId:  store.viewData.currentId  || null,
+
+  //   // // MAYBE: DO NOT SET VIEWDATA/URI in  APP AT ALL
+  //   // // NOTE match.path === uri.route home page is "/:filter?",
+  //   // // NOT "/" as the reduucers may think..
+  //   // uri,
+  //   categoryPath,
   }
 };
 
