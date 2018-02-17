@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
 import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
+// import { changeLocation } from '../store/currentViewData';
+// import { changeCategory } from '../store/persistentViewData';
 
 export class Posts extends Component {
 
@@ -17,10 +19,18 @@ export class Posts extends Component {
     // this.props.fetchPosts(this.props.selectedCategoryName);
     this.props.fetchPosts(this.props.categoryPath);
     // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
+
     if (this.props.uri){
       // console.log('Posts cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeViewByUri(this.props.uri)
     }
+
+  //   // TEST Refactor
+  //   if (this.props.routerProps){
+  //     this.props.changeLocation(this.props.routerProps);
+  //   }
+  //   // persistent data also..
+
   }
 
   componentWillReceiveProps(nextProps){
@@ -43,12 +53,16 @@ export class Posts extends Component {
       // console.log('__Posts cWRprops NOT calling changeView, nextProps.uri', nextProps.uri.url, this.props.uri.url);
     }
 
+    // // TEST Refactor
+    // if (nextProps.routerProps && this.props.routerProps) {
+    //   this.props.DDchangeLocation(nextProps.routerProps, this.props.routerProps);
+    // }
+
     if (nextProps.categoryPath && this.props.categoryPath &&
         nextProps.categoryPath !== this.props.categoryPath){
           console.log('....____Posts cWRprops, fetching..new posts, categoryPath:', nextProps.categoryPath);
           this.props.fetchPosts(nextProps.categoryPath);
     }
-
   }
 
   onChangeSort(e, sortBy){
@@ -162,6 +176,8 @@ function mapDispatchToProps(dispatch){
     fetchPosts: (category) => dispatch(fetchPosts(category)),
     changeViewByUri: (uri) => dispatch(changeView({ uri })),
     onChangeSort: (sortBy) => dispatch(changeSort(sortBy)),
+    // changelocation: (routerProps) => dispatch(changeLocation({ routerProps, prevRouterProps: null })),
+    // DDchangelocation: (routerProps, prev=null) => dispatch(changeLocation({ routerProps, prev })),
   })
 }
 
@@ -179,6 +195,10 @@ function mapStoreToProps (store, ownProps) {
 
   const uri = getUri(ownProps.routerProps) || null;
 
+  const current = store.currentViewData;
+  const url = current && current.url || null;
+  const categoryPath = current && current.categoryPath || null;
+
   return {
     posts: sortedPosts,
     sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
@@ -187,6 +207,10 @@ function mapStoreToProps (store, ownProps) {
     uri,
     categoryPath: uri.currentId,  // === uri.currentCategoryPath  TEMP
 
+    // // refactoring TEST
+    // // current: store.currentViewData,
+    // url,
+    // categoryPath,
   }
 };
 
