@@ -30,7 +30,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 // FAT ACTION CREATORS
 
   export function fetchPosts(category=null){
-    console.log('----fetching posts from category:', category);
     //  fetches ALL posts:   fetchPosts(), or fetchPosts(null)
     //  fetches by category: fetchPosts(category.path)
     return (dispatch) => {

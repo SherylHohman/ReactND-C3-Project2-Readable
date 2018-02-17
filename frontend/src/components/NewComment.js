@@ -28,7 +28,7 @@ export class NewComment extends Component {
       body: this.state.body.trim() || '(no comment)',
       author: this.state.author.trim() || '(anonymous)',
     }
-    console.log(newCommentData);
+    // console.log(newCommentData);
     this.props.onSave(newCommentData);
     this.resetFormFields();
   }
@@ -52,7 +52,6 @@ export class NewComment extends Component {
     return(
       <div
           style={{width:"60%", margin:"0 auto"}}
-
       >
         <h3>Your Comment:</h3>
         <form onSubmit={(e)=> {this.onSubmit(e)}}>
@@ -102,7 +101,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store, ...ownProps ) {
-  // console.log('store:', store)
   return {
     postId : store.viewData.currentId,
   }

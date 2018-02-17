@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { addPost } from '../store/posts';
-import { changeView, HOME } from '../store/viewData';
+import { HOME } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
 import { createId, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -16,42 +16,18 @@ export class NewPost extends Component {
     categoryName: HOME.category.name,
   }
 
-  haveCategories(){
-
-    const val = (this.props &&
-             this.props.categories &&
-             this.props.categories !== null &&
-             Array.isArray(this.props.categories) &&
-             this.props.categories.length > 0  &&
-             this.props.categories[0].name
-             );
-
-    return (!!val === false) ? false : true;
-
-      // val === false, unless it makes it to the final check: (name).
-      // In that case, val === (name).
-      // If (name === '', null, or undefined), val will be falsey,
-      //   so ternary will resolve to false.
-      // Hence, haveCategories returns true ONLY if First Element has a valid name.
-      // Could just write (val) ? false : true, but this is slightly more explicit.
-  }
-
   componentDidMount(){
     // console.log('in NewPost componentDidMount');
 
-    if (!this.haveCategories()){
-        this.props.fetchCategories();
-        console.log('fetching categories..');
-    }
-    else {
-      // initialize a default category to first in the list
-      this.setState({categoryName: this.props.categories[0].name});
+    if (this.props.categoryNames){
+      this.setState( {categoryName: this.props.categoryNames[0] });
     }
   }
 
   componentWillReceiveProps(nextProps){
     // console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
-    // categories never change in life of app, so always ok to overwrite w/o checking.
+
+    // categories never change in life of app, they are fetched at App load
     if ( nextProps &&
          nextProps.categoryNames &&
          Array.isArray(nextProps.categoryNames) &&
@@ -83,40 +59,19 @@ export class NewPost extends Component {
     return false;
   }
 
-  onSubmit(e){
-    e.preventDefault();
-    this.onSave();
-    return false;
-  }
-
   loadHomePage(){
-    const id  = HOME.id;
     const url = HOME.url;
-    this.props.changeViewByUrlId(url, id);
     this.props.history.push(url);
   }
 
   loadCategoryPage(categoryName){
-    // console.log('__loadCategoryPage, this.state:', this.state)
     const category = this.props.categoriesObject[categoryName] || HOME.category;
-
-    this.props.changeViewByCategory(category);
-    // TODO: set persistentSortBy to 'date', sortOrder to 'descending'
-    // this.props.changeSortBy('date');
-
     const url = `/category/${category.path}` || HOME.url;
     this.props.history.push(url);
   }
 
-  loadPostPage(){
-    // TODO: Implementation
-    // TODO: Stay Here, Show spinner until ADD_POST_SUCCES (post is saved in store.)
-
-    const postId = this.state.id;
-    const postUrl = `/post/${postId}`;
-
-    this.props.onChangeView(postUrl, postId);
-    this.props.history.push(postUrl);
+  loadPostPage(postId){
+    this.props.history.push(`/post/${postId}`);
   }
 
   onCancel(){
@@ -125,37 +80,27 @@ export class NewPost extends Component {
   }
 
   onSave(){
-    const newPostDefaults =  {
-        id:     createId(),
-        title:  '(untitled)',
-        body:   '(blank)',
-        author: '(anonymous)',
-          // TODO: automatically populate author from logged in user
-
-        category:  this.props.categoryNames[0] || HOME.category.name,
-          // this.props.categoryNames[0] - valid, but inaccurate value
-          // HOME.category.name - if could not load categories..
-          // ..is likely to cause an error elsewhere, as it cannot be found in
-          // "categories", but might otherwise render, unlike null.
-    }
-
-    const categoryName = this.state.categoryName;
-
     // "Full" Post object has additional fields, initialized by the server.
+
     const newPostData = {
       id:     createId(),
       title:  this.state.title.trim()  || '(untitled)',
       body:   this.state.body.trim()   || '(blank)',
+
       // TODO: automatically populate author from logged in user
       author: this.state.author.trim() || '(anonymous)',
-      category:  categoryName   || newPostDefaults.categoryName,
+      category:  this.state.categoryName     ||
+                 this.props.categoryNames[0] || HOME.category.name,
       timestamp: Date.now(),
     }
-    // TODO: this.loadPost(), instead of loadCategory
-    this.loadCategoryPage(categoryName);
 
-    // TODO: input validation: no empty fields.
     this.props.onSave(newPostData);
+    this.loadPostPage(newPostData.id);
+  }
+
+  onSubmit(e){
+    e.preventDefault();
+    this.onSave();
   }
 
   render(){
@@ -188,7 +133,9 @@ export class NewPost extends Component {
 
         <small>New Post</small>
 
-        <form onSubmit={(e)=> {this.onSubmit(e)}}>
+        <form
+          onSubmit={(e)=> {this.onSubmit(e)}}
+          >
 
           {/* uses state */}
           <input
@@ -267,8 +214,6 @@ NewPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (newPostData) => dispatch(addPost(newPostData)),
-    changeViewByUrlId: (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
-    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     fetchCategories:  (postId) => dispatch(fetchCategories(postId)),
   })
 }
@@ -279,7 +224,7 @@ function mapStoreToProps (store, ownProps) {
   }, []);
 
     // TEMP during refactor, so this.props.history.push() still works
-  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
+  const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
   return {
     categoriesObject: store.categories,

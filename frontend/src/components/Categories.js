@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { fetchCategories } from '../store/categories';
-import { fetchPosts } from '../store/posts';
 import { changeView, HOME, DEFAULT_SORT_BY, getUri } from '../store/viewData';
 
 
@@ -68,7 +67,6 @@ export class Categories extends Component {
 function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
-    getPosts: (category) => dispatch(fetchPosts(category)),
     changeView: (uri) => dispatch(changeView({ uri })),
   })
 }
@@ -78,13 +76,13 @@ function mapStoreToProps (store, ownProps) {
   // console.log('Categories, ownProps:', ownProps)
 
   // so don't have to refactor former history references
-  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null;
+  // const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null;
 
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);
   }, []);
 
-  const uri = getUri(ownProps.routerInfo) || null;
+  const uri = getUri(ownProps.routerProps) || null;
 
   return {
       categories: categoriesArray   || null,

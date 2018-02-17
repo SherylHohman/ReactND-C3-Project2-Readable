@@ -47,19 +47,34 @@ export const SORT_BY = 'SORT_BY';
     category: ALL_POSTS_CATEGORY,
   }
 
-  // export const getPersistentCategory(){
-  //   return store.viewData.persistentCategoryPath;
-  // };
-  // export const getPersistentSort(){
-  //   return store.viewData.persistentCategoryPath;
-  // };
+  // TODO: move uri into store
+  // TODO: maybe change "uri" to a different name: currentViewData, or something
+  export function getUri(routerProps=null, store=null){
+    const match    = (routerProps && routerProps.match)    || null;
+    const location = (routerProps && routerProps.location) || null;
 
-  // TODO: delete this one in favor of uri.js
-  export function getUri(routerInfo){
-    // TODO: maybe change "uri" to a different name: currentViewData, or something
-    const match    = (routerInfo && routerInfo.match)    || null;
-    const location = (routerInfo && routerInfo.location) || null;
-    if (!match) return null;  //exit early
+    // Use STORE  if component does NOT have routerProps
+    if (!match && !store) {
+      console.log('getUri, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
+      console.log('Try passing in "store" as a second parameter to "getUri" as a fallback');
+      // pull info from viewData, which should be kept in synch with url by component's owner
+      return null;
+    }
+    // child component does not have routerProps, use "store" (2nd param)
+    if (store) {
+      console.log('Using "store.viewData", some expected uri fields will be missing.');
+      return ({
+        url: store.viewData.url,
+        currentId: store.viewData.currentId,
+        // these values I cannot get from viewData, but
+        //   they *should not* be needed by child components
+        // route: null,
+        // params: null,
+        // categoryPath: null,
+        // postId: null,
+      });
+    }
+    // else {console.log('___routerProps.match', routerProps.match);}
     // if (!location) return null;  //exit early  // not using location, currently
 
     // Home page format is different than other routes
@@ -89,40 +104,42 @@ export const SORT_BY = 'SORT_BY';
       }
       // delete derived params, when they do not (exist at)/(reflect data for)
       //   current view/url
-      if (uri.postId === null) {delete uri.postId}
+      if (uri.postId       === null) {delete uri.postId}
       if (uri.categoryPath === null) {delete uri.categoryPath}
-      if (uri.currentId === null) {delete uri.postId}
+      if (uri.currentId    === null) {delete uri.postId}
+
+      return uri;
     }
 
-    // otherwise copy values from routerInfo direclty
-    return ({
-      // route:  match.path   || HOME.url,
+    // All other routes -- (don't need to make up data)
+    // Copy values from routerProps directly
+    // console.log('getUri, All Other Routes: routerProps.match', routerProps.match);
+    let uri = {
       route:  match.path   || ROUTES.label['home'].route,
       url:    match.url    || location.pathname || null,
 
       // TODO: get rid of params, key, just put the values in directly
       params: match.params || null,
 
-      // postId:       match.params.postId       || null,
-      // categoryPath: match.params.categoryPath || null,
       // copy the key-value pairs form match.params DIRECTLY onto uri.
-      ...match.params,  // == either postId or categoryPath
+      postId:       match.params.postId       || null,
+      categoryPath: match.params.categoryPath || null,
+      // ...match.params,  // == either postId or categoryPath
 
-      // TESTING to replace postId and categoryPath above
+      // TESTING "currentId": to replace postId and categoryPath above
       currentId: match.params.postId || match.params.categoryPath || HOME.category.path,
 
-      // // TESTING this is viewData, but it's related to params. Not sure if it makes
-      // //  good or bad sense to have "here" also/instead of viewData
-      // //  it should get updated whenever the route is a category route, and
-      // //    the currentCategoryPath is different from the stored persistentCategoryPath
-      // persistentCategoryPath: match.params.categoryPath || store.viewData.persistentCategoryPath || HOME.category.path,
-
       // TODO: store currentSort info in url (persistent shall still be in Uri)
-      // search: location.search || null,
+      //    search: location.search || null,
+      // TODO: so can link to location on page (top of comments, add comment, etc)
+      //    hash:   location.hash   || null,
+    };
+    // delete derived params, when they do not (exist on the current view/url)
+    if (uri.postId       === null) {delete uri.postId}
+    if (uri.categoryPath === null) {delete uri.categoryPath}
+    if (uri.currentId    === null) {delete uri.postId}
 
-      //TODO: so can link to location on page (top of comments, add comment, etc)
-      // hash:   location.hash   || null,
-    })
+    return(uri);
   }
 
 // ACTION CREATORS
@@ -130,132 +147,77 @@ export const SORT_BY = 'SORT_BY';
   export const changeView = (newViewData=HOME) => {
       // console.log('____entering viewData.changeView, newViewData:', newViewData);
 
-    // TODO: refactor app so that "by uri" is the ONLY way this func is called
-    // TODO: also, change persistentCategory (a category object {name, path})
-    //       to persistentCategoryPath (string)
-
-    // TODO: (I can also get rid of currentUrl and currentId, but it's convenient
-    // to have them around.. or replace them with
-    //  - a helper function to pull the values off the router history/match objects)
-
     // changeView By uri
     const uri = newViewData.uri;
-    if (uri){
-      console.log('__have new uri:', uri);
+    if (!uri){ console.log('Must REFACTOR to pass in a "uri" to viewData.changeView');}
+    // else{console.log('__have new uri:', uri);}
 
-      if (uri.route ==="/" || uri.route==="/:filter?"){
-          console.log('__on HOME route:', uri.route);
+    // HOME PAGE
+    if (uri.route ==="/" || uri.route==="/:filter?"){
+        // console.log('__on HOME route:', uri.route);
 
-        // on home route params == {filter: undefined}
-        //   For continuity, shall to explicitely set the categoryPath
-        //   to match expected value, consistent with other paths/components
-        //   * Also Adding a FAKE a "categoryPath" param !! *
+      // on home route params == {filter: undefined}
+      //   For continuity, shall to explicitely set the categoryPath
+      //   to match expected value, consistent with other paths/components
+      //   * Also Adding a FAKE a "categoryPath" param !! *
 
-          return ({
-            type: CHANGE_VIEW,
-            currentUrl: uri.url,
-            currentId:  HOME.category.path,
+        return ({
+          type: CHANGE_VIEW,
+          currentUrl: uri.url,
+          currentId:  HOME.category.path,
 
-            // note "params" is Brittle - I overwrite actual params here.
-            //   if EVER change routes - this may Break !
-            // FAKE THIS - see above notes
-            params: {categoryPath: HOME.category.path},
-            categoryPath: HOME.category.path,
+          // note "params" is Brittle - I overwrite actual params here.
+          //   if EVER change routes - this may Break !
+          // FAKE THIS - see above notes
+          params: {categoryPath: HOME.category.path},  // TODO: retire this category object
 
-            // SHOULD I NOT SET PERSISTENT CATEGORY HERE ??
-            // DOES INITIAL PAGE LOAD CORRUPT THIS SETTING ?
-            persistentCategory: HOME.category,  // category object
-            // TODO: refactor components to (below) this instead (of above)
-            persistentCategoryPath: HOME.category.path,  //string
-          })
-      }
+          categoryPath: HOME.category.path,
 
-        // by uri: category
-        if (uri.route === "/category/:categoryPath") {
-          console.log('__on CATEGORY route:', uri.route);
-        // TODO: instead, check against if categoryPath is in the param list - don't hard code the route
+          persistentCategory: HOME.category,    // TODO: retire this category object
+          // TODO: refactor components to (below) this instead (of above)
+          persistentCategoryPath: HOME.category.path,  //string
+        })
+    }
 
-          // TODO access store.categories to get "categories" from the Path
-          //  OR (better) REFACTOR so I only need the Path for changeView !!
-          //  AND all Components Expect that viewData holds the Path,
-          //  not the whole category
-
-          // const category = (newCategory.name)  // '' or null
-          //   ? newCategory
-          //   : ALL_POSTS_CATEGORY;
-
-          return ({
-            type: CHANGE_VIEW,
-            currentUrl: uri.url,
-            currentId:  uri.params.categoryPath,
-
-            persistentCategory: {
-              name: uri.params.categoryPath,  // technically incorrect!!
-              // (above) don't have access to categories to parse this properly.
-              //  It's the same value in MY dataset (currently)
-              path: uri.params.categoryPath,  //{ name, path }
-            },
-            // TODO: refactor components to use below instead
-            persistentCategoryPath: uri.params.categoryPath,  //string
-          })
-        }
-
-        // by uri: postId
-        if ((uri.route === "/post/:postId") ||
-            (uri.route === "/post/:postId/edit")) {
-          console.log('__on POST route:', uri.route);
-          return ({
-            type: CHANGE_VIEW,
-            currentUrl: uri.url,
-            currentId:  uri.postId,
-          })
-        }
-      }
-
-    // changeView By Category
-
-    const newCategory = newViewData.persistentCategory //|| null
-    if (newCategory) {
-      console.log('___in changeView By Category, newViewData.category:', newViewData.category);
-
-      const category = (newCategory.name)  // '' or null
-        ? newCategory
-        : ALL_POSTS_CATEGORY;
-
-      // url and id are NOT independant of category, set them to ensure in synch
-      // console.log('category.name:', category.name, 'category:', category)
-      const url = (category.name)
-                  ? `/category/${category.path}`
-                  : `${HOME.category.path}`;
-      const id = category.name;
-
-      return ({
-        type: SELECT_CATEGORY,
-        currentUrl: url,
-        currentId: id,
-        persistentCategory: category,
-        //  TODO refactor components to use below instead of above
-        persistentCategoryPath: category.path,
-      });
-
-    // changeView By: url, id
-
-    } else {
-      console.log('___in changeView-via-id/url, newViewData:', newViewData);
-
-      // potential issue: if url is a category url, and/or id is a category..
-      // the sticky category (object) won't get updated !!
-      // The fix: parse URL. If it is '/category/:category', then treat it as
-      // changeViewBCagetory ('SELECT_CATEGORY' above)
+    // by uri: category
+    if (uri.route === "/category/:categoryPath") {
+      // console.log('__on CATEGORY route:', uri.route);
+      // TODO: instead, check against if categoryPath is in the param list
+      //   - don't hard code the route
 
       return ({
         type: CHANGE_VIEW,
-        currentUrl:  newViewData.currentUrl,
-        // if not supplied, 'null' tells reducer to use "persistentCategory"
-        currentId:   newViewData.currentId || null,
+        currentUrl: uri.url,
+        currentId:  uri.params.categoryPath,
+
+        // TODO: retire this object
+        persistentCategory: {
+          name: uri.params.categoryPath,  // technically incorrect!!
+          // (above) don't have access to categories to parse this properly.
+          //  It's the same value in MY dataset (currently)
+          path: uri.params.categoryPath,  // { name, path }
+        },
+
+        // TODO: refactor components to use below instead of persistentCategory
+        persistentCategoryPath: uri.params.categoryPath,  //string
       })
     }
-  }
+
+    // by uri: postId
+    // TODO: instead, check against if postId is in the param list
+    //   - rather than the hard code the route
+
+    if ((uri.route === "/post/:postId") ||
+        (uri.route === "/post/:postId/edit")) {
+      // console.log('__on POST route:', uri.route);
+      return ({
+        type: CHANGE_VIEW,
+        currentUrl: uri.url,
+        currentId:  uri.postId,
+      })
+    }
+
+}
 
   export const changeSort = (persistentSortBy='date') => ({
     // TODO: add this field to (browser) url ??
@@ -274,34 +236,29 @@ export const SORT_BY = 'SORT_BY';
 
 // DATA, INITIAL, SAMPLE
 
-    // Assumes starts app from from Home Page url.
-    // TODO read from react-router or Browser Window
-    // TODO: set url, id with data from browser URL
-    // TODO: parse url, and set sticky: category and sortBy from browser URL
-
   const initialState_ViewData = {
-    // "current" FIELDS WILL GO AWAY, when can read/parse data from Browser Fields
     currentUrl: HOME.url,
     // holds: post.id, comment.id, or category.name, or '' (all posts)
     currentId:  HOME.id,
-    // object eg: {name: 'react', path: 'react'}
-    persistentCategory: HOME.category,
-    //  TODO refactor components to use below instead of above
+
+    persistentCategory: HOME.category,  // TODO: retire this object
+    //  TODO refactor components to use this string
     persistentCategoryPath: HOME.category.path,
+
     // 'votes' or 'date'
     persistentSortBy:    DEFAULT_SORT_BY,
     persistentSortOrder: DEFAULT_SORT_ORDER,
   }
 
 function viewData(state=initialState_ViewData, action){
-  // console.log('entering reducer viewData, action:', action, 'prevState');
-  // console.log('_ entering reducer viewData, action:', action);
+  // console.log('entering reducer viewData, prevState', state);
+  // console.log('entering reducer viewData, action:'  , action);
 
   let id;
   let url;
   switch (action.type) {
     case CHANGE_VIEW:
-      console.log("__CHANGE_VIEW, action:", action);
+      // console.log("__CHANGE_VIEW, action:", action);
 
       // potential issue: if url is a category route, or id is category.name
       //       then viewData's "category" (object) won't get updated.
@@ -320,7 +277,7 @@ function viewData(state=initialState_ViewData, action){
               });
 
     case SELECT_CATEGORY:
-      console.log('SELECT_CATEGORY, action:', action);
+      // console.log('SELECT_CATEGORY, action:', action);
       let category = action.persistentCategory;
       url = (category.path)
                 ? `/category/${category.path}`
@@ -348,6 +305,3 @@ function viewData(state=initialState_ViewData, action){
 };
 
 export default viewData
-
-
-//  NOTE, I only need either currentUrl OR currentId.

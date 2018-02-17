@@ -15,17 +15,14 @@ export class Posts extends Component {
 
   componentDidMount() {
     // this.props.fetchPosts(this.props.selectedCategoryName);
-    // console.log('Posts componentDidMount ..fetching, posts for category:', this.props.selectedCategoryName);
-
     this.props.fetchPosts(this.props.categoryPath);
-    console.log('....____Posts cDM ..fetching, posts for category:', this.props.categoryPath);
-
+    // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
     if (this.props.uri){
-      console.log('__Posts cDM calling changeView, this.props.uri', this.props.uri);
+      // console.log('Posts cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeViewByUri(this.props.uri)
     }
-
   }
+
   componentWillReceiveProps(nextProps){
     // console.log('Posts cWRP nextProps:', nextProps);
 
@@ -98,7 +95,7 @@ export class Posts extends Component {
           </div>
 
           {/*Categories*/}
-          <Categories routerInfo={ this.props.routerInfo }/>
+          <Categories routerProps={ this.props.routerProps }/>
           <hr />
 
           {/*New Post*/}
@@ -172,8 +169,7 @@ function mapStoreToProps (store, ownProps) {
   // console.log('store:', store);
   // console.log('Posts ownProps:', ownProps);
 
-  // So can still use this.props.history without refactoring its references
-  // const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
+  // const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
   // object to array
   const posts = Object.keys(store.posts).reduce((acc, postId) => {
@@ -181,7 +177,7 @@ function mapStoreToProps (store, ownProps) {
     }, []);
   const sortedPosts = sortPosts(posts, store.viewData.persistentSortBy);
 
-  const uri = getUri(ownProps.routerInfo) || null;
+  const uri = getUri(ownProps.routerProps) || null;
 
   return {
     posts: sortedPosts,

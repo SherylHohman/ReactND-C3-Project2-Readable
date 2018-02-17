@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-// import { Redirect } from 'react-router-dom';
 import { editPost } from '../store/posts';
-import { changeView, HOME } from '../store/viewData';
+import { changeView, HOME, getUri } from '../store/viewData';
 import { fetchPost } from '../store/posts';
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -20,49 +19,24 @@ export class EditPost extends Component {
   componentDidMount(){
     // console.log('in EditPost componentDidMount');
 
-    let havePost = true;
-    let havePostId = true;
-    let postId = null;
-
-    if (!this.props || !this.props.post ||
-         this.props.post === null ||
-         this.props.post === {} ||
-         !this.props.post.id) {
-      havePost = false;
-      havePostId = false;
+    if (!this.props.post) {
+      // needed when page is loaded from a saved url
+      this.props.fetchPost(this.props.postId);
     }
     else {
-      postId = this.props.postId;
-      havePostId = (!postId) //|| (postId.length<20) // magic number: length of id
-        ? false : true;
-    }
-
-    // console.log('havePostId:', havePostId, 'postId:', postId, 'havePost:', havePost);
-
-    if (!havePostId && !havePost){
-      this.loadHomePage();
-    }
-
-    if (havePostId && !havePost){
-      console.log('in EditPost, going to fetchPost for postId:', postId, havePostId, havePost)
-        this.props.fetchPost(postId)
-    }
-
-    if (havePost) {
+      // console.log('EditPost, cDM, post:', this.props.post);
       // init controlled input fields
       this.setState({
         title: this.props.post.title,
         body : this.props.post.body,
         categoryName: this.props.post.category,
       });
-      // (if !havePostId) just to be complete - no holes left open. Unlikely, but..
-      postId = this.props.post.id;  // make sure postId and post data are synched !
     }
 
   }
 
   componentWillReceiveProps(nextProps){
-    if (this.props.post.category !== nextProps.post.category){
+    if (this.props.post !== nextProps.post){
       this.setState({
         title: nextProps.post.title,
         body: nextProps.post.body,
@@ -81,19 +55,9 @@ export class EditPost extends Component {
     this.setState({ categoryName });
   }
 
-  loadHomePage(){
-    // use if cannot get the post, (not in store/props, could not fetch/nopostId)
-
-    // null id will load persistent category,
-    // HOME.id will load All Categories
-    this.props.changeView(HOME.url, null);
-    this.props.history.push(HOME.url);
-  }
-
-  setPostView(postUrl){
-    // postUrl purpose is to ensure changeView uses the same as Link to""
-    this.props.changeView(postUrl, this.props.postId);
-  }
+  // onSubmit(e){
+  //   e.preventDefault();
+  // }
 
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
@@ -103,26 +67,21 @@ export class EditPost extends Component {
       body: this.state.body.trim(),
     }
     this.props.onSave(this.props.postId, editedPostData);
-    this.setPostView(postUrl);
-  }
-
-  onCancel(postUrl){
-    this.setPostView(postUrl)
   }
 
   render(){
 
-    // // if (this.props.postId === '' || this.props.postId === null){
-    // if (!this.props.postId){
-    //   console.log('EditPost render, !postId, redirecting Home');
-    //   // should redirect to home or last viewed category page
-    //   // in that case, change HOME.id to null
-    //   this.props.changeView(HOME.url, HOME.id);
+    // console.log('postId:', this.props.postId, 'post:', this.props.post);
+
+    // if (FETCH ERROR){
+    //   // bad postId/deleted-post (likely form saved Url, or browser Back Button)
+    //   // redirect/link to home or last viewed category page (persistentCategoryPath)
     //   return (
     //     <div>
     //       <p>I do not know that post.. Can you find it for me ?</p>
-    //       <p> ..going to the home page now ;-D </p>
-    //       <Redirect to={HOME.url} />
+    //       <Link to={HOME.url}>
+    //         <p>Take me to the home page ;-D </p>
+    //       </Link>
     //     </div>
     //   )
     // }
@@ -130,9 +89,17 @@ export class EditPost extends Component {
     const postId = this.props.postId;
     const postUrl = `/post/${postId}`;
 
-    if (!this.props || !this.props.post || !this.props.post.id){
+    if (this.props && this.props.postId && !this.props.post){
+      // console.log('EditPost render, postId, but no Post');
       return (
-        <div><h2> Hold On.. I'm getting your Post </h2></div>
+        <div>
+        <h2> Hold On.. I'm getting your Post </h2>
+          {/* below is until get fetch error handling implemented (then use above section) */}
+          <Link to={HOME.url}>
+            <h3 style={{color: "red"}}> (..unless it doesn't exist..) </h3>
+            <h3>Take me to the home page ;-D </h3>
+          </Link>
+        </div>
       )
     }
 
@@ -182,10 +149,7 @@ export class EditPost extends Component {
             >
             <button>Save</button>
           </Link>
-          <Link
-            to={postUrl}
-            onClick={() => {this.onCancel(postUrl)}}
-            >
+          <Link to={postUrl}>
             <button>Cancel</button>
           </Link>
         </form>
@@ -223,7 +187,7 @@ EditPost.propTypes = {
     fetchPost: PropTypes.func,
     editPost: PropTypes.func,
     changeView: PropTypes.func,
-    history: PropTypes.object,
+    routerProps: PropTypes.object, // needs match, (maybe location, history.push)
 }
 
 function mapDispatchToProps(dispatch){
@@ -235,32 +199,24 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store, ...ownProps ) {
+function mapStoreToProps ( store, ownProps) {
   // console.log('store:', store)
 
-  const postId = store.viewData.currentId;
+  // const postId = store.viewData.currentId;
+  // if parent component does not pass down routerProps, pass "store" as 2nd param as a fallback
+  // const postId = getUri(null, store).currentId;  //postId not returned when passing "store"
+  const postId = getUri(ownProps.routerProps).postId || null;//currentId;
+
   const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
-
-  // TEMP during refactor, so this.props.history.push() still works
-  const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null
 
   return {
     categoriesObject: store.categories,
     categoryNames,
     postId,
     post: store.posts[postId],
-
-    // TEMP during refactor, so this.props.history.push() still works
-    history,
   }
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(EditPost);
-
-
-//   If page is loaded from saved url: Store is empty. Redirect to home page. Instead...
-//   TODO: perhaps I can read it from viewData.selected (aka props.postId), or viewData.url
-//   TODO: better solution: read post id from the url, then fetch the post.
-

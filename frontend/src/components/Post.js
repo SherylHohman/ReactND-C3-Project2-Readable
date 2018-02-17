@@ -1,9 +1,9 @@
  import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+// import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
-import { changeView, HOME, getUri } from '../store/viewData';
+import { changeView, getUri } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -13,25 +13,12 @@ export class Post extends Component {
   componentDidMount() {
     // console.log('in Post componentDidMount');
 
-    // re-direct to home page if don't have the post, and can't read from url)
-    if (this.props.history && !this.props.postId){
-      console.log(' don\'t have postId yet.. but let\'s wait for cWillRprops before redirecting')
-      // this.props.history.push(HOME.url);
-      // <Redirect to={HOME.ulr} />
-    }
-
-    // TODO if page is loaded from saved url,
-    //  fetch the post, based on post.id that's in the url
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
     }
 
     if (this.props.uri){
-      console.log('__Post cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeView(this.props.uri)
-    }
-    else {
-      console.log('__Post cDM NOT calling changeView, this.props.uri', this.props.uri);
     }
   }
 
@@ -39,26 +26,8 @@ export class Post extends Component {
     // maybe check for 404 (deleted postId, bad postId), or network error here ?
   }
 
-  onDelete(postId){
-    // console.log('deleteing post, postId:', this.props.postId);
-    // console.log('this post\'s categoryPath:', this.props.categoryPath);
-    // console.log('(old uri):', this.props.uri);
-
-    this.props.deletePost(postId);
-    // Link redirects to category that this post previously appeared
-    // viewData musht store this same info to keep in synch
-    // Not Dry :/ - TODO: read and parse data from URL routes
-
-    // const category = {
-    //   name: this.props.post.category,
-    //   path: this.props.categoryPath,
-    // }
-    // this.props.changeViewByCategory(category);
-  }
-
   render(){
 
-    const props = this.props;
     if (!this.props){console.log('Post props is undefined');}
 
     // TODO: show error message if error fetching post:
@@ -81,7 +50,6 @@ export class Post extends Component {
     // category is an {name, path} object on categories, yet
     // category on a post refers to a category.name
     const categoryName = this.props.post.category;
-    const categoryPath = this.props.categoryPath;
 
     return (
       <div>
@@ -113,8 +81,8 @@ export class Post extends Component {
 
             <div>
               <Link
-                to={`/category/${categoryPath}`}
-                onClick={() => {this.onDelete(postId)}}
+                to={`/category/${this.props.categoryPath}`}
+                onClick={() => {this.props.deletePost(postId)}}
               >
                 Delete Post
               </Link>
@@ -125,7 +93,7 @@ export class Post extends Component {
         </div>
         <hr />
         <h3>{commentCount} Comments</h3>
-        <Comments />
+        <Comments routerProps={ this.props.routerProps } />
       </div>
     );
 
@@ -154,27 +122,27 @@ function mapStoreToProps (store, ownProps) {
   // console.log('Post store:', store);
   // console.log('Post ownProps:', ownProps);
 
-  const uri = getUri(ownProps.routerInfo) || null;
+  const uri = getUri(ownProps.routerProps) || null;
   const postId = uri.postId  || null;
   const post = store.posts[postId] || null;
 
   // so can redirect to Post's (former) category when deleting the post
   const categoryName = (post && post.category) || null;
-  const category = categoryName && store.categories[categoryName];
+  const category  = categoryName && store.categories[categoryName];
   const categoryPath = (category && store.categories[categoryName].path) || null //HOME.category.path || null;
-  // console.log('_____________categoryPath:', categoryPath, categoryName, category, post, postId);
 
   return {
     postId,
     post,
+
+    // ref to the url of this post's category
     categoryPath,
 
-    // uri: {url, currentId, route, params}
-    // params: is either: postId OR categoryPath  //currentId replaces postId & categoryPath
+    // view data data stored in url's - keep data in synch w/ browser url
     uri,
 
-    // so don't have to refactor former history.push references (if have bad postId)
-    history: ownProps.routerInfo.history
+    // so don't have to refactor history.push references
+    // history: ownProps.routerProps.history
   }
 };
 
