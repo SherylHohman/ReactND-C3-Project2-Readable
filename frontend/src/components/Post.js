@@ -1,6 +1,5 @@
  import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { changeView, getUri } from '../store/viewData';
@@ -11,7 +10,6 @@ import PropTypes from 'prop-types';
 export class Post extends Component {
 
   componentDidMount() {
-    // console.log('in Post componentDidMount');
 
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
@@ -23,7 +21,7 @@ export class Post extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    // maybe check for 404 (deleted postId, bad postId), or network error here ?
+    // TODO: maybe check for 404 (deleted postId, bad postId), or network error here ?
   }
 
   render(){
@@ -35,7 +33,6 @@ export class Post extends Component {
     //  options: 404, retry, homePage
 
     if (!this.props.post) {
-      // console.log('Post: post wasn\'t present in props, do I have the postID?:', this.props.postId);
       return (
         <div>
           <p>looking for your Post:</p>
@@ -119,8 +116,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('Post store:', store);
-  // console.log('Post ownProps:', ownProps);
 
   const uri = getUri(ownProps.routerProps) || null;
   const postId = uri.postId  || null;
@@ -140,9 +135,6 @@ function mapStoreToProps (store, ownProps) {
 
     // view data data stored in url's - keep data in synch w/ browser url
     uri,
-
-    // so don't have to refactor history.push references
-    // history: ownProps.routerProps.history
   }
 };
 

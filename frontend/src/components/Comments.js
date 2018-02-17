@@ -26,8 +26,6 @@ export class Comments extends Component {
 
   componentDidMount(){
     const postId = this.props.postId;
-    // console.log('...in Comments ComponentDidMount, props', this.props);
-    // console.log('Comments componentDidMount ..fetching, comments');
     this.props.fetchComments(postId);
   }
 
@@ -112,7 +110,6 @@ export class Comments extends Component {
                 <small> {dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</small>
                 </p>
 
-                {/*TODO: link styling, change cursor to hand on hover*/}
                 <p className="link">
                   <span onClick={() => {this.props.onDeleteComment(comment.id)}}> delete </span>
                    <span className="no-link"> | </span>
@@ -193,19 +190,11 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  // const postId = store.viewData.currentId || null;
-  // const uri = getUri(ownProps.routerProps) || null;
-
-  // passed as props from Post - change this when put uri into store
-  // const uri = ownProps.uri;
-
   // either pass "store" in as second prop, or parent component needs to pass uri
-  // const uri = getUri(null, store) || null;
   const uri = getUri(ownProps.routerProps) || null;
 
 
   const postId = uri && uri.currentId;  // or uri.params.postId // or uri.postId
-  // console.log('Comments, mSTP, uri', uri);
 
   const commentIds = Object.keys(store.comments);
   const comments = commentIds.reduce((acc, commentId) => {

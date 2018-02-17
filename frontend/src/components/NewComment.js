@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { addComment } from '../store/comments';
 import { connect } from 'react-redux';
 import { createId, titleCase } from '../utils/helpers';
-// import PropTypes from 'prop-types';
-
 
 export class NewComment extends Component {
 
@@ -28,7 +26,6 @@ export class NewComment extends Component {
       body: this.state.body.trim() || '(no comment)',
       author: this.state.author.trim() || '(anonymous)',
     }
-    // console.log(newCommentData);
     this.props.onSave(newCommentData);
     this.resetFormFields();
   }
@@ -107,7 +104,3 @@ function mapStoreToProps ( store, ...ownProps ) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(NewComment);
-
-
-
-

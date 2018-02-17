@@ -223,7 +223,7 @@ function mapStoreToProps (store, ownProps) {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
-    // TEMP during refactor, so this.props.history.push() still works
+    // So this.props.history.push() still works without refactoring code
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
   return {
@@ -231,7 +231,7 @@ function mapStoreToProps (store, ownProps) {
     categoryNames: categoryNames || null,
     categoryName: categoryNames[0] || HOME.category,
 
-    // TEMP during refactor, so this.props.history.push() still works
+    // So this.props.history.push() still works without refactoring code
     history,
   }
 };

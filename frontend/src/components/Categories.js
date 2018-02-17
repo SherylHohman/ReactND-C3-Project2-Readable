@@ -9,14 +9,9 @@ export class Categories extends Component {
 
   componentDidMount() {
     this.props.fetchCategories();
-    // console.log('Categories componentDidMount ..fetching, categories');
 
     if (this.props.uri){
-      // console.log('Categories cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeView(this.props.uri)
-    }
-    else {
-      // console.log('Categories cDM NOT calling changeView, this.props.uri', this.props.uri);
     }
   }
 
@@ -72,11 +67,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('store.categories:', store.categories)
-  // console.log('Categories, ownProps:', ownProps)
-
-  // so don't have to refactor former history references
-  // const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null;
 
   const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey]]);

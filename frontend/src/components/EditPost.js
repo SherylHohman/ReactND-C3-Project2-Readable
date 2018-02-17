@@ -17,14 +17,12 @@ export class EditPost extends Component {
   }
 
   componentDidMount(){
-    // console.log('in EditPost componentDidMount');
 
     if (!this.props.post) {
       // needed when page is loaded from a saved url
       this.props.fetchPost(this.props.postId);
     }
     else {
-      // console.log('EditPost, cDM, post:', this.props.post);
       // init controlled input fields
       this.setState({
         title: this.props.post.title,
@@ -71,9 +69,8 @@ export class EditPost extends Component {
 
   render(){
 
-    // console.log('postId:', this.props.postId, 'post:', this.props.post);
-
-    // if (FETCH ERROR){
+    // TODO:
+    // if (TODO:FETCH ERROR){
     //   // bad postId/deleted-post (likely form saved Url, or browser Back Button)
     //   // redirect/link to home or last viewed category page (persistentCategoryPath)
     //   return (
@@ -90,7 +87,6 @@ export class EditPost extends Component {
     const postUrl = `/post/${postId}`;
 
     if (this.props && this.props.postId && !this.props.post){
-      // console.log('EditPost render, postId, but no Post');
       return (
         <div>
         <h2> Hold On.. I'm getting your Post </h2>
@@ -183,7 +179,7 @@ EditPost.propTypes = {
     categoriesObject: PropTypes.object,
     categoryNames: PropTypes.array,
     postId: PropTypes.string,
-    post : PropTypes.object,    // required keys: title, body, category
+    post : PropTypes.object,       // required keys: title, body, category
     fetchPost: PropTypes.func,
     editPost: PropTypes.func,
     changeView: PropTypes.func,
@@ -200,9 +196,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store, ownProps) {
-  // console.log('store:', store)
-
-  // const postId = store.viewData.currentId;
   // if parent component does not pass down routerProps, pass "store" as 2nd param as a fallback
   // const postId = getUri(null, store).currentId;  //postId not returned when passing "store"
   const postId = getUri(ownProps.routerProps).postId || null;//currentId;

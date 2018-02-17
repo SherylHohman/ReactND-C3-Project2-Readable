@@ -1,3 +1,5 @@
+// NOTE: NOT YET IMPLEMENTED !
+
 // ACTION TYPES
   export const LOGIN_USER = 'LOGIN_USER';
 

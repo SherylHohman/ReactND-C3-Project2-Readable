@@ -30,8 +30,8 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 // FAT ACTION CREATORS
 
   export function fetchPosts(category=null){
-    //  fetches ALL posts:   fetchPosts(), or fetchPosts(null)
-    //  fetches by category: fetchPosts(category.path)
+    //  fetch ALL posts:   fetchPosts(), or fetchPosts(null)
+    //  fetch by category: fetchPosts(category.path)
     return (dispatch) => {
 
       dispatch({
@@ -96,7 +96,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
         .then((response) => response.json())
         .then((post) => {
-          // console.log('__got the post!:', post);
           return (
             dispatch({
               type: FETCH_POST_SUCCESS,
@@ -222,7 +221,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
             dispatch({
               type: DELETE_POST_SUCCESS,
               id: data.id,
-              // deleted: data.deleted,
               categoryName: data.category,
             })
           )}
@@ -326,9 +324,9 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         // TODO set loading spinner on
         return state;
       case FETCH_POSTS_SUCCESS:
+        // REPLACES all posts in store with current fetch results
         // This is for fetch returning All Posts,
         // And for fetch returning Posts by Category
-        // REPLACES all posts in store with current fetch results
         return ({
           //...state,
           ...action.posts,
@@ -389,9 +387,8 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         return state;
       case DELETE_POST_SUCCESS:
         let newState = {...state};
-        console.log('copy of State', newState);
         delete newState[action.id]
-        console.log('newState', newState);
+
         return newState;
       case DELETE_POST_FAILURE:
         // TODO: UI error message
@@ -438,13 +435,3 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
 // export default post
 export default posts
-
-
-/*
-NOTES:
-  TODO: after deletion, if post's page is loaded, then it may show up empty
-  - redirect to home, "all posts" page
-  - or display "This Post has been Deleted, or Never Existed"
-    (also covers the case of an invalid posts URL)
-  - Both
-*/

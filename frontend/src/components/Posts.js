@@ -14,17 +14,13 @@ export class Posts extends Component {
   }
 
   componentDidMount() {
-    // this.props.fetchPosts(this.props.selectedCategoryName);
     this.props.fetchPosts(this.props.categoryPath);
-    // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
     if (this.props.uri){
-      // console.log('Posts cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeViewByUri(this.props.uri)
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('Posts cWRP nextProps:', nextProps);
 
     if (nextProps.sortBy) {
       this.setState({ sortBy: nextProps.sortBy });
@@ -36,11 +32,7 @@ export class Posts extends Component {
     }
 
     if (this.props.uri && nextProps.uri && nextProps.uri.url !== this.props.uri.url){
-      // console.log('__Posts cWRprops calling changeView, this.props.uri', this.props.uri);
       this.props.changeViewByUri(nextProps.uri)
-    }
-    else {  // for monitoring how app works
-      // console.log('__Posts cWRprops NOT calling changeView, nextProps.uri', nextProps.uri.url, this.props.uri.url);
     }
 
     if (nextProps.categoryPath && this.props.categoryPath &&
@@ -166,10 +158,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('store:', store);
-  // console.log('Posts ownProps:', ownProps);
-
-  // const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
   // object to array
   const posts = Object.keys(store.posts).reduce((acc, postId) => {
@@ -185,8 +173,7 @@ function mapStoreToProps (store, ownProps) {
     sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
 
     uri,
-    categoryPath: uri.currentId,  // === uri.currentCategoryPath  TEMP
-
+    categoryPath: uri.currentId,  // === uri.currentCategoryPath
   }
 };
 
