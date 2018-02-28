@@ -35,7 +35,7 @@ export const ROUTES= {
   },
   editPost: {
     // full:  '/post/:postId/edit',
-    base:     '/post/edit',
+    base:     '/post/edit/',
     full:     '/post/edit/:postId',
   },
   newPost:  {
@@ -160,13 +160,13 @@ export const ROUTES= {
 
 // ACTION CREATORS
 
-  const changeView_Home = (uri) => {
+  const changeView_Home = (uri) => (dispatch) =>  {
     console.log('__on HOME route:', uri.route);
     // on home route params == {filter: undefined}
     //   For continuity, shall to explicitely set the categoryPath
     //   to match expected value, consistent with other paths/components
     //   * Also Adding a FAKE a "categoryPath" param !! *
-    return ({
+    dispatch ({
       type: CHANGE_VIEW,
       currentUrl: uri.url,
       currentId:  HOME.category.path,
@@ -183,9 +183,9 @@ export const ROUTES= {
       persistentCategoryPath: HOME.category.path,  //string
     })
   }
-  const changeView_Category = (uri) => {
+  const changeView_Category = (uri) => (dispatch) => {
     console.log('__on CATEGORY route:', uri.route);
-    return ({
+    dispatch ({
       type: CHANGE_VIEW,
       currentUrl: uri.url,
       currentId:  uri.params.categoryPath,
@@ -202,58 +202,47 @@ export const ROUTES= {
       persistentCategoryPath: uri.params.categoryPath,  //string
     })
   }
-  const changeView_Post = (uri) => {
+  const changeView_Post = (uri) => (dispatch) => {
     console.log('__on POST route:', uri.route);
-    return ({
+    dispatch ({
       type: CHANGE_VIEW,
       currentUrl: uri.url,
       currentId:  uri.postId,
     })
   }
 
-  export const changeView = (newViewData=HOME) => (dispatch) => {
-    console.log('____entering viewData.changeView, newViewData:', newViewData);
+  export function changeView(newViewData=HOME) { //=> (dispatch) => {
+    return (dispatch) => {
 
-    // changeView By uri
-    const uri = newViewData.uri;
-    if (!uri){ console.log('Must REFACTOR to pass in a "uri" to viewData.changeView');}
-    else{console.log('__have new uri:', uri);}
+      console.log('____entering viewData.changeView, newViewData:', newViewData);
 
-    // //temp
-    // console.log('hello')
-    // if (uri.route ==="/" || uri.route==="/:filter?"){
-    //   console.log('__on HOME route:', uri.route);
-    // }
-    // if (uri.route === ROUTES.category.full) {
-    //   console.log('__on CATEGORY route:', uri.route);
-    // }
-    // if ((uri.route === "ROUTES.post.full") ||
-    //     (uri.route === "ROUTES.editPost.full") ||
-    //     (uri.route === "ROUTES.newPost.full")) {
-    //   console.log('__on POST route:', uri.route);
-    // }
-    // console.log('bye');
-    // //temp ends
+      // changeView By uri
+      const uri = newViewData.uri;
+      if (!uri){ console.log('Must REFACTOR to pass in a "uri" to viewData.changeView');}
+      else{console.log('__have new uri:', uri);}
 
-
-    // HOME PAGE
-    if (uri.route ==="/" || uri.route==="/:filter?"){
-        console.log('__on HOME route:', uri.route);
-        changeView_Home(uri);
-    }
-    // by uri: postId (url begins with ROUTES..)
-    else if (uri.route.indexOf(ROUTES.post.base) === 0) {
-       changeView_Post(uri);
-    }
-    // by uri: category (url begins with ROUTES..)
-    else if (uri.route.indexOf(ROUTES.category.base) === 0) {
-        console.log('__on CATEGORY route:', uri.route);
-        changeView_Category(uri);
-    }
-    // No Matching Base Route
-    else {
-        console.log('ERROR WITH THE ROUTE:', uri.route);
-    }
+      // HOME PAGE
+      if (uri.route ==="/" || uri.route==="/:filter?"){
+          console.log('__on HOME route:', uri.route);
+          dispatch(changeView_Home(uri));
+      }
+      // by uri: postId (url begins with ROUTES..)
+      else if (uri.route.indexOf(ROUTES.post.base) === 0) {
+         dispatch(changeView_Post(uri));
+      }
+      // by uri: category (url begins with ROUTES..)
+      else if (uri.route.indexOf(ROUTES.category.base) === 0) {
+          console.log('__on CATEGORY route:', uri.route);
+          dispatch(changeView_Category(uri));
+      }
+      // No Matching Base Route
+      else {
+          console.log('ERROR WITH THE ROUTE:', uri.route);
+          dispatch({
+            type: 'INVALID ROUTE CANNOT CHANGE_VIEW',
+          })
+      }
+  } // dispatch wrapper
 }
 
   export const changeSort = (persistentSortBy='date') => ({
@@ -289,13 +278,13 @@ export const ROUTES= {
 
 function viewData(state=initialState_ViewData, action){
   // console.log('entering reducer viewData, prevState', state);
-  // console.log('entering reducer viewData, action:'  , action);
+  console.log('entering reducer viewData, action:'  , action);
 
   let id;
   let url;
   switch (action.type) {
     case CHANGE_VIEW:
-      // console.log("__CHANGE_VIEW, action:", action);
+      console.log("__CHANGE_VIEW, action:", action);
 
       // potential issue: if url is a category route, or id is category.name
       //       then viewData's "category" (object) won't get updated.
@@ -304,11 +293,11 @@ function viewData(state=initialState_ViewData, action){
       id = (action.currentId === null)
         ? state.persistentCategory.path
         : action.currentId
-      // console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
+      console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
       return  ({
                 ...state,
                 currentUrl: action.currentUrl,
-                currentId: id,
+                currentId:  id,
                 persistentCategory: action.persistentCategory,
                 persistentCategoryPath: action.persistentCategoryPath,
               });
