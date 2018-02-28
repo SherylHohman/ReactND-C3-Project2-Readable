@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { fetchCategories } from '../store/categories';
+import { ROUTES } from '../store/viewData';
 import { changeView, HOME, DEFAULT_SORT_BY, getUri } from '../store/viewData';
 
 
@@ -9,10 +10,10 @@ export class Categories extends Component {
 
   componentDidMount() {
     this.props.fetchCategories();
-    // console.log('Categories componentDidMount ..fetching, categories');
+    console.log('Categories componentDidMount ..fetching, categories');
 
     if (this.props.uri){
-      // console.log('Categories cDM calling changeView, this.props.uri', this.props.uri);
+      console.log('Categories cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeView(this.props.uri)
     }
     else {
@@ -45,7 +46,7 @@ export class Categories extends Component {
                 {this.props.categories.map(category => {
                   return (
                     <NavLink key={category.name}
-                      to={`/category/${category.path}`}
+                      to={`${ROUTES.category.base}${category.path}`}
                       activeClassName="selected"
                           >{category.name}
                       <li key={category.name}></li>
@@ -83,6 +84,7 @@ function mapStoreToProps (store, ownProps) {
   }, []);
 
   const uri = getUri(ownProps.routerProps) || null;
+  console.log('sTTP Categories, uri:', uri)
 
   return {
       categories: categoriesArray   || null,

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
+import { ROUTES } from '../store/viewData';
 import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 
 export class Posts extends Component {
@@ -99,7 +100,7 @@ export class Posts extends Component {
           <hr />
 
           {/*New Post*/}
-          <Link to={`/post/new`}>
+          <Link to={`${ROUTES.newPost.full}`}>
             <div><h2>Add New Post</h2><hr /></div>
           </Link>
 
@@ -114,7 +115,7 @@ export class Posts extends Component {
                       <li key={post.id}>
                         <div>
 
-                          <Link to={`/post/${post.id}`}>
+                          <Link to={`${ROUTES.post.base}${post.id}`}>
                             <h1>{post.title}</h1>
                           </Link>
 

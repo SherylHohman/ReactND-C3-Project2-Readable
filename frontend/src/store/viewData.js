@@ -19,14 +19,30 @@ export const SORT_BY = 'SORT_BY';
   // export const sortOrder = ['decending', 'ascending'];
 
   // TODO: get paths from App.js, then use to populate App.js
-  export const ROUTES = {
-    // home:     '/',
-    home:     '/:filter?',
-    category: '/category/:categoryPath',
-    post:     '/post/:postId',
-    editPost: '/post/:postId/edit',
-    newPost:  '/post/new',
-  };
+export const ROUTES= {
+  home:     {
+    // full:     '/',
+    base:     '/',
+    full:     '/:filter?',
+  },
+  category: {
+    base:     '/category/',
+    full:     '/category/:categoryPath',
+  },
+  post:     {
+    base:     '/post/',
+    full:     '/post/:postId',
+  },
+  editPost: {
+    // full:  '/post/:postId/edit',
+    base:     '/post/edit',
+    full:     '/post/edit/:postId',
+  },
+  newPost:  {
+    base:     '/post/new',
+    full:     '/post/new',
+  },
+}
 
   // "id" is one of: post.id, comment.id, category.name
   // "url" is an exact path, as per browser window
@@ -144,79 +160,100 @@ export const SORT_BY = 'SORT_BY';
 
 // ACTION CREATORS
 
-  export const changeView = (newViewData=HOME) => {
-      // console.log('____entering viewData.changeView, newViewData:', newViewData);
+  const changeView_Home = (uri) => {
+    console.log('__on HOME route:', uri.route);
+    // on home route params == {filter: undefined}
+    //   For continuity, shall to explicitely set the categoryPath
+    //   to match expected value, consistent with other paths/components
+    //   * Also Adding a FAKE a "categoryPath" param !! *
+    return ({
+      type: CHANGE_VIEW,
+      currentUrl: uri.url,
+      currentId:  HOME.category.path,
+
+      // note "params" is Brittle - I overwrite actual params here.
+      //   if EVER change routes - this may Break !
+      // FAKE THIS - see above notes
+      params: {categoryPath: HOME.category.path},  // TODO: retire this category object
+
+      categoryPath: HOME.category.path,
+
+      persistentCategory: HOME.category,    // TODO: retire this category object
+      // TODO: refactor components to (below) this instead (of above)
+      persistentCategoryPath: HOME.category.path,  //string
+    })
+  }
+  const changeView_Category = (uri) => {
+    console.log('__on CATEGORY route:', uri.route);
+    return ({
+      type: CHANGE_VIEW,
+      currentUrl: uri.url,
+      currentId:  uri.params.categoryPath,
+
+      // TODO: retire this object
+      persistentCategory: {
+        name: uri.params.categoryPath,  // technically incorrect!!
+        // (above) don't have access to categories to parse this properly.
+        //  It's the same value in MY dataset (currently)
+        path: uri.params.categoryPath,  // { name, path }
+      },
+
+      // TODO: refactor components to use below instead of persistentCategory
+      persistentCategoryPath: uri.params.categoryPath,  //string
+    })
+  }
+  const changeView_Post = (uri) => {
+    console.log('__on POST route:', uri.route);
+    return ({
+      type: CHANGE_VIEW,
+      currentUrl: uri.url,
+      currentId:  uri.postId,
+    })
+  }
+
+  export const changeView = (newViewData=HOME) => (dispatch) => {
+    console.log('____entering viewData.changeView, newViewData:', newViewData);
 
     // changeView By uri
     const uri = newViewData.uri;
     if (!uri){ console.log('Must REFACTOR to pass in a "uri" to viewData.changeView');}
-    // else{console.log('__have new uri:', uri);}
+    else{console.log('__have new uri:', uri);}
+
+    // //temp
+    // console.log('hello')
+    // if (uri.route ==="/" || uri.route==="/:filter?"){
+    //   console.log('__on HOME route:', uri.route);
+    // }
+    // if (uri.route === ROUTES.category.full) {
+    //   console.log('__on CATEGORY route:', uri.route);
+    // }
+    // if ((uri.route === "ROUTES.post.full") ||
+    //     (uri.route === "ROUTES.editPost.full") ||
+    //     (uri.route === "ROUTES.newPost.full")) {
+    //   console.log('__on POST route:', uri.route);
+    // }
+    // console.log('bye');
+    // //temp ends
+
 
     // HOME PAGE
     if (uri.route ==="/" || uri.route==="/:filter?"){
-        // console.log('__on HOME route:', uri.route);
-
-      // on home route params == {filter: undefined}
-      //   For continuity, shall to explicitely set the categoryPath
-      //   to match expected value, consistent with other paths/components
-      //   * Also Adding a FAKE a "categoryPath" param !! *
-
-        return ({
-          type: CHANGE_VIEW,
-          currentUrl: uri.url,
-          currentId:  HOME.category.path,
-
-          // note "params" is Brittle - I overwrite actual params here.
-          //   if EVER change routes - this may Break !
-          // FAKE THIS - see above notes
-          params: {categoryPath: HOME.category.path},  // TODO: retire this category object
-
-          categoryPath: HOME.category.path,
-
-          persistentCategory: HOME.category,    // TODO: retire this category object
-          // TODO: refactor components to (below) this instead (of above)
-          persistentCategoryPath: HOME.category.path,  //string
-        })
+        console.log('__on HOME route:', uri.route);
+        changeView_Home(uri);
     }
-
-    // by uri: category
-    if (uri.route === "/category/:categoryPath") {
-      // console.log('__on CATEGORY route:', uri.route);
-      // TODO: instead, check against if categoryPath is in the param list
-      //   - don't hard code the route
-
-      return ({
-        type: CHANGE_VIEW,
-        currentUrl: uri.url,
-        currentId:  uri.params.categoryPath,
-
-        // TODO: retire this object
-        persistentCategory: {
-          name: uri.params.categoryPath,  // technically incorrect!!
-          // (above) don't have access to categories to parse this properly.
-          //  It's the same value in MY dataset (currently)
-          path: uri.params.categoryPath,  // { name, path }
-        },
-
-        // TODO: refactor components to use below instead of persistentCategory
-        persistentCategoryPath: uri.params.categoryPath,  //string
-      })
+    // by uri: postId (url begins with ROUTES..)
+    else if (uri.route.indexOf(ROUTES.post.base) === 0) {
+       changeView_Post(uri);
     }
-
-    // by uri: postId
-    // TODO: instead, check against if postId is in the param list
-    //   - rather than the hard code the route
-
-    if ((uri.route === "/post/:postId") ||
-        (uri.route === "/post/:postId/edit")) {
-      // console.log('__on POST route:', uri.route);
-      return ({
-        type: CHANGE_VIEW,
-        currentUrl: uri.url,
-        currentId:  uri.postId,
-      })
+    // by uri: category (url begins with ROUTES..)
+    else if (uri.route.indexOf(ROUTES.category.base) === 0) {
+        console.log('__on CATEGORY route:', uri.route);
+        changeView_Category(uri);
     }
-
+    // No Matching Base Route
+    else {
+        console.log('ERROR WITH THE ROUTE:', uri.route);
+    }
 }
 
   export const changeSort = (persistentSortBy='date') => ({

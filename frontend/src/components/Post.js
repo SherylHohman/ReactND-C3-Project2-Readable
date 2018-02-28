@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { changeView, getUri } from '../store/viewData';
+import { ROUTES } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -11,7 +12,7 @@ import PropTypes from 'prop-types';
 export class Post extends Component {
 
   componentDidMount() {
-    // console.log('in Post componentDidMount');
+    console.log('in Post componentDidMount, props:', this.props);
 
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
@@ -54,7 +55,7 @@ export class Post extends Component {
     return (
       <div>
         <div>
-            <Link to={`/post/${postId}`}>
+            <Link to={`${ROUTES.post.base}${postId}`}>
               <h2>{title}</h2>
             </Link>
 
@@ -81,12 +82,12 @@ export class Post extends Component {
 
             <div>
               <Link
-                to={`/category/${this.props.categoryPath}`}
+                to={`${ROUTES.category.base}${this.props.categoryPath}`}
                 onClick={() => {this.props.deletePost(postId)}}
               >
                 Delete Post
               </Link>
-                <Link to={`/post/${postId}/edit`}>
+                <Link to={`${ROUTES.post.base}${postId}/edit`}>
                   Edit Post
                 </Link>
             </div>
