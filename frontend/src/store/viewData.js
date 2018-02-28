@@ -23,24 +23,24 @@ export const ROUTES= {
   home:     {
     // full:     '/',
     base:     '/',
-    full:     '/:filter?',
+    param:    '/:filter?',
   },
   category: {
     base:     '/category/',
-    full:     '/category/:categoryPath',
+    param:    ':categoryPath',
   },
   post:     {
     base:     '/post/',
-    full:     '/post/:postId',
+    param:    ':postId',
   },
   editPost: {
     // full:  '/post/:postId/edit',
     base:     '/post/edit/',
-    full:     '/post/edit/:postId',
+    param:    ':postId',
   },
   newPost:  {
     base:     '/post/new',
-    full:     '/post/new',
+    param:    '',
   },
 }
 

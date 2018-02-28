@@ -100,7 +100,7 @@ export class Posts extends Component {
           <hr />
 
           {/*New Post*/}
-          <Link to={`${ROUTES.newPost.full}`}>
+          <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}>
             <div><h2>Add New Post</h2><hr /></div>
           </Link>
 

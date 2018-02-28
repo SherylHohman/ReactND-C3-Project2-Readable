@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 // import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
-import { changeView, getUri } from '../store/viewData';
 import { ROUTES } from '../store/viewData';
+import { changeView, getUri } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -87,7 +87,7 @@ export class Post extends Component {
               >
                 Delete Post
               </Link>
-                <Link to={`${ROUTES.post.base}${postId}/edit`}>
+                <Link to={`${ROUTES.editPost.base}${postId}`}>
                   Edit Post
                 </Link>
             </div>
