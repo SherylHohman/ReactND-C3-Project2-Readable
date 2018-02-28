@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { addPost } from '../store/posts';
-import { HOME } from '../store/viewData';
+import { HOME, ROUTES } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
 import { createId, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -66,12 +66,12 @@ export class NewPost extends Component {
 
   loadCategoryPage(categoryName){
     const category = this.props.categoriesObject[categoryName] || HOME.category;
-    const url = `/category/${category.path}` || HOME.url;
+    const url = `${ROUTES.category.base}${category.path}` || HOME.url;
     this.props.history.push(url);
   }
 
   loadPostPage(postId){
-    this.props.history.push(`/post/${postId}`);
+    this.props.history.push(`${ROUTES.post.base}${postId}`);
   }
 
   onCancel(){

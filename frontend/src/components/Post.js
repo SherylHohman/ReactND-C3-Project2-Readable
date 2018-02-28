@@ -84,12 +84,13 @@ export class Post extends Component {
               <Link
                 to={`${ROUTES.category.base}${this.props.categoryPath}`}
                 onClick={() => {this.props.deletePost(postId)}}
-              >
+                >
                 Delete Post
               </Link>
-                <Link to={`${ROUTES.editPost.base}${postId}`}>
-                  Edit Post
-                </Link>
+
+              <Link to={`${ROUTES.editPost.base}${postId}`}>
+                Edit Post
+              </Link>
             </div>
         </div>
         <hr />

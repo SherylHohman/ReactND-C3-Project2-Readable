@@ -34,27 +34,26 @@ class App extends Component{
 
         </header>
 
-
-      {/* Routes */}
         <Route exact path="/" render={(routerProps) => (
           <Posts     routerProps={ routerProps } />
         )} />
 
-        <Route path="/category/:categoryPath" render={(routerProps) => (
-          <Posts     routerProps={ routerProps } />
-        )} />
-
+      {/* Routes */}
         <Switch>
           <Route exact path="/post/new" render={(routerProps) => (
             <NewPost  routerProps={ routerProps } />
           )} />
 
-          <Route path="/post/:postId/edit" render={(routerProps) => (
+          <Route path="/post/edit/:postId" render={(routerProps) => (
             <EditPost routerProps={ routerProps }/>
           )} />
 
           <Route exact path="/post/:postId" render={(routerProps) => (
             <Post     routerProps={ routerProps } />
+          )} />
+
+          <Route exact path="/category/:categoryPath" render={(routerProps) => (
+            <Posts     routerProps={ routerProps } />
           )} />
         </Switch>
 

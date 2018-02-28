@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { editPost } from '../store/posts';
-import { changeView, HOME, getUri } from '../store/viewData';
+import { HOME, ROUTES } from '../store/viewData';
+import { changeView, getUri } from '../store/viewData';
 import { fetchPost } from '../store/posts';
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -87,7 +88,7 @@ export class EditPost extends Component {
     // }
 
     const postId = this.props.postId;
-    const postUrl = `/post/${postId}`;
+    const postUrl = `${ROUTES.post.base}${postId}`;
 
     if (this.props && this.props.postId && !this.props.post){
       // console.log('EditPost render, postId, but no Post');

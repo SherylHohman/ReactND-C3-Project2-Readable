@@ -306,8 +306,8 @@ function viewData(state=initialState_ViewData, action){
       // console.log('SELECT_CATEGORY, action:', action);
       let category = action.persistentCategory;
       url = (category.path)
-                ? `/category/${category.path}`
-                : '/'    // home page: all categories
+                ? `${ROUTES.category.base}${category.path}`
+                : `${HOME.url}`    // home page: all categories
       id = category.path;
       return  ({
                 ...state,
