@@ -48,11 +48,11 @@ class App extends Component{
             <EditPost routerProps={ routerProps }/>
           )} />
 
-          <Route exact path="/post/:postId" render={(routerProps) => (
+          <Route exact path="/category/:postId" render={(routerProps) => (
             <Post     routerProps={ routerProps } />
           )} />
 
-          <Route exact path="/category/:categoryPath" render={(routerProps) => (
+          <Route exact path="/:categoryPath" render={(routerProps) => (
             <Posts     routerProps={ routerProps } />
           )} />
         </Switch>

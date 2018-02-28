@@ -23,18 +23,17 @@ export const ROUTES= {
   home:     {
     // full:     '/',
     base:     '/',
-    param:    '/:filter?',
+    param:    ':filter?',
   },
   category: {
-    base:     '/category/',
+    base:     '/',
     param:    ':categoryPath',
   },
   post:     {
-    base:     '/post/',
+    base:     '/category/',
     param:    ':postId',
   },
   editPost: {
-    // full:  '/post/:postId/edit',
     base:     '/post/edit/',
     param:    ':postId',
   },
@@ -186,7 +185,7 @@ export const ROUTES= {
   const changeView_Category = (uri) => (dispatch) => {
     console.log('__on CATEGORY route:', uri.route);
     dispatch ({
-      type: CHANGE_VIEW,
+      type: SELECT_CATEGORY,
       currentUrl: uri.url,
       currentId:  uri.params.categoryPath,
 
