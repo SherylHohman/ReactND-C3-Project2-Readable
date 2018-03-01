@@ -107,7 +107,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         .catch(err => {
           console.error(err);  //  in case of render error
           dispatch({
-            type: FETCH_POSTS_FAILURE,
+            type: FETCH_POST_FAILURE,
             err,
             error: true,
           })
@@ -293,7 +293,11 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 // ACTION CREATORS (regular)
 
 // INITIAL STATE
-  const postsInitialState = {}
+  const postsInitialState = {
+    isLoading: false,
+    isFetchFailure: false,
+    errorMessage: '',
+  }
 
 // SAMPLE DATA
   // const samplePost = {
@@ -340,16 +344,27 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
       case REQUEST_POST:
         // TODO set loading spinner on
-        return state;
+        return ({
+          ...state,
+          isLoading: true,
+          isFetchFailure: false,
+          errorMessage: '',
+        })
       case FETCH_POST_SUCCESS:
         return ({
           ...state,
           [action.post.id]: action.post,
-          // TODO: turn loading spinner off
-        });
+          isLoading: false,
+          isFetchFailure: false,
+          errorMessage: '',
+         });
       case FETCH_POST_FAILURE:
-          // TODO: UI error message
-          return state;
+        return ({
+          ...state,
+          isLoading: false,
+          isFetchFailure: true,
+          errorMessage: action.err,
+        })
 
       case REQUEST_ADD_POST:
         // TODO:
@@ -389,9 +404,9 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         return state;
       case DELETE_POST_SUCCESS:
         let newState = {...state};
-        console.log('copy of State', newState);
+        // console.log('copy of State', newState);
         delete newState[action.id]
-        console.log('newState', newState);
+        // console.log('newState', newState);
         return newState;
       case DELETE_POST_FAILURE:
         // TODO: UI error message
