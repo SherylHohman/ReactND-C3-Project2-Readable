@@ -160,7 +160,7 @@ export const ROUTES= {
 // ACTION CREATORS
 
   const changeView_Home = (uri) => (dispatch) =>  {
-    console.log('__on HOME route:', uri.route);
+    // console.log('__on HOME route:', uri.route);
     // on home route params == {filter: undefined}
     //   For continuity, shall to explicitely set the categoryPath
     //   to match expected value, consistent with other paths/components
@@ -183,7 +183,7 @@ export const ROUTES= {
     })
   }
   const changeView_Category = (uri) => (dispatch) => {
-    console.log('__on CATEGORY route:', uri.route);
+    // console.log('__on CATEGORY route:', uri.route);
     dispatch ({
       type: SELECT_CATEGORY,
       currentUrl: uri.url,
@@ -202,7 +202,7 @@ export const ROUTES= {
     })
   }
   const changeView_Post = (uri) => (dispatch) => {
-    console.log('__on POST route:', uri.route);
+    // console.log('__on POST route:', uri.route);
     dispatch ({
       type: CHANGE_VIEW,
       currentUrl: uri.url,
@@ -213,7 +213,7 @@ export const ROUTES= {
   export function changeView(newViewData=HOME) { //=> (dispatch) => {
     return (dispatch) => {
 
-      console.log('____entering viewData.changeView, newViewData:', newViewData);
+      // console.log('____entering viewData.changeView, newViewData:', newViewData);
 
       // changeView By uri
       const uri = newViewData.uri;
@@ -222,7 +222,7 @@ export const ROUTES= {
 
       // HOME PAGE
       if (uri.route ==="/" || uri.route==="/:filter?"){
-          console.log('__on HOME route:', uri.route);
+          // console.log('__on HOME route:', uri.route);
           dispatch(changeView_Home(uri));
       }
       // by uri: postId (url begins with ROUTES..)
@@ -231,7 +231,7 @@ export const ROUTES= {
       }
       // by uri: category (url begins with ROUTES..)
       else if (uri.route.indexOf(ROUTES.category.base) === 0) {
-          console.log('__on CATEGORY route:', uri.route);
+          // console.log('__on CATEGORY route:', uri.route);
           dispatch(changeView_Category(uri));
       }
       // No Matching Base Route
@@ -277,13 +277,13 @@ export const ROUTES= {
 
 function viewData(state=initialState_ViewData, action){
   // console.log('entering reducer viewData, prevState', state);
-  console.log('entering reducer viewData, action:'  , action);
+  // console.log('entering reducer viewData, action:'  , action);
 
   let id;
   let url;
   switch (action.type) {
     case CHANGE_VIEW:
-      console.log("__CHANGE_VIEW, action:", action);
+      // console.log("__CHANGE_VIEW, action:", action);
 
       // potential issue: if url is a category route, or id is category.name
       //       then viewData's "category" (object) won't get updated.
@@ -292,7 +292,7 @@ function viewData(state=initialState_ViewData, action){
       id = (action.currentId === null)
         ? state.persistentCategory.path
         : action.currentId
-      console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
+      // console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
       return  ({
                 ...state,
                 currentUrl: action.currentUrl,
@@ -317,7 +317,7 @@ function viewData(state=initialState_ViewData, action){
               });
 
     case SORT_BY:
-      console.log('SORT_BY, action:', action);
+      // console.log('SORT_BY, action:', action);
       return  ({
                 ...state,
                 // TODO sort method stored in url ??
