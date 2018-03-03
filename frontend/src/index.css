@@ -53,57 +53,113 @@
   }
 
   .app-header {
-    background-color: green;/*orangered*/
-    /*background-color: #222;*/
+    /*background-color: orangered;*/
+    /*background-color: green;*/
+    /*background-color: #388e3c;*/
+    background-color: #6abf69;
     /*height: 120px;*/
     padding: 10px;
     color: white;
-    text-shadow: -1px 0 darkgreen, 0 1px darkgreen, 1px 0 darkgreen, 0 -1px darkgreen, 1px 1px 1px darkgreen;
+    /*text-shadow: -1px 0 darkgreen, 0 1px darkgreen, 1px 0 darkgreen, 0 -1px darkgreen, 1px 1px 1px darkgreen;*/
   }
 
   .app-title {
     font-size: 1.4em;
-    color: green;
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, -1px -1px 3px black, 1px 1px 2px black;
+    /*color: green;*/
+    /*color: #388e3c;*/
+    /*color: #00600f;*/
+    /*color: rgba(0,96,15,.63);*/
+    color: rgba(196,62,0, 1);
+    /*color: rgba(255,255,255,.63);*/
+;
+    /*text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, -1px -1px 3px black, 1px 1px 2px black;*/
+    /*text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, 2px 2px 4px #000000;*/
+    /*text-shadow: 1px 1px 1px black, 0 0 15px green, 0 0 5px darkgreen;*/
+    /*text-shadow: 1px 1px 1px rgba(0,0,0,.7), 0 0 15px #388e3c, 0 0 5px #00600f;*/
   }
 
   .app-intro {
     font-size: small;
-    color: white;
-  }
+    /*color: white;*/
+    /*color: rgba(255,255,255,.9);*/
+    /*color: rgba(0,0,0,.63);*/
+    /*color: #6abf69;*/
+    /*color: #00600f;*/
+    color: rgba(255,255,255,.63);
+}
 
   .nav{
     display: flex;
     justify-content: space-around;
     align-items: center;
     cursor: pointer;
-    color: orange;
+    color: rgba(255, 64, 0, 1);
+    /*color: orange;*/
     /*background-color:rgba(255,255,255,.5);*/
   }
 
   .link {
     color: orange;
+    /*color: rgba(255, 64, 0, 1);*/
     cursor: pointer;
   }
 
   .nav .no-link, .no-link {
     cursor: text;
-    color: black;
-  }
+    /*color: black;*/
+    color: rgba(0,96,15, 1)
+    }
     
 /*  header .nav{
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
   }
 */
+  header .link {
+    /*color: orange;*/
+    /*color: #ffa040;*/
+    /*color: rgba(255, 111, 0, .85);*/
+    /*color: rgba(196,62,0, .1);*/
+    color: rgba(0,96,15,.63);
+    cursor: pointer;
+  }
+  ul .nav .sort li{
+    /*color: rgba(0,96,15,.63);*/
+    /*color: rgba(196,62,0, 1);*/
+    color: rgba(255, 64, 0, 1);
+    /*font-weight: bold;*/
+    cursor: pointer;
+  }
+
+  header .nav a{
+    /*color: rgba(0,96,15,.63);*/
+    /*color: rgba(196,62,0, 1);*/
+    color: rgba(196,62,0, 1);
+    font-weight: bold;
+    cursor: pointer;
+  }
+
   header .nav .no-link, header .no-link {
     cursor: text;
-    color: lightgreen;
+    /*color: #6abf69;*/
+    /*color: rgba(0,96,15,.63);*/
+    color: rgba(255,255,255,.63);
   }
 
   .nav .selected, .nav .sort .selected, .nav .category .selected {
-    color: red;
+    /*color: red;*/
+    /*color: rgba(0,96,15, 1);*/
+    color: rgba(56,142,60, 1);
     cursor: default;
+    /*font-weight: bold;*/
   }
+  header .nav .selected, header .nav .sort .selected, header .nav .category .selected {
+    color: rgba(0,96,15,.63);
+    /*color: rgba(196,62,0, 1);*/
+    /*color: rgba(255, 0, 0, .65);*/
+    cursor: default;
+    /*text-shadow: -1px 0 rgba(163, 0, 0, .1), 0 1px rgba(163, 0, 0, .1), 1px 0 rgba(163, 0, 0, .1), 0 -1px rgba(163, 0, 0, .1);*/
+    font-weight: bold;
+}
 
 /* NAVLINK default category for "active" (aka "selected") items
    NavLink will automatically use this class if a className is not provided
