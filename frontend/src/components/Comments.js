@@ -129,7 +129,7 @@ export class Comments extends Component {
         <div>
           <Modal little
             open={this.state.isOpenModal}
-            onClose={ ()=>this.onCancel() }
+            onClose={ ()=>this.closeModal() }
             >
             <div>
               <form onSubmit={(e)=> {this.onSubmit(e)}}>
