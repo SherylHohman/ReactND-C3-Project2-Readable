@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { fetchCategories } from '../store/categories';
 import { ROUTES } from '../store/viewData';
 import { changeView, HOME, DEFAULT_SORT_BY, getUri } from '../store/viewData';
+import { titleCase } from '../utils/helpers';
 
 
 export class Categories extends Component {
@@ -48,7 +49,8 @@ export class Categories extends Component {
                     <NavLink key={category.name}
                       to={`${ROUTES.category.base}${category.path}`}
                       activeClassName="selected"
-                          >{category.name}
+                      >
+                      {titleCase(category.name)}
                       <li key={category.name}></li>
                     </NavLink>
                   )

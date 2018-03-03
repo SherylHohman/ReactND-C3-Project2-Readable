@@ -159,7 +159,10 @@ export class EditPost extends Component {
               >
               {this.props.categoryNames.map((categoryName) => {
                 return (
-                  <option key={categoryName} value={categoryName}>{categoryName}</option>
+                  <option
+                    key={categoryName}
+                    value={categoryName}>{titleCase(categoryName)}
+                  </option>
                 )
               })}
             </select>

@@ -26,6 +26,7 @@ export function timeIn12HourFormat(unixTimestamp){
 
 export function titleCase(str) {
   // doesn't allow for all caps.. or CamelCase words :-/
+  if (!str) return str  // handle undefined, empty string, null
   return str.toLowerCase().split(' ').map(function(word) {
     if (!word || word.length < 1) {
       console.log('cannot titleCase _'+word+'_');

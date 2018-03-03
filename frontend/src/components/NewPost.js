@@ -117,7 +117,7 @@ export class NewPost extends Component {
             >
             {this.props.categoryNames.map((categoryName) => {
               return (
-                <option key={categoryName} value={categoryName}>{categoryName}</option>
+                <option key={categoryName} value={categoryName}>{titleCase(categoryName)}</option>
               )
             })}
           </select>
@@ -192,7 +192,7 @@ export class NewPost extends Component {
         {((this.state.categoryName === HOME.category.name) &&
           <p>-</p>
          ) || (
-          <p>  Category: {this.state.categoryName}  </p>
+          <p>  Category: {titleCase(this.state.categoryName)}  </p>
          )
         }
         <p>  Authored by: {this.state.author}  </p>

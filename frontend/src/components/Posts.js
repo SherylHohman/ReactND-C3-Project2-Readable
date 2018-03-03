@@ -6,7 +6,7 @@ import Categories from './Categories';
 import { ROUTES } from '../store/viewData';
 import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts';
-import { dateMonthYear } from '../utils/helpers';
+import { dateMonthYear, titleCase } from '../utils/helpers';
 
 export class Posts extends Component {
 
@@ -79,22 +79,24 @@ export class Posts extends Component {
 
     return (
       <div>
-          <div> {/*sort by  TODO map over constants in viewData instead */}
-          <ul className="nav sort">
-            <li className="no-link"> Sort By : </li>
-            <li
-              className={`${this.state.sortBy==='date' ? "selected" : ""}`}
-              onClick={(e) => {this.onChangeSort(e, 'date')}}
+
+          {/*sort by  TODO map over constants in viewData instead */}
+          <div>
+            <ul className="nav sort">
+              <li className="no-link"> Sort By : </li>
+              <li
+                className={`${this.state.sortBy==='date' ? "selected" : ""}`}
+                onClick={(e) => {this.onChangeSort(e, 'date')}}
+                >
+                Most Recent
+              </li>
+              <li
+                className={(this.state.sortBy==='voteScore' ? "selected" : "")}
+                onClick={(e) => {this.onChangeSort(e, 'voteScore')}}
               >
-              Most Recent
-            </li>
-            <li
-              className={(this.state.sortBy==='voteScore' ? "selected" : "")}
-              onClick={(e) => {this.onChangeSort(e, 'voteScore')}}
-            >
-              Highest Votes
-            </li>
-          </ul>
+                Highest Votes
+              </li>
+            </ul>
           </div>
 
           {/*Categories*/}
@@ -157,12 +159,12 @@ export class Posts extends Component {
                             </div>
                         </div>
 
-                         <p>By: {post.author} | On: {dateMonthYear(post.timestamp)}</p>
+                         <p>by: {post.author}, {dateMonthYear(post.timestamp)}</p>
 
                           <div className="counts">
                             {post.voteScore} Votes | {post.commentCount} Comments
                           </div>
-                          <p>{post.category}</p>
+                          <p>{titleCase(post.category)}</p>
                           <div></div>
                           <hr />
                        </div>

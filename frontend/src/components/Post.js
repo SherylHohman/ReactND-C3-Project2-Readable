@@ -6,7 +6,7 @@ import Comments from './Comments';
 import { ROUTES, HOME } from '../store/viewData';
 import { changeView, getUri } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
-import { dateMonthYear } from '../utils/helpers';
+import { dateMonthYear, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
 export class Post extends Component {
@@ -109,7 +109,7 @@ export class Post extends Component {
               </div>
             </div>
 
-            <p>Category: {categoryName} | By: {author} | On: {dateMonthYear(timestamp)}</p>
+            <p>category: {titleCase(categoryName)} | by: {author}, {dateMonthYear(timestamp)}</p>
 
             <div>
               <Link
