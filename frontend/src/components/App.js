@@ -39,13 +39,13 @@ class App extends Component{
             <h1 className="app-title">Readable</h1>
           </Link>
           <div className="app-intro">
-            <small>..an app for posting and viewing posts and comments</small>
+            <small> - an app to share your posts and comments - </small>
           </div>
-
-        </header>
 
         {/*Categories*/}
         <Categories routerProps={ appRouterProps }/>
+
+        </header>
         <hr />
 
         <Route exact path="/" render={(routerProps) => (

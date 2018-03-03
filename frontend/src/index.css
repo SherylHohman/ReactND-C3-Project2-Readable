@@ -53,15 +53,18 @@
   }
 
   .app-header {
-    background-color: #222;
-    height: 120px;
+    background-color: green;/*orangered*/
+    /*background-color: #222;*/
+    /*height: 120px;*/
     padding: 10px;
     color: white;
+    text-shadow: -1px 0 darkgreen, 0 1px darkgreen, 1px 0 darkgreen, 0 -1px darkgreen, 1px 1px 1px darkgreen;
   }
 
   .app-title {
     font-size: 1.4em;
-    color: red;
+    color: green;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, -1px -1px 3px black, 1px 1px 2px black;
   }
 
   .app-intro {
@@ -71,10 +74,11 @@
 
   .nav{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     cursor: pointer;
     color: orange;
+    /*background-color:rgba(255,255,255,.5);*/
   }
 
   .link {
@@ -85,6 +89,15 @@
   .nav .no-link, .no-link {
     cursor: text;
     color: black;
+  }
+    
+/*  header .nav{
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  }
+*/
+  header .nav .no-link, header .no-link {
+    cursor: text;
+    color: lightgreen;
   }
 
   .nav .selected, .nav .sort .selected, .nav .category .selected {
