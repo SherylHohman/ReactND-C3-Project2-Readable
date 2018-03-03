@@ -102,9 +102,16 @@ export class Posts extends Component {
           <hr />
 
           {/*New Post*/}
-          <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}>
-            <div><h2>Add New Post</h2><hr /></div>
+          <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}
+                style={{"height":"100%",
+                        "width" :"100%"
+                      }}
+                >
+            <div><button><h2>Add New Post</h2></button></div>
           </Link>
+
+          <hr />
+
 
           {/*posts*/}
           {( (!havePosts) &&
