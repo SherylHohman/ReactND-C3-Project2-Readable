@@ -163,8 +163,8 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
+    border-left:   25px solid transparent;
+    border-right:  25px solid transparent;
 
     border-bottom: 25px solid green;
   }
@@ -173,10 +173,10 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 25px solid transparent;
+    border-left:  25px solid transparent;
     border-right: 25px solid transparent;
 
-    border-top: 25px solid green;
+    border-top:   25px solid green;
   }
 
  /* "Hat" Arrows for comments */
@@ -184,8 +184,8 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
+    border-left:   8px solid transparent;
+    border-right:  8px solid transparent;
 
     border-bottom: 8px solid green;
   }
@@ -193,11 +193,18 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 8px solid transparent;
+    border-left:  8px solid transparent;
     border-right: 8px solid transparent;
 
-    border-top: 8px solid green;
+    border-top:   8px solid green;
   }
+
+  .centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
 
 /* placeholder text */
   ::placeholder {

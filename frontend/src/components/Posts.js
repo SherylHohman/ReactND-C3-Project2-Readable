@@ -5,6 +5,8 @@ import { fetchPosts } from '../store/posts';
 import Categories from './Categories';
 import { ROUTES } from '../store/viewData';
 import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
+import { upVotePost, downVotePost, deletePost } from '../store/posts';
+import { dateMonthYear } from '../utils/helpers';
 
 export class Posts extends Component {
 
@@ -119,6 +121,37 @@ export class Posts extends Component {
                             <h1>{post.title}</h1>
                           </Link>
 
+                          <div className="vote centered">
+                            <p
+                              className="comment-up-vote centered"
+                              onClick={() => {this.props.onUpVotePost(post.id)}}
+                              >
+
+                            </p>
+                            <p
+                              className="comment-down-vote centered"
+                              onClick={() => {this.props.onDownVotePost(post.id)}}
+                              >
+                            </p>
+                          </div>
+
+                          <div>
+                             <div>
+                              <Link
+                                to={`${ROUTES.category.base}${this.props.categoryPath}`}
+                                onClick={() => {this.props.deletePost(post.id)}}
+                                >
+                                Delete Post
+                              </Link>
+
+                              <Link to={`${ROUTES.editPost.base}${post.id}`}>
+                                Edit Post
+                              </Link>
+                            </div>
+                        </div>
+
+                         <p>By: {post.author} | On: {dateMonthYear(post.timestamp)}</p>
+
                           <div className="counts">
                             {post.voteScore} Votes | {post.commentCount} Comments
                           </div>
@@ -161,6 +194,11 @@ function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER
 function mapDispatchToProps(dispatch){
   return ({
     fetchPosts: (category) => dispatch(fetchPosts(category)),
+
+    onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
+    onDownVotePost: (postId) => dispatch(downVotePost(postId)),
+    deletePost: (postId) => dispatch(deletePost(postId)),
+
     changeViewByUri: (uri) => dispatch(changeView({ uri })),
     onChangeSort: (sortBy) => dispatch(changeSort(sortBy)),
   })
