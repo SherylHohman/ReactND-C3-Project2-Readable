@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
-import Categories from './Categories';
 import { ROUTES } from '../store/viewData';
 import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts';
@@ -98,10 +97,6 @@ export class Posts extends Component {
               </li>
             </ul>
           </div>
-
-          {/*Categories*/}
-          <Categories routerProps={ this.props.routerProps }/>
-          <hr />
 
           {/*New Post*/}
           <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}

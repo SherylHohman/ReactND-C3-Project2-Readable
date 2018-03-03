@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 import { Link, Switch } from 'react-router-dom';
+import Categories from './Categories';
 import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
@@ -20,6 +21,15 @@ class App extends Component{
   }
 
   render() {
+    // console.log('____App render, this.props', this.props);
+
+    // same info as routerProps, but derived differently, hence using a diff name
+    const appRouterProps = {
+      history:  this.props.history,
+      location: this.props.location,
+      match:    this.props.match,
+    }
+
     return (
       <div className="app-container">
 
@@ -33,6 +43,10 @@ class App extends Component{
           </div>
 
         </header>
+
+        {/*Categories*/}
+        <Categories routerProps={ appRouterProps }/>
+        <hr />
 
         <Route exact path="/" render={(routerProps) => (
           <Posts     routerProps={ routerProps } />
