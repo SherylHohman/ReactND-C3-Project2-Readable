@@ -15,6 +15,7 @@ export class EditPost extends Component {
     title: '',
     body:  '',
     categoryName: '',
+    author: '',   //  TODO: assign the value of 'LoggedInUser'
   }
 
   componentDidMount(){
@@ -31,6 +32,7 @@ export class EditPost extends Component {
         title: this.props.post.title,
         body : this.props.post.body,
         categoryName: this.props.post.category,
+        author: this.props.post.author,
       });
     }
 
@@ -42,6 +44,7 @@ export class EditPost extends Component {
         title: nextProps.post.title,
         body: nextProps.post.body,
         category: nextProps.post.category,
+        author: nextProps.post.author,
       })
     }
   }
@@ -55,6 +58,9 @@ export class EditPost extends Component {
   controlledCategoryField(categoryName){
     this.setState({ categoryName });
   }
+  controlledAuthorField(e, currentText){
+    this.setState({author: titleCase(currentText)});
+  }
 
   // onSubmit(e){
   //   e.preventDefault();
@@ -63,9 +69,12 @@ export class EditPost extends Component {
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
-      title: this.state.title.trim(),
+      title: this.state.title.trim()   || '(untitled)',
       category: this.state.categoryName,
-      body: this.state.body.trim(),
+      body: this.state.body.trim()     || '(blank)',
+
+      // TODO: automatically populate author from logged in user
+      author: this.state.author.trim() || '(anonymous)',
     }
     this.props.onSave(this.props.postId, editedPostData);
   }
@@ -108,6 +117,18 @@ export class EditPost extends Component {
       <div>
         <form className="edit">
           {/* uses state */}
+          <div>
+            <p className="field-label-left">Your Name: </p>
+            <input
+              className="edit-author"
+              type="text"
+              placeholder="Your Name in Lights.."
+              value={this.state.author}
+              onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+              /* TODO: add user field on Home/Page, that auto populates author field */
+              />
+          </div>
+
           <div>
             <p className="field-label-left">Title: </p>
             <input
