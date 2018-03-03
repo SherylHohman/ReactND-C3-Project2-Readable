@@ -7,6 +7,7 @@ import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
+import PageNotFound from './PageNotFound';
 import { fetchCategories } from '../store/categories';
 
 class App extends Component{
@@ -46,7 +47,6 @@ class App extends Component{
         <Categories routerProps={ appRouterProps }/>
 
         </header>
-        <hr />
 
         <Route exact path="/" render={(routerProps) => (
           <Posts     routerProps={ routerProps } />

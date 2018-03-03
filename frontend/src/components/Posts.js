@@ -79,6 +79,17 @@ export class Posts extends Component {
     return (
       <div>
 
+          {/*New Post*/}
+          <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}
+                style={{"height":"100%",
+                        "width" :"100%"
+                      }}
+                >
+            <div><button><h2>Add New Post</h2></button></div>
+          </Link>
+
+          <hr />
+
           {/*sort by  TODO map over constants in viewData instead */}
           <div>
             <ul className="nav sort">
@@ -97,15 +108,6 @@ export class Posts extends Component {
               </li>
             </ul>
           </div>
-
-          {/*New Post*/}
-          <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}
-                style={{"height":"100%",
-                        "width" :"100%"
-                      }}
-                >
-            <div><button><h2>Add New Post</h2></button></div>
-          </Link>
 
           <hr />
 
