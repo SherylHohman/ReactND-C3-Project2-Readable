@@ -93,7 +93,7 @@ export class Posts extends Component {
                 className={(this.state.sortBy==='voteScore' ? "selected" : "")}
                 onClick={(e) => {this.onChangeSort(e, 'voteScore')}}
               >
-                Highest Votes
+                Most Votes
               </li>
             </ul>
           </div>
