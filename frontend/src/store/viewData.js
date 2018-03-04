@@ -50,8 +50,8 @@ export const ROUTES= {
   // "category.path" is a url-safe string for the category url. Not including'/''
 
   // ensure consistancy
-  const ALL_POSTS_CATEGORY= {name: '', path: ''} // name '' or null ??
-  const ALL_POSTS_ID  = '' ;  // or null ??
+  const ALL_POSTS_CATEGORY= {name: '', path: ''};
+  const ALL_POSTS_ID  = '' ;
   const ALL_POSTS_URL = '/';
   export const DEFAULT_SORT_BY = 'date';
   export const DEFAULT_SORT_ORDER = 'high_to_low';
@@ -77,7 +77,7 @@ export const ROUTES= {
     }
     // child component does not have routerProps, use "store" (2nd param)
     if (store) {
-      console.log('Using "store.viewData", some expected uri fields will be missing.');
+      console.log('getUri: Using "store.viewData", some expected uri fields will be missing.');
       return ({
         url: store.viewData.url,
         currentId: store.viewData.currentId,
@@ -162,9 +162,10 @@ export const ROUTES= {
   const changeView_Home = (uri) => (dispatch) =>  {
     // console.log('__on HOME route:', uri.route);
     // on home route params == {filter: undefined}
-    //   For continuity, shall to explicitely set the categoryPath
+    //   For continuity, shall explicitely set the categoryPath
     //   to match expected value, consistent with other paths/components
     //   * Also Adding a FAKE a "categoryPath" param !! *
+
     dispatch ({
       type: CHANGE_VIEW,
       currentUrl: uri.url,
@@ -173,13 +174,15 @@ export const ROUTES= {
       // note "params" is Brittle - I overwrite actual params here.
       //   if EVER change routes - this may Break !
       // FAKE THIS - see above notes
-      params: {categoryPath: HOME.category.path},  // TODO: retire this category object
+      // TODO: retire this category object
+      params: {categoryPath: HOME.category.path},
 
       categoryPath: HOME.category.path,
     })
   }
   const changeView_Category = (uri) => (dispatch) => {
     // console.log('__on CATEGORY route:', uri.route);
+
     // TODO: Detect Bad URL / Bad Category
     //    Create and Set a BadUrl Flag, so can 404
     dispatch ({
@@ -197,9 +200,8 @@ export const ROUTES= {
     })
   }
 
-  export function changeView(newViewData=HOME) { //=> (dispatch) => {
+  export function changeView(newViewData=HOME) {
     return (dispatch) => {
-
       // console.log('____entering viewData.changeView, newViewData:', newViewData);
 
       // changeView By uri
@@ -212,16 +214,26 @@ export const ROUTES= {
           // console.log('__on HOME route:', uri.route);
           dispatch(changeView_Home(uri));
       }
-      // by uri: postId (url begins with ROUTES..)
+      // by uri: postId (url begins with ROUTES.post.base)
       else if (uri.route.indexOf(ROUTES.post.base) === 0) {
          dispatch(changeView_Post(uri));
       }
-      // by uri: category (url begins with ROUTES..)
+      // by uri: category (url begins with ROUTES.category.base)
       else if (uri.route.indexOf(ROUTES.category.base) === 0) {
           // console.log('__on CATEGORY route:', uri.route);
+
+          // TODO: check that the url is VALID.
+          //    Any Garbage will match this route
+          //    If the ":category" does not === an category url,
+          //    then it is invalid, and a 404 page, error, or re-direct must ensue
           dispatch(changeView_Category(uri));
       }
       // No Matching Base Route
+      // (Because of the nature of the "/:category" route, this line will)
+      //  likely never be reached.  All invalid routes will get absorbed by
+      //  ":category", I think.
+      //  Unless a url with an additional "/" causes Router to not match it.
+      //  I think though "/:category" acts as a sort of wild card to match anything.
       else {
           console.log('ERROR WITH THE ROUTE:', uri.route);
           dispatch({
@@ -240,6 +252,7 @@ export const ROUTES= {
     persistentSortBy,
   })
 
+  // TODO: implement User selectable sort order
   // export const sortOrder = ({  }) => ({
   //   type: SORT_ORDER,
   //   sortOrder: 'DESCENDING'
@@ -250,10 +263,11 @@ export const ROUTES= {
 
   const initialState_ViewData = {
     currentUrl: HOME.url,
-    // holds: post.id, comment.id, or category.name, or '' (all posts)
+
+    // stored value is a: post.id, comment.id, or category.name, or '' (all posts)
     currentId:  HOME.id,
 
-    // 'votes' or 'date'
+    // sort method: 'by votes' or 'by date'
     persistentSortBy:    DEFAULT_SORT_BY,
     persistentSortOrder: DEFAULT_SORT_ORDER,
   }
@@ -272,11 +286,6 @@ function viewData(state=initialState_ViewData, action){
       //       then viewData's "category" (object) won't get updated.
       // TODO: parse URL and call selectCategory action creator instead.
 
-      // id = (action.currentId === null)
-      //   ? state.persistentCategory.path
-      //   : action.currentId
-      // // console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
-
       // TODO: DETECT NON-EXISTANT CATEGORY PATH / BAD URL
 
       return  ({
@@ -287,10 +296,11 @@ function viewData(state=initialState_ViewData, action){
 
     case SELECT_CATEGORY:
       // console.log('SELECT_CATEGORY, action:', action);
+
       let category = action.currentId;
       url = (category.path)
                 ? `${ROUTES.category.base}${category.path}`
-                : `${HOME.url}`    // home page: all categories
+                : `${HOME.url}`    // home page: all posts/categories
       id = category.path;
       return  ({
                 ...state,
@@ -302,7 +312,7 @@ function viewData(state=initialState_ViewData, action){
       // console.log('SORT_BY, action:', action);
       return  ({
                 ...state,
-                // TODO sort method stored in url ??
+                // TODO: add sort method stored in url ??
                 persistentSortBy: action.persistentSortBy,
               });
 

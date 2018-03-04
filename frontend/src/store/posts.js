@@ -290,8 +290,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
   };
 
 
-// ACTION CREATORS (regular)
-
 // INITIAL STATE
   const postsInitialState = {
     isLoading: false,
@@ -324,6 +322,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
   function posts(state=postsInitialState, action) {
     // console.log('posts reducer, action', action)
 
+    // TODO: refactor. combine cases.
     switch (action.type){
 
       case REQUEST_POSTS:
@@ -331,7 +330,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         return state;
       case FETCH_POSTS_SUCCESS:
         // This is for fetch returning All Posts,
-        // And for fetch returning Posts by Category
+        // ..AND for fetch returning Posts by Category
         // REPLACES all posts in store with current fetch results
         return ({
           //...state,
@@ -404,9 +403,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         return state;
       case DELETE_POST_SUCCESS:
         let newState = {...state};
-        // console.log('copy of State', newState);
         delete newState[action.id]
-        // console.log('newState', newState);
         return newState;
       case DELETE_POST_FAILURE:
         // TODO: UI error message
@@ -444,22 +441,10 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
           }
         });
 
-
       default:
         return state;
     }
   }
 
 
-// export default post
 export default posts
-
-
-/*
-NOTES:
-  TODO: after deletion, if post's page is loaded, then it may show up empty
-  - redirect to home, "all posts" page
-  - or display "This Post has been Deleted, or Never Existed"
-    (also covers the case of an invalid posts URL)
-  - Both
-*/
