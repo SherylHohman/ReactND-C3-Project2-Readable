@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
-import { ROUTES } from '../store/viewData';
+import { ROUTES, HOME } from '../store/viewData';
+import PageNotFound from './PageNotFound';
 import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts';
 import { dateMonthYear, titleCase } from '../utils/helpers';
@@ -13,6 +14,15 @@ export class Posts extends Component {
     posts: [],
     sortBy: DEFAULT_SORT_BY,
     sortOrder: DEFAULT_SORT_ORDER,
+  }
+
+  isInValidUrl(){
+    if (!this.props || !this.props.validUrls || !this.props.uri ||
+        this.props.validUrls.indexOf(this.props.uri.url) === -1){
+      // console.log('Posts, isInValidUrl, url:', this.props && this.props.uri && this.props.uri.url)
+      return true;
+    }
+    return false;
   }
 
   componentDidMount() {
@@ -74,6 +84,15 @@ export class Posts extends Component {
             statusMessage = 'Posts are not in an array - they canot be mapped over !';
           }
       }
+    }
+
+    if (this.isInValidUrl()){
+      return (
+        <div>
+          <PageNotFound routerProps={ this.props.routerProps } />
+          {/* <Redirect to={HOME.url} /> */}
+        </div>
+      );
     }
 
     return (
@@ -222,6 +241,13 @@ function mapStoreToProps (store, ownProps) {
     }, []);
   const sortedPosts = sortPosts(posts, store.viewData.persistentSortBy);
 
+  const categoryNames = Object.keys(store.categories);
+  let validUrls = categoryNames.map((categoryName) => {
+    return '/' + store.categories[categoryName].path;
+  });
+  validUrls.push(HOME.url);
+  // console.log('validUrls:', validUrls);
+
   const uri = getUri(ownProps.routerProps) || null;
 
   return {
@@ -229,6 +255,7 @@ function mapStoreToProps (store, ownProps) {
     sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
     sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
 
+    validUrls,
     uri,
     categoryPath: uri.currentId,  // === uri.currentCategoryPath  TEMP
 

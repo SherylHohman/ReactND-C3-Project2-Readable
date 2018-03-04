@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import { Link, Switch } from 'react-router-dom';
 import Categories from './Categories';
 import Posts from './Posts';
@@ -68,6 +68,12 @@ class App extends Component{
 
           <Route exact path="/:categoryPath" render={(routerProps) => (
             <Posts     routerProps={ routerProps } />
+          )} />
+
+          {/* Category Route (above) will also absorb Invalid URLs */}
+          {/* so it checks for invalid "category paths", and calls PageNotFound */}
+          <Route render={(routerProps) => (
+            <PageNotFound routerProps={ routerProps } />
           )} />
         </Switch>
 
