@@ -176,29 +176,16 @@ export const ROUTES= {
       params: {categoryPath: HOME.category.path},  // TODO: retire this category object
 
       categoryPath: HOME.category.path,
-
-      persistentCategory: HOME.category,    // TODO: retire this category object
-      // TODO: refactor components to (below) this instead (of above)
-      persistentCategoryPath: HOME.category.path,  //string
     })
   }
   const changeView_Category = (uri) => (dispatch) => {
     // console.log('__on CATEGORY route:', uri.route);
+    // TODO: Detect Bad URL / Bad Category
+    //    Create and Set a BadUrl Flag, so can 404
     dispatch ({
       type: SELECT_CATEGORY,
       currentUrl: uri.url,
       currentId:  uri.params.categoryPath,
-
-      // TODO: retire this object
-      persistentCategory: {
-        name: uri.params.categoryPath,  // technically incorrect!!
-        // (above) don't have access to categories to parse this properly.
-        //  It's the same value in MY dataset (currently)
-        path: uri.params.categoryPath,  // { name, path }
-      },
-
-      // TODO: refactor components to use below instead of persistentCategory
-      persistentCategoryPath: uri.params.categoryPath,  //string
     })
   }
   const changeView_Post = (uri) => (dispatch) => {
@@ -266,10 +253,6 @@ export const ROUTES= {
     // holds: post.id, comment.id, or category.name, or '' (all posts)
     currentId:  HOME.id,
 
-    persistentCategory: HOME.category,  // TODO: retire this object
-    //  TODO refactor components to use this string
-    persistentCategoryPath: HOME.category.path,
-
     // 'votes' or 'date'
     persistentSortBy:    DEFAULT_SORT_BY,
     persistentSortOrder: DEFAULT_SORT_ORDER,
@@ -289,21 +272,22 @@ function viewData(state=initialState_ViewData, action){
       //       then viewData's "category" (object) won't get updated.
       // TODO: parse URL and call selectCategory action creator instead.
 
-      id = (action.currentId === null)
-        ? state.persistentCategory.path
-        : action.currentId
-      // console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
+      // id = (action.currentId === null)
+      //   ? state.persistentCategory.path
+      //   : action.currentId
+      // // console.log('__CHANGE_VIEW, action.currentUrl, id', action.currentUrl, id)
+
+      // TODO: DETECT NON-EXISTANT CATEGORY PATH / BAD URL
+
       return  ({
                 ...state,
                 currentUrl: action.currentUrl,
-                currentId:  id,
-                persistentCategory: action.persistentCategory,
-                persistentCategoryPath: action.persistentCategoryPath,
+                currentId:  action.currentId,
               });
 
     case SELECT_CATEGORY:
       // console.log('SELECT_CATEGORY, action:', action);
-      let category = action.persistentCategory;
+      let category = action.currentId;
       url = (category.path)
                 ? `${ROUTES.category.base}${category.path}`
                 : `${HOME.url}`    // home page: all categories
@@ -312,8 +296,6 @@ function viewData(state=initialState_ViewData, action){
                 ...state,
                 currentUrl: url,
                 currentId: id,
-                persistentCategory: category,
-                persistentCategoryPath: action.persistentCategoryPath,
               });
 
     case SORT_BY:
