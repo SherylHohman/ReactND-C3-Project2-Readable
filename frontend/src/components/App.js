@@ -48,12 +48,12 @@ class App extends Component{
 
         </header>
 
-        <Route exact path="/" render={(routerProps) => (
-          <Posts     routerProps={ routerProps } />
-        )} />
-
       {/* Routes */}
         <Switch>
+          <Route exact path="/" render={(routerProps) => (
+            <Posts     routerProps={ routerProps } />
+          )} />
+
           <Route exact path="/post/new" render={(routerProps) => (
             <NewPost  routerProps={ routerProps } />
           )} />
