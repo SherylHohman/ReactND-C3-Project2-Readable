@@ -7,6 +7,7 @@ import PageNotFound from './PageNotFound';
 import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts';
 import { dateMonthYear, titleCase } from '../utils/helpers';
+import { createSelector } from 'reselect';
 
 export class Posts extends Component {
 
@@ -26,6 +27,7 @@ export class Posts extends Component {
   }
 
   componentDidMount() {
+    // console.log('Posts componentDidMount');
     // this.props.fetchPosts(this.props.selectedCategoryName);
     this.props.fetchPosts(this.props.categoryPath);
     // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
@@ -69,6 +71,7 @@ export class Posts extends Component {
   }
 
   render() {
+    // console.log('re-render Posts');
 
     const havePosts = (this.props && this.props.posts &&
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
@@ -87,6 +90,7 @@ export class Posts extends Component {
     }
 
     if (this.isInValidUrl()){
+      // console.log('PageNotFound from within Posts component, uri:', this.props.uri)
       return (
         <div>
           <PageNotFound routerProps={ this.props.routerProps } />
@@ -235,27 +239,41 @@ function mapStoreToProps (store, ownProps) {
 
   // const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
-  // object to array
-  const posts = Object.keys(store.posts).reduce((acc, postId) => {
-      return acc.concat([store.posts[postId]]);
-    }, []);
-  const sortedPosts = sortPosts(posts, store.viewData.persistentSortBy);
+  const getSortedPosts = createSelector(
+    store => store.posts,
+    store => store.viewData.persistentSortBy,
+    (postsObj, persistentSortBy) => {
+      // object to array
+      const posts = Object.keys(postsObj).reduce((acc, postId) => {
+        return acc.concat([postsObj[postId]]);
+      }, []);
+      // now sort..
+      return sortPosts(posts, persistentSortBy);
+    }
+  );
 
-  const categoryNames = Object.keys(store.categories);
-  let validUrls = categoryNames.map((categoryName) => {
-    return '/' + store.categories[categoryName].path;
-  });
-  validUrls.push(HOME.url);
-  // console.log('validUrls:', validUrls);
+  // valid /:category routes - vs 404
+  const getValidUrls = createSelector(
+    store => store.categories,
+    (categories) => {
+      const categoryNames = Object.keys(store.categories);
+      let validUrls = categoryNames.map((categoryName) => {
+        return '/' + store.categories[categoryName].path;
+      });
+      validUrls.push(HOME.url);
+      // console.log('validUrls:', validUrls);
+      return validUrls;
+    }
+  );
 
   const uri = getUri(ownProps.routerProps) || null;
 
   return {
-    posts: sortedPosts,
+    posts: getSortedPosts(store),
     sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
     sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
 
-    validUrls,
+    validUrls: getValidUrls(store),
     uri,
     categoryPath: uri.currentId,  // === uri.currentCategoryPath  TEMP
 
