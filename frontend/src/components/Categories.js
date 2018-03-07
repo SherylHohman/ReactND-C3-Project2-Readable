@@ -5,7 +5,7 @@ import { fetchCategories } from '../store/categories';
 import { ROUTES } from '../store/viewData';
 import { changeView, HOME, DEFAULT_SORT_BY, getUri } from '../store/viewData';
 import { titleCase } from '../utils/helpers';
-
+import { createSelector } from 'reselect';
 
 export class Categories extends Component {
 
@@ -81,9 +81,17 @@ function mapStoreToProps (store, ownProps) {
   // so don't have to refactor former history references
   // const history = (ownProps.routerInfo && ownProps.routerInfo.history )|| null;
 
-  const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
-    return acc.concat([store.categories[categoryKey]]);
-  }, []);
+  // not sure that reselect makes a difference here.
+  const getCategoriesArray = createSelector(
+    store => store.categories,
+    (categories) => Object.keys(categories).reduce((acc, categoryKey) => {
+      return acc.concat([categories[categoryKey]]);
+     }, [])
+  );
+  const categoriesArray = getCategoriesArray(store);
+  // const categoriesArray = Object.keys(store.categories).reduce((acc, categoryKey) => {
+  //   return acc.concat([store.categories[categoryKey]]);
+  // }, []);
 
   const uri = getUri(ownProps.routerProps) || null;
   // console.log('sTTP Categories, uri:', uri)
