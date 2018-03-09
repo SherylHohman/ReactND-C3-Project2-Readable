@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Form, Field } from 'react-final-form';
 import { addPost } from '../store/posts';
 import { HOME, ROUTES } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
@@ -133,55 +134,62 @@ export class NewPost extends Component {
 
         <small>New Post</small>
 
-        <form
-          onSubmit={(e)=> {this.onSubmit(e)}}
-          >
+        <Form
+          onSubmit={this.onSubmit}
+          /* initialValues={{ employed: true, stooge: 'larry' }} */
+          render={({ handleSubmit, reset, submitting, pristine, values }) => (
+            <form
+              /*onSubmit={(e)=> {this.onSubmit(e)}}*/
+              onSubmit={handleSubmit}
+              >
 
-          {/* uses state */}
-          <input
-            className="edit-title"
-            type="text"
-            placeholder="Clever Title.."
-            value={this.state.title}
-            onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
-            />
-          {/* TODO: titleCase on keystrokes */}
+              {/* uses state */}
+              <input
+                className="edit-title"
+                type="text"
+                placeholder="Clever Title.."
+                value={this.state.title}
+                onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
+                />
+              {/* TODO: titleCase on keystrokes */}
 
-          <textarea
-            className="edit-post-body"
-            type="text"
-            placeholder="Write Something Amazing.."
-            value={this.state.body}
-            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-            rows={'5'}
-            />
+              <textarea
+                className="edit-post-body"
+                type="text"
+                placeholder="Write Something Amazing.."
+                value={this.state.body}
+                onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+                rows={'5'}
+                />
 
-          <input
-            className="edit-author"
-            type="text"
-            placeholder="Your Name in Lights.."
-            value={this.state.author}
-            onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-            /* TODO: add user field on Home/Page, that auto populates author field */
-            />
+              <input
+                className="edit-author"
+                type="text"
+                placeholder="Your Name in Lights.."
+                value={this.state.author}
+                onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+                /* TODO: add user field on Home/Page, that auto populates author field */
+                />
 
-            <div>
-                {showCategoriesOrLoading}
-            </div>
+                <div>
+                    {showCategoriesOrLoading}
+                </div>
 
-          <button
-            className="on-save"
-            onClick={() => {this.onSave();}}
-            >
-            Save
-          </button>
-          <button
-            className="on-cancel"
-            onClick={() => {this.onCancel();
-          }}>
-            Cancel
-          </button>
-        </form>
+              <button
+                className="on-save"
+                onClick={() => {this.onSave();}}
+                >
+                Save
+              </button>
+              <button
+                className="on-cancel"
+                onClick={() => {this.onCancel();
+              }}>
+                Cancel
+              </button>
+            </form>
+          )}
+        />
 
         <hr />
         {/* uses props */}
