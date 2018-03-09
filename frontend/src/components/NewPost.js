@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Form, Field } from 'react-final-form';
+// import { Form, Field } from 'react-final-form';
 import { addPost } from '../store/posts';
 import { HOME, ROUTES } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
@@ -129,29 +129,37 @@ export class NewPost extends Component {
          ? renderSelectCategory
          : renderCategoriesLoading;
 
+    const hasInvalidField =
+      !this.state.title || !this.state.author || !this.state.body;
+
     return  (
       <div>
 
         <small>New Post</small>
 
-        <Form
+        {/*<Form
           onSubmit={this.onSubmit}
-          /* initialValues={{ employed: true, stooge: 'larry' }} */
           render={({ handleSubmit, reset, submitting, pristine, values }) => (
+        */}
             <form
-              /*onSubmit={(e)=> {this.onSubmit(e)}}*/
-              onSubmit={handleSubmit}
+              onSubmit={(e)=> {this.onSubmit(e)}}
+              /*onSubmit={handleSubmit}*/
               >
 
               {/* uses state */}
-              <input
-                className="edit-title"
-                type="text"
-                placeholder="Clever Title.."
-                value={this.state.title}
-                onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
+              {/*<div>*/}
+                {/*<label className="field-label-left">Post Title</label>*/}
+                {/*<<Field*/}
+                  {/*name="title"*/}
+                <input
+                  component="input"
+                  className="edit-title"
+                  type="text"
+                  placeholder="Clever Title.."
+                  value={this.state.title}
+                  onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
                 />
-              {/* TODO: titleCase on keystrokes */}
+              {/*</div>*/}
 
               <textarea
                 className="edit-post-body"
@@ -176,8 +184,9 @@ export class NewPost extends Component {
                 </div>
 
               <button
-                className="on-save"
+                className={hasInvalidField?"has-invalid-field":"on-save"}
                 onClick={() => {this.onSave();}}
+                disabled={hasInvalidField}
                 >
                 Save
               </button>
@@ -188,8 +197,8 @@ export class NewPost extends Component {
                 Cancel
               </button>
             </form>
-          )}
-        />
+          {/*})}*/}
+        {/*/>*/}
 
         <hr />
         {/* uses props */}

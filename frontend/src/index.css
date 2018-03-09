@@ -161,6 +161,17 @@
     font-weight: bold;
 }
 
+  button {
+    color: white;
+    background-color: green;
+  }
+
+  .has-invalid-field {
+    color: white;
+    background-color: lightgray;
+    cursor: not-allowed;
+  }
+
 /* NAVLINK default category for "active" (aka "selected") items
    NavLink will automatically use this class if a className is not provided
   .nav .active {
