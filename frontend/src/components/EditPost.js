@@ -16,6 +16,12 @@ export class EditPost extends Component {
     body:  '',
     categoryName: '',
     author: '',   //  TODO: assign the value of 'LoggedInUser'
+
+    validField: {
+      title:  true,
+      author: true,
+      body:   true,
+    },
   }
 
   componentDidMount(){
@@ -49,22 +55,44 @@ export class EditPost extends Component {
     }
   }
 
+  canSubmit(){
+    const keys = Object.keys(this.state.validField);
+    return keys.every((key) => {
+      return this.state.validField[key];
+    })
+  }
+  validateField(key, newText){
+    // setState is async, so cannot use it's value
+    // hence passing and validating on newText (what setState is being set to)
+    const isValid = !!newText;  // !! empty string, null, undefined
+    this.setState({
+      validField: {
+        ...this.state.validField,
+        [key]: isValid,
+      }
+    });
+  }
+
   controlledTitleField(e, currentText){
     this.setState({title: titleCase(currentText)});
+    this.validateField('title', currentText)
   }
   controlledBodyField(e, currentText){
     this.setState({body: currentText});
+    this.validateField('body', currentText)
   }
   controlledCategoryField(categoryName){
     this.setState({ categoryName });
   }
   controlledAuthorField(e, currentText){
     this.setState({author: titleCase(currentText)});
+    this.validateField('author', currentText)
   }
 
   // onSubmit(e){
   //   e.preventDefault();
   // }
+
 
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
@@ -113,27 +141,18 @@ export class EditPost extends Component {
       )
     }
 
+    const canSubmit = this.canSubmit();
+
     return  (
       <div>
         <form className="edit">
           {/* uses state */}
           <div>
-            <p className="field-label-left">Your Name: </p>
-            <input
-              className="edit-author"
-              type="text"
-              placeholder="Your Name in Lights.."
-              value={this.state.author}
-              onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-              /* TODO: add user field on Home/Page, that auto populates author field */
-              />
-          </div>
-
-          <div>
             <p className="field-label-left">Title: </p>
             <input
-              className="edit-title"
+              className={this.state.validField.title ? "" : "invalid-field"}
               type="text"
+              placeholder="Title"
               value={this.state.title}
               onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
               />
@@ -142,11 +161,24 @@ export class EditPost extends Component {
           <div>
            <p className="field-label-left">Body: </p>
             <textarea
-              className="post-body"
+              className={this.state.validField.body ? "" : "invalid-field"}
               type="text"
+              placeholder="Write Something"
               value={this.state.body}
               onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
               rows={'5'}
+              />
+          </div>
+
+          <div>
+            <p className="field-label-left">Your Name: </p>
+            <input
+              className={this.state.validField.author ? "" : "invalid-field"}
+              type="text"
+              placeholder="Your Name"
+              value={this.state.author}
+              onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+              /* TODO: add user field on Home/Page, that auto populates author field */
               />
           </div>
 
@@ -170,14 +202,18 @@ export class EditPost extends Component {
 
           <Link
             to={postUrl}
-            onClick={() => {this.onSave(postUrl)}}
             >
-            <button>Save</button>
-          </Link>
-          <Link to={postUrl}>
+            <button
+              className={canSubmit ? "on-save" : "has-invalid-field"}
+              onClick={() => {this.onSave();}}
+              disabled={!canSubmit}
+              >Save
+            </button>
             <button>Cancel</button>
           </Link>
+
         </form>
+
           <hr />
           {/* uses props */}
           <div className="edited">
