@@ -10,13 +10,37 @@ export class NewComment extends Component {
   state = {
     body   : '',
     author : '',  // TODO auto fill by logged in User
+    validField: {
+      author: false,
+      body:   false,
+    },
+  }
+
+  canSubmit(){
+    const keys = Object.keys(this.state.validField);
+    return keys.every((key) => {
+      return this.state.validField[key];
+    })
+  }
+  validateField(key, newText){
+    // setState is async, so cannot use it's value
+    // hence passing and validating on newText (what setState is being set to)
+    const isValid = !!newText;  // !! empty string, null, undefined
+    this.setState({
+      validField: {
+        ...this.state.validField,
+        [key]: isValid,
+      }
+    });
   }
 
   controlledBodyField(e, currentText){
     this.setState({body: currentText});
+    this.validateField('body', currentText)
   }
   controlledAuthorField(e, currentText){
     this.setState({author: titleCase(currentText)});
+    this.validateField('author', currentText)
   }
 
   onSave(){
@@ -39,6 +63,12 @@ export class NewComment extends Component {
 
   resetFormFields(){
     this.setState({body: '', author: ''});
+    this.setState({
+      validField: {
+        author: false,
+        body:   false,
+      }
+    });
   }
 
   onSubmit(e){
@@ -49,6 +79,8 @@ export class NewComment extends Component {
 
   render(){
 
+    const canSubmit = this.canSubmit();
+
     return(
       <div
           style={{width:"60%", margin:"0 auto"}}
@@ -57,7 +89,8 @@ export class NewComment extends Component {
         <form onSubmit={(e)=> {this.onSubmit(e)}}>
 
           <textarea
-            className="comment-body"
+            /* className="comment-body" */
+            style={{width:"87%"}}
             type="text"
             placeholder="Your insightful comment.."
             value={this.state.body}
@@ -66,7 +99,7 @@ export class NewComment extends Component {
             />
 
           <input
-            className="comment-author"
+            /* className="comment-author" */
             type="text"
             placeholder="Your Name.."
             value={this.state.author}
@@ -75,7 +108,7 @@ export class NewComment extends Component {
             />
 
           <button
-            className="on-save"
+            className={canSubmit ? "on-save" : "has-invalid-field"}
             onClick={() => {this.onSave();}}
             >
             Save
@@ -107,7 +140,3 @@ function mapStoreToProps ( store, ...ownProps ) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(NewComment);
-
-
-
-
