@@ -15,6 +15,19 @@ export class NewPost extends Component {
     author: '',   //  TODO: assign the value of 'LoggedInUser'
     body:   '',
     categoryName: HOME.category.name,
+
+    // though an empty field is invalid, don't want to highlight it as such
+    // at page load. instead only "invalidate" the field once it's been "touched"
+    validField: {
+      title:  true,
+      author: true,
+      body:   true,
+    },
+    touchedField: {
+      title:  false,
+      author: false,
+      body:   false,
+    }
   }
 
   componentDidMount(){
@@ -41,14 +54,54 @@ export class NewPost extends Component {
       }
   }
 
+  // formTouched(){
+  //   const keys = Object.keys(this.state.touchedField);
+  //   keys.some((key) => {
+  //     return this.state.touchedField[key] === true;
+  //   })
+  // }
+  canSubmit(){
+    const keys = Object.keys(this.state.touchedField);
+    return keys.every((key) => {
+      return this.state.touchedField[key] && this.state.validField[key];
+    })
+  }
+  fieldTouched(key){
+    this.setState({
+      touchedField: {
+        ...this.state.touchedField,
+        [key]: true,
+      }
+    });
+  }
+  validateField(key, newText){
+    // setState is async, so cannot use it's value
+    // hence passing and validating on newText (what setState is being set to)
+    const isValid = !!newText;  // not empty string, null, undefined
+    this.setState({
+      validField: {
+        ...this.state.validField,
+        [key]: isValid,
+      }
+    });
+  }
+  updateFieldStatus(key, newTextValue){
+    this.fieldTouched(key);
+    this.validateField(key, newTextValue)
+  }
+
   controlledTitleField(e, currentText){
     e.preventDefault();
     this.setState({title: titleCase(currentText)});
+    // passing in currentText to validate against, because setState is asynch!!
+    this.updateFieldStatus("title", currentText)
     return false;
   }
   controlledBodyField(e, currentText){
     e.preventDefault();
     this.setState({body: currentText});
+    // passing in currentText to validate against, because setState is asynch!!
+    this.updateFieldStatus("body", currentText);
     return false;
   }
   controlledCategoryField(e, selected){
@@ -57,6 +110,8 @@ export class NewPost extends Component {
   controlledAuthorField(e, currentText){
     e.preventDefault();
     this.setState({author: titleCase(currentText)});
+    // passing in currentText to validate against, because setState is asynch!!
+    this.updateFieldStatus("author", currentText);
     return false;
   }
 
@@ -129,8 +184,7 @@ export class NewPost extends Component {
          ? renderSelectCategory
          : renderCategoriesLoading;
 
-    const hasInvalidField =
-      !this.state.title || !this.state.author || !this.state.body;
+    const canSubmit = this.canSubmit();
 
     return  (
       <div>
@@ -153,27 +207,31 @@ export class NewPost extends Component {
                   {/*name="title"*/}
                 <input
                   component="input"
-                  className="edit-title"
+                  /* className="edit-title" */
+                  /*className={this.state.invalidField.title?"edit-title invalid-field":"edit-title"}*/
+                  className={this.state.validField.title?"edit-title":"edit-title invalid-field"}
                   type="text"
-                  placeholder="Clever Title.."
+                  placeholder="Title"
                   value={this.state.title}
                   onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
                 />
               {/*</div>*/}
 
               <textarea
-                className="edit-post-body"
+                className={this.state.validField.body?"edit-post-body":"edit-post-body invalid-field"}
+                /*className="edit-post-body"*/
                 type="text"
-                placeholder="Write Something Amazing.."
+                placeholder="Write Something"
                 value={this.state.body}
                 onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
                 rows={'5'}
                 />
 
               <input
-                className="edit-author"
+                className={this.state.validField.author?"edit-author":"edit-author invalid-field"}
+                /*className="edit-author"*/
                 type="text"
-                placeholder="Your Name in Lights.."
+                placeholder="Your Name"
                 value={this.state.author}
                 onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
                 /* TODO: add user field on Home/Page, that auto populates author field */
@@ -184,9 +242,9 @@ export class NewPost extends Component {
                 </div>
 
               <button
-                className={hasInvalidField?"has-invalid-field":"on-save"}
+                className={canSubmit?"on-save":"has-invalid-field"}
                 onClick={() => {this.onSave();}}
-                disabled={hasInvalidField}
+                disabled={!canSubmit}
                 >
                 Save
               </button>
