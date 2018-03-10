@@ -41,7 +41,7 @@
   }
   textarea {
     width: 98%;
-    padding: 18px;
+    padding: 20px;
   }
   textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus select, select:focus{
     /*border-color: rgba(229, 103, 23, 0.8);*/
