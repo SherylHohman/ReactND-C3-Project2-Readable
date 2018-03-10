@@ -46,21 +46,15 @@ export class NewPost extends Component {
          Array.isArray(nextProps.categoryNames) &&
          nextProps.categoryNames[0]
        ){
-          // default init "selected" category to the first in the list
+          // default: initialize "selected" category to the first in the list
           this.setState({
             categoryName: nextProps.categoryNames[0],
           })
       }
   }
 
-  // formTouched(){
-  //   const keys = Object.keys(this.state.touchedField);
-  //   keys.some((key) => {
-  //     return this.state.touchedField[key] === true;
-  //   })
-  // }
   canSubmit(){
-    const keys = Object.keys(this.state.touchedField);
+    const keys = Object.keys(this.state.validField);
     return keys.every((key) => {
       return this.state.touchedField[key] && this.state.validField[key];
     })
@@ -196,19 +190,15 @@ export class NewPost extends Component {
 
                 <input
                   component="input"
-                  /* className="edit-title" */
-                  /*className={this.state.invalidField.title?"edit-title invalid-field":"edit-title"}*/
                   className={this.state.validField.title?"edit-title":"edit-title invalid-field"}
                   type="text"
                   placeholder="Title"
                   value={this.state.title}
                   onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
                 />
-              {/*</div>*/}
 
               <textarea
                 className={this.state.validField.body?"edit-post-body":"edit-post-body invalid-field"}
-                /*className="edit-post-body"*/
                 type="text"
                 placeholder="Write Something"
                 value={this.state.body}
@@ -218,7 +208,6 @@ export class NewPost extends Component {
 
               <input
                 className={this.state.validField.author?"edit-author":"edit-author invalid-field"}
-                /*className="edit-author"*/
                 type="text"
                 placeholder="Your Name"
                 value={this.state.author}
@@ -285,7 +274,6 @@ function mapStoreToProps (store, ownProps) {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
-    // TEMP during refactor, so this.props.history.push() still works
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
   return {
@@ -293,7 +281,7 @@ function mapStoreToProps (store, ownProps) {
     categoryNames: categoryNames || null,
     categoryName: categoryNames[0] || HOME.category,
 
-    // TEMP during refactor, so this.props.history.push() still works
+    // so this.props.history.push() still works without refactor
     history,
   }
 };
