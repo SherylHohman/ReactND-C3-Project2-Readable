@@ -190,7 +190,7 @@ export class NewPost extends Component {
 
                 <input
                   component="input"
-                  className={this.state.validField.title?"edit-title":"edit-title invalid-field"}
+                  className={this.state.validField.title ? "" : "invalid-field"}
                   type="text"
                   placeholder="Title"
                   value={this.state.title}
@@ -198,7 +198,7 @@ export class NewPost extends Component {
                 />
 
               <textarea
-                className={this.state.validField.body?"edit-post-body":"edit-post-body invalid-field"}
+                className={this.state.validField.body ? "" : "invalid-field"}
                 type="text"
                 placeholder="Write Something"
                 value={this.state.body}
@@ -207,7 +207,7 @@ export class NewPost extends Component {
                 />
 
               <input
-                className={this.state.validField.author?"edit-author":"edit-author invalid-field"}
+                className={this.state.validField.author ? "" : "invalid-field"}
                 type="text"
                 placeholder="Your Name"
                 value={this.state.author}
@@ -220,7 +220,7 @@ export class NewPost extends Component {
                 </div>
 
               <button
-                className={canSubmit?"on-save":"has-invalid-field"}
+                className={canSubmit ? "on-save" : "has-invalid-field"}
                 onClick={() => {this.onSave();}}
                 disabled={!canSubmit}
                 >

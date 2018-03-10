@@ -239,18 +239,6 @@
     font-style: italic;
   }
 
-/* TODO: need styles for these classnames
-  (EditPost, NewPost)
-    edit-title  -- want this font to be fairly large - input field for Post Title
-    edit-post-body -- descent size - input field for Post body
-
-  (New Post)
-    edit-category and
-    edit-author fields will also need to be set (new posts)
-
-  (EditComment, NewComment)
-    edit-comment  -- any reasonable size will do here.
-*/
   .orig {
     color: dimgray;
   }
