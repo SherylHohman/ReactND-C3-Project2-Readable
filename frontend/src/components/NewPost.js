@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import { Form, Field } from 'react-final-form';
 import { addPost } from '../store/posts';
 import { HOME, ROUTES } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
@@ -191,20 +190,10 @@ export class NewPost extends Component {
 
         <small>New Post</small>
 
-        {/*<Form
-          onSubmit={this.onSubmit}
-          render={({ handleSubmit, reset, submitting, pristine, values }) => (
-        */}
             <form
               onSubmit={(e)=> {this.onSubmit(e)}}
-              /*onSubmit={handleSubmit}*/
               >
 
-              {/* uses state */}
-              {/*<div>*/}
-                {/*<label className="field-label-left">Post Title</label>*/}
-                {/*<<Field*/}
-                  {/*name="title"*/}
                 <input
                   component="input"
                   /* className="edit-title" */
@@ -255,8 +244,6 @@ export class NewPost extends Component {
                 Cancel
               </button>
             </form>
-          {/*})}*/}
-        {/*/>*/}
 
         <hr />
         {/* uses props */}
