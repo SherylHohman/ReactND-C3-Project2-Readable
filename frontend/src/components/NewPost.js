@@ -59,7 +59,7 @@ export class NewPost extends Component {
       return this.state.touchedField[key] && this.state.validField[key];
     })
   }
-  fieldTouched(key){
+  touchField(key){
     this.setState({
       touchedField: {
         ...this.state.touchedField,
@@ -79,7 +79,7 @@ export class NewPost extends Component {
     });
   }
   updateFieldStatus(key, newTextValue){
-    this.fieldTouched(key);
+    this.touchField(key);
     this.validateField(key, newTextValue)
   }
 
