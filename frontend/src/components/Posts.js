@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import { ROUTES, HOME } from '../store/viewData';
 import PageNotFound from './PageNotFound';
@@ -28,7 +28,6 @@ export class Posts extends Component {
 
   componentDidMount() {
     // console.log('Posts componentDidMount');
-    // this.props.fetchPosts(this.props.selectedCategoryName);
     this.props.fetchPosts(this.props.categoryPath);
     // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
     if (this.props.uri){
@@ -38,31 +37,30 @@ export class Posts extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('Posts cWRP nextProps:', nextProps);
+    // console.log('Posts cWRP nextProps: ', nextProps);
+    // console.log('Posts cWRP this.Props:', this.props);
 
-    if (nextProps.sortBy) {
+    if (nextProps.sortBy !== this.props.sortBy) {
       this.setState({ sortBy: nextProps.sortBy });
     }
-    if (nextProps.posts) {
+    if (nextProps.posts !== this.props.posts) {
+      // console.log('Posts cWRP, got new posts');
+      // console.log('newPosts:', nextProps.posts, 'oldPosts:', this.props.posts);
       const sortedPosts = sortPosts(nextProps.posts,
                                     nextProps.sortBy || this.state.sortBy);
       this.setState({ posts: sortedPosts });
     }
 
-    if (this.props.uri && nextProps.uri && nextProps.uri.url !== this.props.uri.url){
-      // console.log('__Posts cWRprops calling changeView, this.props.uri', this.props.uri);
+    if (nextProps.uri && this.props.uri &&
+        nextProps.uri.url !== this.props.uri.url){
+      // console.log('__Posts cWRP,     calling changeView, nextProps.uri:', nextProps.uri);
       this.props.changeViewByUri(nextProps.uri)
+      this.props.fetchPosts(nextProps.categoryPath);
     }
     else {  // for monitoring how app works
-      // console.log('__Posts cWRprops NOT calling changeView, nextProps.uri', nextProps.uri.url, this.props.uri.url);
+      // console.log('Posts cWRP, NOT calling changeView, nextProps.uri.url:',
+      //             nextProps.uri.url, ', this.props.uri.url:', this.props.uri.url);
     }
-
-    if (nextProps.categoryPath && this.props.categoryPath &&
-        nextProps.categoryPath !== this.props.categoryPath){
-          console.log('....____Posts cWRprops, fetching..new posts, categoryPath:', nextProps.categoryPath);
-          this.props.fetchPosts(nextProps.categoryPath);
-    }
-
   }
 
   onChangeSort(e, sortBy){
@@ -72,6 +70,15 @@ export class Posts extends Component {
 
   render() {
     // console.log('re-render Posts');
+
+    if (this.isInValidUrl()){
+      // console.log('PageNotFound from within Posts component, uri:', this.props.uri)
+      return (
+        <div>
+          <PageNotFound routerProps={ this.props.routerProps } />
+        </div>
+      );
+    }
 
     const havePosts = (this.props && this.props.posts &&
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
@@ -89,16 +96,6 @@ export class Posts extends Component {
       }
     }
 
-    if (this.isInValidUrl()){
-      // console.log('PageNotFound from within Posts component, uri:', this.props.uri)
-      return (
-        <div>
-          <PageNotFound routerProps={ this.props.routerProps } />
-          {/* <Redirect to={HOME.url} /> */}
-        </div>
-      );
-    }
-
     return (
       <div>
 
@@ -113,7 +110,7 @@ export class Posts extends Component {
 
           <hr />
 
-          {/*sort by  TODO map over constants in viewData instead */}
+          {/* sortBy  TODO map over constants in viewData instead */}
           <div>
             <ul className="nav sort">
               <li className="no-link"> Sort By : </li>
@@ -133,7 +130,6 @@ export class Posts extends Component {
           </div>
 
           <hr />
-
 
           {/*posts*/}
           {( (!havePosts) &&
@@ -201,6 +197,7 @@ export class Posts extends Component {
 }
 
 function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER) {
+  if (!posts) return posts;  // invalid categoryRoute sets posts to null
   const isHIGH_TO_LOW = (orderBy === DEFAULT_SORT_ORDER) ? 1 : -1;
 
   const sorted = posts.sort((postA, postB) => {
@@ -214,7 +211,7 @@ function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER
       if (postA.voteScore  <  postB.voteScore) return 1 * isHIGH_TO_LOW
       else return -1 * isHIGH_TO_LOW
     }
-    return 0;  // no sort
+    return 0;  // no change
   });
   return sorted;
 };
@@ -237,46 +234,91 @@ function mapStoreToProps (store, ownProps) {
   // console.log('store:', store);
   // console.log('Posts ownProps:', ownProps);
 
-  // const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
+  const uri = getUri(ownProps.routerProps) || null;
+  // console.log('Posts, uri:', uri);
 
-  const getSortedPosts = createSelector(
-    store => store.posts,
-    store => store.viewData.persistentSortBy,
-    (postsObj, persistentSortBy) => {
-      // object to array
-      const posts = Object.keys(postsObj).reduce((acc, postId) => {
-        return acc.concat([postsObj[postId]]);
-      }, []);
-      // now sort..
-      return sortPosts(posts, persistentSortBy);
-    }
-  );
-
+  // const for the life of the app, as categories don't change
   // valid /:category routes - vs 404
-  const getValidUrls = createSelector(
+  const getValidCategoryUrls = createSelector(
     store => store.categories,
     (categories) => {
       const categoryNames = Object.keys(store.categories);
       let validUrls = categoryNames.map((categoryName) => {
         return '/' + store.categories[categoryName].path;
       });
+      // HOME.url must be LAST in array for indexOf searches to work as expected
       validUrls.push(HOME.url);
-      // console.log('validUrls:', validUrls);
       return validUrls;
     }
   );
+  const validCategoryUrls = getValidCategoryUrls(store)
 
-  const uri = getUri(ownProps.routerProps) || null;
+  if (!uri || (validCategoryUrls.indexOf(uri.url) === -1)) {
+    // TODO: exit ASAP - before compute below constants ! - just want to render 404 mssg
+    //    keep computations minimal:
+    //    set as many values to NULL or CONSTANTS as possible..
+    //    while not breaking the component
+    // console.log('__Posts, mSTPs, invalidCategoryUrl - EXITING mSTP early, uri.url:',
+    //             uri.url, validCategoryUrls, validCategoryUrls.indexOf(uri.url));
+    return ({
+          posts:     null,
+          sortBy:    DEFAULT_SORT_BY,
+          sortOrder: DEFAULT_SORT_ORDER,
+          validUrls: null,  //validCategoryUrls,
+          uri,
+          categoryPath: uri.currentId,
+        })
+  }
+
+  // TODO: move these selectors to ?? reducers files ??
+  const getAllPosts = createSelector(
+    store => store.posts,
+    store => store.viewData.persistentSortBy,
+    (postsObj, persistentSortBy) => {
+      // object to array
+      const allPosts = Object.keys(postsObj).reduce((acc, postId) => {
+        return acc.concat([postsObj[postId]]);
+      }, []);
+      return allPosts;
+    }
+  );
+  const allPosts = getAllPosts(store);
+
+  // TODO: save categorized posts filtered by category
+  // const getPostIdsByCategory = createSelector(
+  // );
+  // const postIdsByCategory = getPostIdsByCategory(store);
+  // const postIdsCurrentCategory = postIdsByCategory[uri.currentId] || null;
+
+  const getPostsCurrentCategory = createSelector(
+    store => store.viewData.currentId,
+    store => store.viewData.url,
+    store => store.persistentSortBy,
+    (currentCategoryPath, url, persistentSortBy) => {
+      // uses memoized selectors allPosts, and validCategoryUrls (defined above)
+      const postsCurrentCategory = allPosts.filter( (post) => {
+        return post.category === uri.currentId;
+      });
+      const currentPosts = (uri.currentId === HOME.category.path)
+                   ? allPosts
+                   : postsCurrentCategory
+      return currentPosts;
+    }
+  );
+  const postsCurrentCategory = getPostsCurrentCategory(store);
+
+  // const sortedPosts = sortPosts(allPosts, uri.persistentSortBy);
+  // const sortedPosts = sortPosts(postsCurrentCategory, uri.persistentSortBy);
+  // console.log('__Posts, mSTPs, sortedPosts', sortedPosts)
 
   return {
-    posts: getSortedPosts(store),
+    posts:     postsCurrentCategory, //sortedPosts,
     sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
     sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
 
-    validUrls: getValidUrls(store),
+    validUrls: validCategoryUrls,
     uri,
-    categoryPath: uri.currentId,  // === uri.currentCategoryPath  TEMP
-
+    categoryPath: uri.currentId,
   }
 };
 

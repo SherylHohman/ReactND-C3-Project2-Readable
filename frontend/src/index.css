@@ -145,7 +145,12 @@
     /*color: rgba(0,96,15,.63);*/
     color: rgba(255,255,255,.63);
   }
-
+/*  
+  .selected {
+    unfortunately, this forces a link-like cursor, so it looks clickable
+    pointer-events: none;
+  }
+*/
   .nav .selected, .nav .sort .selected, .nav .category .selected {
     /*color: red;*/
     /*color: rgba(0,96,15, 1);*/
