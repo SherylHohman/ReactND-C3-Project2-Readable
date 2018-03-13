@@ -30,16 +30,12 @@ export class NewPost extends Component {
   }
 
   componentDidMount(){
-    // console.log('in NewPost componentDidMount');
-
     if (this.props.categoryNames){
       this.setState( {categoryName: this.props.categoryNames[0] });
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
-
     // categories never change in life of app, they are fetched at App load
     if ( nextProps &&
          nextProps.categoryNames &&

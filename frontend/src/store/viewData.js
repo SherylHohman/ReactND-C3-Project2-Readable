@@ -59,14 +59,12 @@ export const ROUTES= {
   }
 
   export function getUri(routerProps=null, store=null){
-    // console.log('getUri, routerProps.match:', routerProps.match);
     const match    = (routerProps && routerProps.match)    || null;
     const location = (routerProps && routerProps.location) || null;
     if (!match) {
       console.log('getUri, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
       return null;
     }
-    // console.log('__let uri.params = match.params:', match.params);
     let uri = {
       // actual location, not just the "match"ed part
       url: location.pathname || null,
@@ -101,9 +99,7 @@ export const ROUTES= {
 // ACTION CREATORS
 
   export const changeView = (newViewData=HOME) => (dispatch) => {
-      // console.log('__++__entering viewData.CHANGEVIEW, newViewData:', newViewData);
       const uri = newViewData.uri;
-      // console.log('__++__entering viewData.changeView, uri.currentId:', uri.currentId);
       dispatch ({
         type: CHANGE_VIEW,
         currentUrl: uri.url,
@@ -141,18 +137,14 @@ export const ROUTES= {
   }
 
 function viewData(state=initialState_ViewData, action){
-  // console.log('entering reducer viewData, prevState', state);
-  // console.log('entering reducer viewData, action:'  , action);
   switch (action.type) {
     case CHANGE_VIEW:
-      // console.log("_++_CHANGE_VIEW, action:", action);
       return  ({
                 ...state,
                 currentUrl: action.currentUrl,
                 currentId:  action.currentId,
               });
     case SORT_BY:
-      // console.log('SORT_BY, action:', action);
       return  ({
                 ...state,
                 // TODO: add sort method stored in url ??

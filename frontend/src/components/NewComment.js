@@ -52,7 +52,6 @@ export class NewComment extends Component {
       body: this.state.body.trim() || '(no comment)',
       author: this.state.author.trim() || '(anonymous)',
     }
-    // console.log(newCommentData);
     this.props.onSave(newCommentData);
     this.resetFormFields();
   }

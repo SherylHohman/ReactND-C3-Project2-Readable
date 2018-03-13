@@ -25,13 +25,8 @@ export class EditPost extends Component {
   }
 
   componentDidMount(){
-    // console.log('in EditPost componentDidMount');
-
     // synch store with current URL
     if (this.props.uri){
-      // console.log('__EditPost cDM calling changeView, this.props.uri:', this.props.uri);
-      // console.log('__EditPost routerProps:', this.props.routerProps);
-      // console.log('__EditPost uri:-----', this.props.uri);
       this.props.changeViewByUri(this.props.uri);
     }
 
@@ -40,7 +35,6 @@ export class EditPost extends Component {
       this.props.fetchPost(this.props.postId);
     }
     else {
-      // console.log('EditPost, cDM, post:', this.props.post);
       // init controlled input fields
       this.setState({
         title: this.props.post.title,
@@ -49,7 +43,6 @@ export class EditPost extends Component {
         author: this.props.post.author,
       });
     }
-
   }
 
   componentWillReceiveProps(nextProps){
@@ -63,9 +56,6 @@ export class EditPost extends Component {
     }
 
     // if (nextProps.uri && nextProps.uri !== this.props.uri){
-    //   console.log('__EditPost cWRP calling changeView, this.props.uri:', this.props.uri);
-    //   console.log('__EditPost routerProps:', this.props.routerProps);
-    //   console.log('__EditPost uri:', this.props.uri);
     //   this.props.changeViewByUri(this.props.uri);
     // }
 
@@ -125,8 +115,6 @@ export class EditPost extends Component {
 
   render(){
 
-    // console.log('postId:', this.props.postId, 'post:', this.props.post);
-
     // TODO:
     // if (FETCH ERROR){
     //   // bad postId/deleted-post (likely form saved Url, or browser Back Button)
@@ -145,7 +133,6 @@ export class EditPost extends Component {
     const postUrl = `${ROUTES.post.base}${postId}`;
 
     if (this.props && this.props.postId && !this.props.post){
-      // console.log('EditPost render, postId, but no Post');
       return (
         <div>
         <h2> Hold On.. I'm getting your Post </h2>
@@ -276,9 +263,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store, ownProps) {
-  // console.log('store:', store)
-  // console.log('__EditPost ownProps', ownProps);
-
   // const postId = store.viewData.currentId;
   const postId = getUri(ownProps.routerProps).postId || null;//currentId;
 

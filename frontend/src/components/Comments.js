@@ -35,8 +35,6 @@ export class Comments extends Component {
 
   componentDidMount(){
     const postId = this.props.postId;
-    // console.log('...in Comments ComponentDidMount, props', this.props);
-    // console.log('Comments componentDidMount ..fetching, comments');
     this.props.fetchComments(postId);
   }
 
@@ -127,13 +125,11 @@ export class Comments extends Component {
     const { comments, postId } = this.props;
 
     if (postId === null) {
-      // console.log('Comments, are null.');
       return (
         <div>Unable to get comments for this post</div>
       )
     }
     if (comments === []) {
-      // console.log('There are no comments for this post.');
       return (
         <div>Be the first to comment on this post</div>
       )
@@ -258,13 +254,10 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-
-  // const postId = store.viewData.currentId  || null;
   const uri = getUri(ownProps.routerProps) || null;
 
-
+  // const postId = store.viewData.currentId  || null;
   const postId = uri && uri.currentId;  // or uri.params.postId // or uri.postId
-  // console.log('Comments, mSTP, uri', uri);
 
   const commentIds = Object.keys(store.comments);
   const comments = commentIds.reduce((acc, commentId) => {

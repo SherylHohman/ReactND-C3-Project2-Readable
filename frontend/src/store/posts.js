@@ -96,7 +96,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
         .then((response) => response.json())
         .then((post) => {
-          // console.log('__got the post!:', post);
           return (
             dispatch({
               type: FETCH_POST_SUCCESS,
@@ -320,7 +319,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
   // state is an object of (multiple) post objects
   function posts(state=postsInitialState, action) {
-    // console.log('posts reducer, action', action)
 
     // TODO: refactor. combine cases.
     switch (action.type){

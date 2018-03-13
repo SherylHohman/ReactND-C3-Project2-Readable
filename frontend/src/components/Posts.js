@@ -20,32 +20,24 @@ export class Posts extends Component {
   isInValidUrl(){
     if (!this.props || !this.props.validUrls || !this.props.uri ||
         this.props.validUrls.indexOf(this.props.uri.url) === -1){
-      // console.log('Posts, isInValidUrl, url:', this.props && this.props.uri && this.props.uri.url)
       return true;
     }
     return false;
   }
 
   componentDidMount() {
-    // console.log('Posts componentDidMount');
     this.props.fetchPosts(this.props.categoryPath);
-    // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
     if (this.props.uri){
-      // console.log('Posts cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeViewByUri(this.props.uri)
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('Posts cWRP nextProps: ', nextProps);
-    // console.log('Posts cWRP this.Props:', this.props);
 
     if (nextProps.sortBy !== this.props.sortBy) {
       this.setState({ sortBy: nextProps.sortBy });
     }
     if (nextProps.posts !== this.props.posts) {
-      // console.log('Posts cWRP, got new posts');
-      // console.log('newPosts:', nextProps.posts, 'oldPosts:', this.props.posts);
       const sortedPosts = sortPosts(nextProps.posts,
                                     nextProps.sortBy || this.state.sortBy);
       this.setState({ posts: sortedPosts });
@@ -53,13 +45,8 @@ export class Posts extends Component {
 
     if (nextProps.uri && this.props.uri &&
         nextProps.uri.url !== this.props.uri.url){
-      // console.log('__Posts cWRP,     calling changeView, nextProps.uri:', nextProps.uri);
       this.props.changeViewByUri(nextProps.uri)
       this.props.fetchPosts(nextProps.categoryPath);
-    }
-    else {  // for monitoring how app works
-      // console.log('Posts cWRP, NOT calling changeView, nextProps.uri.url:',
-      //             nextProps.uri.url, ', this.props.uri.url:', this.props.uri.url);
     }
   }
 
@@ -69,10 +56,8 @@ export class Posts extends Component {
   }
 
   render() {
-    // console.log('re-render Posts');
 
     if (this.isInValidUrl()){
-      // console.log('PageNotFound from within Posts component, uri:', this.props.uri)
       return (
         <div>
           <PageNotFound routerProps={ this.props.routerProps } />
@@ -244,11 +229,8 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('store:', store);
-  // console.log('Posts ownProps:', ownProps);
 
   const uri = getUri(ownProps.routerProps) || null;
-  // console.log('Posts, uri:', uri);
 
   // const for the life of the app, as categories don't change
   // valid /:category routes - vs 404
@@ -271,8 +253,6 @@ function mapStoreToProps (store, ownProps) {
     //    keep computations minimal:
     //    set as many values to NULL or CONSTANTS as possible..
     //    while not breaking the component
-    // console.log('__Posts, mSTPs, invalidCategoryUrl - EXITING mSTP early, uri.url:',
-    //             uri.url, validCategoryUrls, validCategoryUrls.indexOf(uri.url));
     return ({
           posts:     null,
           sortBy:    DEFAULT_SORT_BY,
@@ -322,7 +302,6 @@ function mapStoreToProps (store, ownProps) {
 
   // const sortedPosts = sortPosts(allPosts, uri.persistentSortBy);
   // const sortedPosts = sortPosts(postsCurrentCategory, uri.persistentSortBy);
-  // console.log('__Posts, mSTPs, sortedPosts', sortedPosts)
 
   return {
     posts:     postsCurrentCategory, //sortedPosts,

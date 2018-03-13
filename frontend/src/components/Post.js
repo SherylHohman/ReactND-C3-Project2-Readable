@@ -11,8 +11,6 @@ import PropTypes from 'prop-types';
 export class Post extends Component {
 
   componentDidMount() {
-    // console.log('in Post componentDidMount, props:', this.props);
-
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
     }
@@ -23,28 +21,23 @@ export class Post extends Component {
   }
 
   render(){
-
     const { isLoading, isFetchFailure } = this.props.fetchStatus;
     const postId = this.props.postId;
 
     if (isFetchFailure) {
-      // console.log('Post: isFetchFailure, postId', this.props.postId);
       return (
         <div>
           <p>I could not retrieve that post.</p>
           <p>Either that post does not exist..</p>
           <p>..or there was a network error.</p>
           <hr />
-          {/**/}
           <Link to={HOME.url}>Home Page</Link>
           <button onClick={() => {this.props.fetchPost(postId)}}>Retry</button>
-          {/**/}
         </div>
       )
     }
 
     if (isLoading) {
-      // console.log('Post: Loading.. postID:', this.props.postId);
       return (
         <div>
           <p>looking for your Post..</p>
@@ -53,7 +46,6 @@ export class Post extends Component {
     }
 
     if (!this.props.post) {
-      // console.log('Post: no post data. Has FETCH POST been initiated?: post wasn\'t present in props, postID?:', this.props.postId);
       return (
         <div>
           <p>First render should have initiated a fetch..</p>
@@ -141,9 +133,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('Post store:', store);
-  // console.log('Post ownProps:', ownProps);
-
   const uri = getUri(ownProps.routerProps) || null;
   const postId = uri.postId  || null;
   const post = store.posts[postId] || null;

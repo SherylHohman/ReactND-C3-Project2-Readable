@@ -12,20 +12,10 @@ export class Categories extends Component {
 
   componentDidMount() {
     this.props.fetchCategories();
-    console.log('Categories componentDidMount ..fetching, categories');
 
     if (this.props.uri){
-      console.log('Categories cDM calling changeView, this.props.uri', this.props.uri);
       this.props.changeView(this.props.uri)
     }
-    // else {  // for app monitoring
-    //   console.log('Categories cDM NOT calling changeView, this.props.uri', this.props.uri);
-    // }
-  }
-
-  componentWillReceiveProps(nextProps){
-    // console.log('__Categories cWRP nextProps: ', nextProps);
-    // console.log('__Categories cWRP this.Props:', this.props);
   }
 
   render() {
@@ -128,14 +118,9 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('store.categories:', store.categories)
-  // console.log('Categories, ownProps:', ownProps)
-
   const { match, location, history } = ownProps;
   const routerProps = { match, location, history };
-  // console.log(routerProps);
   const uri = getUri(routerProps) || null;
-  // console.log('__Categories, uri:', uri)
 
   const getCategoriesArray = createSelector(
     store => store.categories,
@@ -158,7 +143,6 @@ function mapStoreToProps (store, ownProps) {
          }, []).concat(HOME.category.path)
       );
       const categoriesPaths = getCategoriesPaths(store);
-      // console.log('__categoriesPaths', categoriesPaths);
 
       if ((categoriesPaths.indexOf(currentId) !== -1) &&
           // in case more ROUTES get added that incorporate categoryPath (currentId)
@@ -175,7 +159,6 @@ function mapStoreToProps (store, ownProps) {
     }
   );
   const selectedCategoryPath = getSelectedCategoryPath(store);
-  // console.log('__selectedCategoryPath', selectedCategoryPath);
 
   return {
       categories: categoriesArray   || null,
