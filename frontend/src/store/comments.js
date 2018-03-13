@@ -283,22 +283,22 @@ import * as ReaderAPI from '../utils/api';
   function comments(state={}, action) {
 
     switch (action.type){
+
       case REQUEST_COMMENTS:
-        // TODO set loading spinner on
+      case REQUEST_ADD_COMMENT:
+      case REQUEST_EDIT_COMMENT:
+      case REQUEST_DELETE_COMMENT:
+      case REQUEST_VOTE_ON_COMMENT:
+        // TODO: loading spinner on
+        // TODO: loading spinner off on SUCCESS and FAILURE
         return state;
+
+      // TODO: turn loading spinnera off
       case FETCH_COMMENTS_SUCCESS:
         return ({
           ...state,
           ...action.comments,
-          // TODO: turn loading spinner off
         });
-      case FETCH_COMMENTS_FAILURE:
-          // TODO: UI error message
-          return state;
-
-      case REQUEST_ADD_COMMENT:
-        // TODO:
-        return state;
       case ADD_COMMENT_SUCCESS:
         return ({
           ...state,
@@ -306,13 +306,6 @@ import * as ReaderAPI from '../utils/api';
             ...action.comment,
           }
         });
-      case ADD_COMMENT_FAILURE:
-        // TODO: UI error message
-        return state;
-
-      case REQUEST_EDIT_COMMENT:
-        // TODO:
-        return state;
       case EDIT_COMMENT_SUCCESS:
         return ({
           ...state,
@@ -320,25 +313,12 @@ import * as ReaderAPI from '../utils/api';
             ...action.comment,
           }
         });
-      case EDIT_COMMENT_FAILURE:
-        // TODO: UI error message
-        return state;
-
-      case REQUEST_DELETE_COMMENT:
-        // TODO
-        return state;
       case DELETE_COMMENT_SUCCESS:
         // needs the comment ID
         let newState = {...state};
         delete newState[action.commentId]
         return newState;
-      case DELETE_COMMENT_FAILURE:
-        // TODO
-        return state;
 
-      case REQUEST_VOTE_ON_COMMENT:
-        // TODO: do I need a spinner ?
-        return state;
       case VOTE_ON_COMMENT_SUCCESS:
         // needs the comment ID
         return ({
@@ -348,8 +328,14 @@ import * as ReaderAPI from '../utils/api';
             voteScore: action.voteScore,
           }
         });
+
+      case FETCH_COMMENTS_FAILURE:
+      case ADD_COMMENT_FAILURE:
+      case EDIT_COMMENT_FAILURE:
+      case DELETE_COMMENT_FAILURE:
       case VOTE_ON_COMMENT_FAILURE:
-        // TODO: error message
+        // TODO: UI error message
+        // TODO: loading spinner off
         return state;
 
       default:
