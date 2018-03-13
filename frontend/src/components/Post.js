@@ -67,7 +67,7 @@ export class Post extends Component {
       // console.log('Post: no post data. Has FETCH POST been initiated?: post wasn\'t present in props, postID?:', this.props.postId);
       return (
         <div>
-          <p>First render could have initiated a fetch..</p>
+          <p>First render should have initiated a fetch..</p>
           <p>..but then either "isLoading" or "isFetchFailure" should kick in</p>
           <p><i>Should't get this far.. (why was there no early return??)</i></p>
           <p>Post: post wasn\'t present in props, do I have the postID?: {postId}</p>
