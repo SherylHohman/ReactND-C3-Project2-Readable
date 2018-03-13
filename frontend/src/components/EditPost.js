@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { editPost } from '../store/posts';
-import { changeView, HOME, getUri } from '../store/viewData';
+import { HOME, ROUTES } from '../store/viewData';
+import { changeView, getUri } from '../store/viewData';
 import { fetchPost } from '../store/posts';
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -14,9 +15,20 @@ export class EditPost extends Component {
     title: '',
     body:  '',
     categoryName: '',
+    author: '',   //  TODO: assign the value of 'LoggedInUser'
+
+    validField: {
+      title:  true,
+      author: true,
+      body:   true,
+    },
   }
 
   componentDidMount(){
+    // synch store with current URL
+    if (this.props.uri){
+      this.props.changeViewByUri(this.props.uri);
+    }
 
     if (!this.props.post) {
       // needed when page is loaded from a saved url
@@ -28,9 +40,9 @@ export class EditPost extends Component {
         title: this.props.post.title,
         body : this.props.post.body,
         categoryName: this.props.post.category,
+        author: this.props.post.author,
       });
     }
-
   }
 
   componentWillReceiveProps(nextProps){
@@ -39,30 +51,64 @@ export class EditPost extends Component {
         title: nextProps.post.title,
         body: nextProps.post.body,
         category: nextProps.post.category,
+        author: nextProps.post.author,
       })
     }
+
+    // if (nextProps.uri && nextProps.uri !== this.props.uri){
+    //   this.props.changeViewByUri(this.props.uri);
+    // }
+
+  }
+
+  canSubmit(){
+    const keys = Object.keys(this.state.validField);
+    return keys.every((key) => {
+      return this.state.validField[key];
+    })
+  }
+  validateField(key, newText){
+    // setState is async, so cannot use state's value
+    // hence validating on newText (the value setState is setting the field to)
+    const isValid = !!newText;  // !! empty string, null, undefined
+    this.setState({
+      validField: {
+        ...this.state.validField,
+        [key]: isValid,
+      }
+    });
   }
 
   controlledTitleField(e, currentText){
     this.setState({title: titleCase(currentText)});
+    this.validateField('title', currentText)
   }
   controlledBodyField(e, currentText){
     this.setState({body: currentText});
+    this.validateField('body', currentText)
   }
   controlledCategoryField(categoryName){
     this.setState({ categoryName });
+  }
+  controlledAuthorField(e, currentText){
+    this.setState({author: titleCase(currentText)});
+    this.validateField('author', currentText)
   }
 
   // onSubmit(e){
   //   e.preventDefault();
   // }
 
+
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
-      title: this.state.title.trim(),
+      title: this.state.title.trim()   || '(untitled)',
       category: this.state.categoryName,
-      body: this.state.body.trim(),
+      body: this.state.body.trim()     || '(blank)',
+
+      // TODO: automatically populate author from logged in user
+      author: this.state.author.trim() || '(anonymous)',
     }
     this.props.onSave(this.props.postId, editedPostData);
   }
@@ -70,7 +116,7 @@ export class EditPost extends Component {
   render(){
 
     // TODO:
-    // if (TODO:FETCH ERROR){
+    // if (FETCH ERROR){
     //   // bad postId/deleted-post (likely form saved Url, or browser Back Button)
     //   // redirect/link to home or last viewed category page (persistentCategoryPath)
     //   return (
@@ -84,7 +130,7 @@ export class EditPost extends Component {
     // }
 
     const postId = this.props.postId;
-    const postUrl = `/post/${postId}`;
+    const postUrl = `${ROUTES.post.base}${postId}`;
 
     if (this.props && this.props.postId && !this.props.post){
       return (
@@ -99,6 +145,8 @@ export class EditPost extends Component {
       )
     }
 
+    const canSubmit = this.canSubmit();
+
     return  (
       <div>
         <form className="edit">
@@ -106,8 +154,9 @@ export class EditPost extends Component {
           <div>
             <p className="field-label-left">Title: </p>
             <input
-              className="edit-title"
+              className={this.state.validField.title ? "" : "invalid-field"}
               type="text"
+              placeholder="Title"
               value={this.state.title}
               onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
               />
@@ -116,11 +165,24 @@ export class EditPost extends Component {
           <div>
            <p className="field-label-left">Body: </p>
             <textarea
-              className="post-body"
+              className={this.state.validField.body ? "" : "invalid-field"}
               type="text"
+              placeholder="Write Something"
               value={this.state.body}
               onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
               rows={'5'}
+              />
+          </div>
+
+          <div>
+            <p className="field-label-left">Your Name: </p>
+            <input
+              className={this.state.validField.author ? "" : "invalid-field"}
+              type="text"
+              placeholder="Your Name"
+              value={this.state.author}
+              onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+              /* TODO: add user field on Home/Page, that auto populates author field */
               />
           </div>
 
@@ -133,7 +195,10 @@ export class EditPost extends Component {
               >
               {this.props.categoryNames.map((categoryName) => {
                 return (
-                  <option key={categoryName} value={categoryName}>{categoryName}</option>
+                  <option
+                    key={categoryName}
+                    value={categoryName}>{titleCase(categoryName)}
+                  </option>
                 )
               })}
             </select>
@@ -141,18 +206,21 @@ export class EditPost extends Component {
 
           <Link
             to={postUrl}
-            onClick={() => {this.onSave(postUrl)}}
             >
-            <button>Save</button>
-          </Link>
-          <Link to={postUrl}>
+            <button
+              className={canSubmit ? "on-save" : "has-invalid-field"}
+              onClick={() => {this.onSave();}}
+              disabled={!canSubmit}
+              >Save
+            </button>
             <button>Cancel</button>
           </Link>
+
         </form>
+
           <hr />
           {/* uses props */}
           <div className="edited">
-            {/* <h4> Edited post </h4> */}
             <h3> {this.state.title} </h3>
             <p className="post-body">  {this.state.body}  </p>
             <p className="italic">  Category: {this.state.categoryName}</p>
@@ -189,26 +257,27 @@ EditPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
-    changeView: (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
-    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
+    changeViewByUri: (uri) => dispatch(changeView({ uri })),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
   })
 }
 
 function mapStoreToProps ( store, ownProps) {
-  // if parent component does not pass down routerProps, pass "store" as 2nd param as a fallback
-  // const postId = getUri(null, store).currentId;  //postId not returned when passing "store"
+  // const postId = store.viewData.currentId;
   const postId = getUri(ownProps.routerProps).postId || null;//currentId;
 
   const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
+  const uri = getUri(ownProps.routerProps) || null;
+
   return {
     categoriesObject: store.categories,
     categoryNames,
     postId,
     post: store.posts[postId],
+    uri,
   }
 };
 

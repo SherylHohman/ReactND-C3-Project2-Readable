@@ -6,14 +6,11 @@ import * as ReaderAPI from '../utils/api';
   export const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
   export const SET_CURRENT_CATEGORY = 'SET_CURRENT_CATEGORY';
 
-
-// FAT ACTION CREATORS (business logic, then call dispatch on results)
-
   export function fetchCategories(){
     return (dispatch) => {
 
       dispatch({ type: FETCH_CATEGORIES });
-      // TODO: show loading spinner
+        // TODO: show loading spinner
 
         ReaderAPI.fetchCategories()
           .then((response) => {
@@ -22,13 +19,11 @@ import * as ReaderAPI from '../utils/api';
               console.log('__response NOT OK, fetchCategories');
               throw Error(response.statusText);
             }
-
             // TODO
             // dispatch({
             //   type: IS_LOADING_FALSE,
             //   showLoadingSpinner: false,
             // });
-
             return response;
           })
 

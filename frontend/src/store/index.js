@@ -15,6 +15,7 @@ const rootReducer = combineReducers({
 
 export default rootReducer;
 
+// TODO: create root Selectors
 
 //  This file collects all the reducers, so src/index.js
 //  can simply use `import * as reducers from './state'`)

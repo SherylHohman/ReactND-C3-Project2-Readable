@@ -41,10 +41,11 @@
   }
   textarea {
     width: 98%;
+    padding: 20px;
   }
   textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus select, select:focus{
-    border-color: rgba(229, 103, 23, 0.8);
-    box-shadow: 0 1px 1px rgba(229, 103, 23, 0.075) inset, 0 0 8px rgba(229, 103, 23, 0.6);
+    /*border-color: rgba(229, 103, 23, 0.8);*/
+    /*box-shadow: 0 1px 1px rgba(229, 103, 23, 0.075) inset, 0 0 8px rgba(229, 103, 23, 0.6);*/
     outline: 0 none;
   }
 
@@ -53,43 +54,170 @@
   }
 
   .app-header {
-    background-color: #222;
-    height: 120px;
+    /*background-color: orangered;*/
+    /*background-color: green;*/
+    /*background-color: #388e3c;*/
+    background-color: #6abf69;
+    /*height: 120px;*/
     padding: 10px;
     color: white;
+    /*text-shadow: -1px 0 darkgreen, 0 1px darkgreen, 1px 0 darkgreen, 0 -1px darkgreen, 1px 1px 1px darkgreen;*/
   }
 
   .app-title {
     font-size: 1.4em;
-    color: red;
+    /*color: green;*/
+    /*color: #388e3c;*/
+    /*color: #00600f;*/
+    /*color: rgba(0,96,15,.63);*/
+    color: rgba(196,62,0, 1);
+    /*color: rgba(255,255,255,.63);*/
+;
+    /*text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, -1px -1px 3px black, 1px 1px 2px black;*/
+    /*text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black, 2px 2px 4px #000000;*/
+    /*text-shadow: 1px 1px 1px black, 0 0 15px green, 0 0 5px darkgreen;*/
+    /*text-shadow: 1px 1px 1px rgba(0,0,0,.7), 0 0 15px #388e3c, 0 0 5px #00600f;*/
   }
 
   .app-intro {
     font-size: small;
-    color: white;
-  }
+    /*color: white;*/
+    /*color: rgba(255,255,255,.9);*/
+    /*color: rgba(0,0,0,.63);*/
+    /*color: #6abf69;*/
+    /*color: #00600f;*/
+    color: rgba(255,255,255,.63);
+}
 
   .nav{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     cursor: pointer;
-    color: orange;
+    color: rgba(255, 64, 0, 1);
+    /*color: orange;*/
+    /*background-color:rgba(255,255,255,.5);*/
   }
 
   .link {
     color: orange;
+    /*color: rgba(255, 64, 0, 1);*/
     cursor: pointer;
   }
 
   .nav .no-link, .no-link {
     cursor: text;
-    color: black;
+    /*color: black;*/
+    color: rgba(0,96,15, 1)
+    }
+    
+/*  header .nav{
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  }
+*/
+  header .link {
+    /*color: orange;*/
+    /*color: #ffa040;*/
+    /*color: rgba(255, 111, 0, .85);*/
+    /*color: rgba(196,62,0, .1);*/
+    color: rgba(0,96,15,.63);
+    cursor: pointer;
+  }
+  ul .nav .sort li{
+    /*color: rgba(0,96,15,.63);*/
+    /*color: rgba(196,62,0, 1);*/
+    color: rgba(255, 64, 0, 1);
+    /*font-weight: bold;*/
+    cursor: pointer;
   }
 
+  header .nav a{
+    /*color: rgba(0,96,15,.63);*/
+    /*color: rgba(196,62,0, 1);*/
+    color: rgba(196,62,0, 1);
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  header .nav .no-link, header .no-link {
+    cursor: text;
+    /*color: #6abf69;*/
+    /*color: rgba(0,96,15,.63);*/
+    color: rgba(255,255,255,.63);
+  }
+/*  
+  .selected {
+    unfortunately, this forces a link-like cursor, so it looks clickable
+    pointer-events: none;
+  }
+*/
   .nav .selected, .nav .sort .selected, .nav .category .selected {
-    color: red;
+    /*color: red;*/
+    /*color: rgba(0,96,15, 1);*/
+    color: rgba(56,142,60, 1);
     cursor: default;
+    /*font-weight: bold;*/
+  }
+  header .nav .selected, header .nav .sort .selected, header .nav .category .selected {
+    color: rgba(0,96,15,.63);
+    /*color: rgba(196,62,0, 1);*/
+    /*color: rgba(255, 0, 0, .65);*/
+    cursor: default;
+    /*text-shadow: -1px 0 rgba(163, 0, 0, .1), 0 1px rgba(163, 0, 0, .1), 1px 0 rgba(163, 0, 0, .1), 0 -1px rgba(163, 0, 0, .1);*/
+    font-weight: bold;
+}
+
+  button {
+    color: white;
+    background-color: green;
+  }
+
+ /* Full-width input fields */
+  /* Set a style for all buttons */
+  button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+  }
+  button:hover {
+      opacity: 0.8;
+  }
+  /* Extra styles for the cancel button */
+  .cancelbtn {
+      width: auto;
+      padding: 10px 18px;
+      background-color: #f44336;
+  }
+
+  input[type=text]{
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+  }
+
+  form input .invalid-field, textarea .invalid-field, option .invalid-field {
+      border: 1px, solid, red;
+      outline: 1px, solid, red;
+  }
+
+  form .has-invalid-field {
+      color: white;
+      background-color: lightgray;
+      cursor: not-allowed;
+  }
+
+  form .invalid-field, .placeholder {
+      /*background-color: red;*/
+      border-color: red;
+      color: red;
+      font-weight: bold;
   }
 
 /* NAVLINK default category for "active" (aka "selected") items
@@ -116,29 +244,17 @@
     font-style: italic;
   }
 
-/* TODO: need styles for these classnames
-  (EditPost, NewPost)
-    edit-title  -- want this font to be fairly large - input field for Post Title
-    edit-post-body -- descent size - input field for Post body
-
-  (New Post)
-    edit-category and
-    edit-author fields will also need to be set (new posts)
-
-  (EditComment, NewComment)
-    edit-comment  -- any reasonable size will do here.
-*/
   .orig {
     color: dimgray;
   }
   .field-label-left {
     text-align: left;
-    color: goldenrod; /*goldenrod to match placeholder text*/ /*darkorange;*/
+    color: purple;        /* should === placeholder text color */ /*darkorange;*/
     font-size: smaller;
   }
   .field-label-centered {
     text-align: center;
-    color: goldenrod; /*goldenrod to match placeholder text*/ /*darkorange;*/
+    color: purple;        /* should === placeholder text color */ /*darkorange;*/
     font-size: smaller;
   }
   .edit-delete-comment-links {
@@ -163,8 +279,8 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 25px solid transparent;
-    border-right: 25px solid transparent;
+    border-left:   25px solid transparent;
+    border-right:  25px solid transparent;
 
     border-bottom: 25px solid green;
   }
@@ -173,10 +289,10 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 25px solid transparent;
+    border-left:  25px solid transparent;
     border-right: 25px solid transparent;
 
-    border-top: 25px solid green;
+    border-top:   25px solid green;
   }
 
  /* "Hat" Arrows for comments */
@@ -184,8 +300,8 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
+    border-left:   8px solid transparent;
+    border-right:  8px solid transparent;
 
     border-bottom: 8px solid green;
   }
@@ -193,22 +309,45 @@
     width: 0;
     height: 0;
     margin: 6px;
-    border-left: 8px solid transparent;
+    border-left:  8px solid transparent;
     border-right: 8px solid transparent;
 
-    border-top: 8px solid green;
+    border-top:   8px solid green;
   }
+
+  .centered {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
 
 /* placeholder text */
   ::placeholder {
-      color: goldenrod;
+      /*color: rgb(255,165,0);*/
+      color: purple;
       opacity: .7; /* Firefox */
   }
   :-ms-input-placeholder { /* Internet Explorer 10-11 */
-     color: red;
+      /*color: rgb(255,165,0);*/
+      color: purple;
   }
   ::-ms-input-placeholder { /* Microsoft Edge */
+      /*color: rgb(255,165,0);*/
+      color: purple;
+  }
+  .invalid-field::placeholder {
+      color: red;
+      font-weight: bold;
+      opacity: .7; /* Firefox */
+  }
+  .invalid-field:-ms-input-placeholder { /* Internet Explorer 10-11 */
+      color: red;
+      font-weight: bold;
+  }
+  .invalid-field::-ms-input-placeholder { /* Microsoft Edge */
      color: red;
+     font-weight: bold;
   }
 
 /* Comment styles  */
@@ -383,6 +522,7 @@
   /*
   <style>
   /* Full-width input fields */
+/*
   input[type=text]{
       width: 100%;
       padding: 12px 20px;
@@ -393,6 +533,7 @@
   }
 
   /* Set a style for all buttons */
+  /*
   button {
       background-color: #4CAF50;
       color: white;
@@ -408,12 +549,13 @@
   }
 
   /* Extra styles for the cancel button */
+  /*
   .cancelbtn {
       width: auto;
       padding: 10px 18px;
       background-color: #f44336;
   }
-
+*/
   /* Center the image and position the close button */
   .imgcontainer {
       text-align: center;

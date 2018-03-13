@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { Link, Switch } from 'react-router-dom';
+import Categories from './Categories';
 import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
+import PageNotFound from './PageNotFound';
 import { fetchCategories } from '../store/categories';
 
 class App extends Component{
@@ -20,6 +23,7 @@ class App extends Component{
 
   render() {
     return (
+      <BrowserRouter>
       <div className="app-container">
 
         <header className="app-header">
@@ -28,37 +32,46 @@ class App extends Component{
             <h1 className="app-title">Readable</h1>
           </Link>
           <div className="app-intro">
-            <small>..an app for posting and viewing posts and comments</small>
+            <small> - an app to share your posts and comments - </small>
           </div>
+
+          {/*Categories*/}
+          <Categories />
 
         </header>
 
-
       {/* Routes */}
-        <Route exact path="/" render={(routerProps) => (
-          <Posts     routerProps={ routerProps } />
-        )} />
-
-        <Route path="/category/:categoryPath" render={(routerProps) => (
-          <Posts     routerProps={ routerProps } />
-        )} />
-
         <Switch>
+          <Route exact path="/" render={(routerProps) => (
+            <Posts     routerProps={ routerProps } />
+          )} />
+
           <Route exact path="/post/new" render={(routerProps) => (
             <NewPost  routerProps={ routerProps } />
           )} />
 
-          <Route path="/post/:postId/edit" render={(routerProps) => (
+          <Route path="/post/edit/:postId" render={(routerProps) => (
             <EditPost routerProps={ routerProps }/>
           )} />
 
-          <Route exact path="/post/:postId" render={(routerProps) => (
+          <Route exact path="/category/:postId" render={(routerProps) => (
             <Post     routerProps={ routerProps } />
+          )} />
+
+          <Route exact path="/:categoryPath" render={(routerProps) => (
+            <Posts     routerProps={ routerProps } />
+          )} />
+
+          {/* Category Route (above) will also absorb Invalid URLs */}
+          {/* so Categories checks for invalid "category paths", and calls PageNotFound */}
+          <Route render={(routerProps) => (
+            <PageNotFound routerProps={ routerProps } />
           )} />
         </Switch>
 
         <hr />
       </div>
+      </BrowserRouter>
     );
   }
 }

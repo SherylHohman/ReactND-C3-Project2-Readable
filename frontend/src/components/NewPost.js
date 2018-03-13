@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { addPost } from '../store/posts';
-import { HOME } from '../store/viewData';
+import { HOME, ROUTES } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
 import { createId, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -14,40 +14,84 @@ export class NewPost extends Component {
     author: '',   //  TODO: assign the value of 'LoggedInUser'
     body:   '',
     categoryName: HOME.category.name,
+
+    // though an empty field is invalid, don't want to highlight them RED
+    // at page load. instead only "invalidate" the field once it's been "touched"
+    validField: {
+      title:  true,
+      author: true,
+      body:   true,
+    },
+    touchedField: {
+      title:  false,
+      author: false,
+      body:   false,
+    }
   }
 
   componentDidMount(){
-    // console.log('in NewPost componentDidMount');
-
     if (this.props.categoryNames){
       this.setState( {categoryName: this.props.categoryNames[0] });
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
-
     // categories never change in life of app, they are fetched at App load
     if ( nextProps &&
          nextProps.categoryNames &&
          Array.isArray(nextProps.categoryNames) &&
          nextProps.categoryNames[0]
        ){
-          // default init "selected" category to the first in the list
-          this.setState({
-            categoryName: nextProps.categoryNames[0],
-          })
+        // default: initialize "selected" category to the first in the list
+        this.setState({
+          categoryName: nextProps.categoryNames[0],
+        })
       }
+  }
+
+  canSubmit(){
+    // all fields touched and valid
+    const keys = Object.keys(this.state.validField);
+    return keys.every((key) => {
+      return this.state.touchedField[key] && this.state.validField[key];
+    })
+  }
+  touchField(key){
+    this.setState({
+      touchedField: {
+        ...this.state.touchedField,
+        [key]: true,
+      }
+    });
+  }
+  validateField(key, newText){
+    // setState is async, so cannot validate on state's value of the field
+    // hence validating on newText (the value setState is setting the field to)
+    const isValid = !!newText;  // not empty string, null, undefined
+    this.setState({
+      validField: {
+        ...this.state.validField,
+        [key]: isValid,
+      }
+    });
+  }
+  updateFieldStatus(key, newTextValue){
+    this.touchField(key);
+    this.validateField(key, newTextValue)
   }
 
   controlledTitleField(e, currentText){
     e.preventDefault();
     this.setState({title: titleCase(currentText)});
+    // passing in currentText to validate against, because setState is asynch!!
+    this.updateFieldStatus("title", currentText)
     return false;
   }
   controlledBodyField(e, currentText){
     e.preventDefault();
     this.setState({body: currentText});
+    // passing in currentText to validate against, because setState is asynch!!
+    this.updateFieldStatus("body", currentText);
     return false;
   }
   controlledCategoryField(e, selected){
@@ -56,6 +100,8 @@ export class NewPost extends Component {
   controlledAuthorField(e, currentText){
     e.preventDefault();
     this.setState({author: titleCase(currentText)});
+    // passing in currentText to validate against, because setState is asynch!!
+    this.updateFieldStatus("author", currentText);
     return false;
   }
 
@@ -66,16 +112,16 @@ export class NewPost extends Component {
 
   loadCategoryPage(categoryName){
     const category = this.props.categoriesObject[categoryName] || HOME.category;
-    const url = `/category/${category.path}` || HOME.url;
+    const url = `${ROUTES.category.base}${category.path}` || HOME.url;
     this.props.history.push(url);
   }
 
   loadPostPage(postId){
-    this.props.history.push(`/post/${postId}`);
+    this.props.history.push(`${ROUTES.post.base}${postId}`);
   }
 
   onCancel(){
-    //  TODO: return to prev url, via history object.
+    //  TODO: return to prev url, via history object, instead of the Home Page
     this.loadHomePage();
   }
 
@@ -117,7 +163,7 @@ export class NewPost extends Component {
             >
             {this.props.categoryNames.map((categoryName) => {
               return (
-                <option key={categoryName} value={categoryName}>{categoryName}</option>
+                <option key={categoryName} value={categoryName}>{titleCase(categoryName)}</option>
               )
             })}
           </select>
@@ -128,60 +174,62 @@ export class NewPost extends Component {
          ? renderSelectCategory
          : renderCategoriesLoading;
 
+    const canSubmit = this.canSubmit();
+
     return  (
       <div>
 
         <small>New Post</small>
 
-        <form
-          onSubmit={(e)=> {this.onSubmit(e)}}
-          >
+            <form
+              onSubmit={(e)=> {this.onSubmit(e)}}
+              >
 
-          {/* uses state */}
-          <input
-            className="edit-title"
-            type="text"
-            placeholder="Clever Title.."
-            value={this.state.title}
-            onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
-            />
-          {/* TODO: titleCase on keystrokes */}
+                <input
+                  component="input"
+                  className={this.state.validField.title ? "" : "invalid-field"}
+                  type="text"
+                  placeholder="Title"
+                  value={this.state.title}
+                  onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
+                />
 
-          <textarea
-            className="edit-post-body"
-            type="text"
-            placeholder="Write Something Amazing.."
-            value={this.state.body}
-            onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
-            rows={'5'}
-            />
+              <textarea
+                className={this.state.validField.body ? "" : "invalid-field"}
+                type="text"
+                placeholder="Write Something"
+                value={this.state.body}
+                onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
+                rows={'5'}
+                />
 
-          <input
-            className="edit-author"
-            type="text"
-            placeholder="Your Name in Lights.."
-            value={this.state.author}
-            onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
-            /* TODO: add user field on Home/Page, that auto populates author field */
-            />
+              <input
+                className={this.state.validField.author ? "" : "invalid-field"}
+                type="text"
+                placeholder="Your Name"
+                value={this.state.author}
+                onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
+                /* TODO: add user field on Home/Page, that auto populates author field */
+                />
 
-            <div>
-                {showCategoriesOrLoading}
-            </div>
+                <div>
+                    {showCategoriesOrLoading}
+                </div>
 
-          <button
-            className="on-save"
-            onClick={() => {this.onSave();}}
-            >
-            Save
-          </button>
-          <button
-            className="on-cancel"
-            onClick={() => {this.onCancel();
-          }}>
-            Cancel
-          </button>
-        </form>
+              <button
+                className={canSubmit ? "on-save" : "has-invalid-field"}
+                onClick={() => {this.onSave();}}
+                disabled={!canSubmit}
+                >
+                Save
+              </button>
+              <button
+                className="on-cancel"
+                onClick={() => {this.onCancel();
+              }}>
+                Cancel
+              </button>
+            </form>
 
         <hr />
         {/* uses props */}
@@ -192,7 +240,7 @@ export class NewPost extends Component {
         {((this.state.categoryName === HOME.category.name) &&
           <p>-</p>
          ) || (
-          <p>  Category: {this.state.categoryName}  </p>
+          <p>  Category: {titleCase(this.state.categoryName)}  </p>
          )
         }
         <p>  Authored by: {this.state.author}  </p>
@@ -223,15 +271,13 @@ function mapStoreToProps (store, ownProps) {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
-    // So this.props.history.push() still works without refactoring code
+  // so this.props.history.push() still works without refactor
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
   return {
     categoriesObject: store.categories,
     categoryNames: categoryNames || null,
     categoryName: categoryNames[0] || HOME.category,
-
-    // So this.props.history.push() still works without refactoring code
     history,
   }
 };

@@ -22,6 +22,15 @@ export class Comments extends Component {
     id: '',
     body: '',
     author: '',
+
+    validField: {
+      body:   true,
+      author: true,
+    },
+    touchedField: {
+      body:   false,
+      author: false,
+    }
   };
 
   componentDidMount(){
@@ -29,15 +38,81 @@ export class Comments extends Component {
     this.props.fetchComments(postId);
   }
 
+  touchField(key){
+    this.setState({
+      touchedField: {
+        ...this.state.touchedField,
+        [key]: true,
+      }
+    });
+  }
+  validateField(key, newText){
+    // setState is async, so cannot use the value state has for this field
+    // hence validating on newText (the value setState is setting the field to)
+    const isValid = !!newText;  // !! empty string, null, undefined
+    this.setState({
+      validField: {
+        ...this.state.validField,
+        [key]: isValid,
+      }
+    });
+  }
+  updateFieldStatus(key, newTextValue){
+    this.touchField(key);
+    this.validateField(key, newTextValue)
+  }
+
   controlledBodyField(e, currentText){
     e.preventDefault();
     this.setState({body: currentText});
+    this.updateFieldStatus('body', currentText)
   }
   controlledAuthorField(e, currentText){
     e.preventDefault();
     this.setState({author: titleCase(currentText)});
+    this.updateFieldStatus('author', currentText)
+  }
+
+  canSubmit(){
+    const keys = Object.keys(this.state.validField);
+    const allFieldsValid = keys.every((key) => {
+      return this.state.validField[key];
+    })
+    const anyFieldTouched = keys.some((key) => {
+      return this.state.touchedField[key];
+    })
+    return anyFieldTouched && allFieldsValid;
+  }
+  onSave(){
+    if (this.canSubmit()) {
+      this.props.updateComment({
+        id:this.state.id, //id, //: this.props.id,
+        body: this.state.body.trim(),
+        author: this.state.author,
+        timestamp: Date.now(),   // supposed to update timestamp ?
+      });
+      this.closeModal();
+    }
+  }
+  closeModal(){
+    this.setState({id:'', body:'', author: '', isOpenModal: false});
+    this.setState({
+      touchedField: {
+        body:   false,
+        author: false,
+      },
+      validField: {
+        body:   true,
+        author: true,
+      },
+    });
+  };
+  onSubmit(e){
+    e.preventDefault();
+    // return false;
   }
   onEditComment(comment){
+    // opens modal
       this.setState({
         id: comment.id,
         body: comment.body,
@@ -45,38 +120,22 @@ export class Comments extends Component {
         isOpenModal: true,
       });
   }
-  onSave(){
-    this.props.updateComment({
-      id:this.state.id, //id, //: this.props.id,
-      body: this.state.body.trim(),
-      author: this.state.author,
-      timestamp: Date.now(),   // supposed to update timestamp ?
-    });
-    this.closeModal();
-  }
-  closeModal(){
-    this.setState({id:'', body:'', author: '', isOpenModal: false});
-  };
-  onSubmit(e){
-    e.preventDefault();
-    // return false;
-  }
 
   render() {
     const { comments, postId } = this.props;
 
     if (postId === null) {
-      console.log('Comments, are null.');
       return (
         <div>Unable to get comments for this post</div>
       )
     }
     if (comments === []) {
-      console.log('There are no comments for this post.');
       return (
         <div>Be the first to comment on this post</div>
       )
     }
+
+    const canSubmit = this.canSubmit();
 
     return  (
       <div>
@@ -126,7 +185,7 @@ export class Comments extends Component {
         <div>
           <Modal little
             open={this.state.isOpenModal}
-            onClose={ ()=>this.onCancel() }
+            onClose={ ()=>this.closeModal() }
             >
             <div>
               <form onSubmit={(e)=> {this.onSubmit(e)}}>
@@ -134,9 +193,15 @@ export class Comments extends Component {
                 <div>
                   <p className="field-label-left">Comment:</p>
                   <textarea
-                    className="comment-body"
+                    style={{
+                      width: 75 + "%",
+                      padding: "12px 20px",
+                      margin:   "8px 0px",
+                      display: "inline-block",
+                      border:  "1px solid #ccc",
+                    }}
                     type="text"
-                    placeholder="Your insightful comment.."
+                    placeholder="Your comment.."
                     value={this.state.body}
                     onChange={ (event) => {this.controlledBodyField(event, event.target.value)} }
                     rows={'2'}
@@ -146,16 +211,15 @@ export class Comments extends Component {
                 <div>
                   <p className="field-label-left">Author:</p>
                   <input
-                    className="comment-author"
                     type="text"
-                    placeholder="Your name in lights.."
+                    placeholder="Your name"
                     value={this.state.author}
                     onChange={ (event) => {this.controlledAuthorField(event, event.target.value)} }
                     />
                 </div>
 
                 <button
-                  className="on-save"
+                  className={canSubmit ? "on-save" : "has-invalid-field"}
                   onClick={() => {this.onSave()}}
                   >
                   Save
@@ -189,11 +253,9 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-
-  // either pass "store" in as second prop, or parent component needs to pass uri
   const uri = getUri(ownProps.routerProps) || null;
 
-
+  // const postId = store.viewData.currentId  || null;
   const postId = uri && uri.currentId;  // or uri.params.postId // or uri.postId
 
   const commentIds = Object.keys(store.comments);

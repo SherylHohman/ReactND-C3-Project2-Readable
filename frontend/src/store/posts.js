@@ -106,7 +106,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
         .catch(err => {
           console.error(err);  //  in case of render error
           dispatch({
-            type: FETCH_POSTS_FAILURE,
+            type: FETCH_POST_FAILURE,
             err,
             error: true,
           })
@@ -288,10 +288,12 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
   };
 
 
-// ACTION CREATORS (regular)
-
 // INITIAL STATE
-  const postsInitialState = {}
+  const postsInitialState = {
+    isLoading: false,
+    isFetchFailure: false,
+    errorMessage: '',
+  }
 
 // SAMPLE DATA
   // const samplePost = {
@@ -316,47 +318,51 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
   // state is an object of (multiple) post objects
   function posts(state=postsInitialState, action) {
-    // console.log('posts reducer, action', action)
 
+    // TODO: refactor. combine cases.
     switch (action.type){
 
       case REQUEST_POSTS:
+      case REQUEST_ADD_POST:
+      case REQUEST_EDIT_POST:
+      case REQUEST_DELETE_POST:
+      case REQUEST_VOTE_ON_POST:
         // TODO set loading spinner on
         return state;
+
       case FETCH_POSTS_SUCCESS:
-        // REPLACES all posts in store with current fetch results
-        // This is for fetch returning All Posts,
-        // And for fetch returning Posts by Category
+        // fetch All Posts, AND
+        // fetch Posts by Category
         return ({
-          //...state,
-          ...action.posts,
           // TODO: turn loading spinner off
+          // REPLACES all posts in store with current fetched results
+          ...action.posts,
         });
-      case FETCH_POSTS_FAILURE:
-          // TODO: UI error message
-          return state;
 
       case REQUEST_POST:
         // TODO set loading spinner on
-        return state;
+        return ({
+          ...state,
+          isLoading: true,
+          isFetchFailure: false,
+          errorMessage: '',
+        })
       case FETCH_POST_SUCCESS:
         return ({
           ...state,
           [action.post.id]: action.post,
-          // TODO: turn loading spinner off
-        });
+          isLoading: false,
+          isFetchFailure: false,
+          errorMessage: '',
+         });
       case FETCH_POST_FAILURE:
-          // TODO: UI error message
-          return state;
-
-      case REQUEST_ADD_POST:
-        // TODO:
-        return state;
-      case ADD_POST_FAILURE:
-        // TODO error message
         return ({
           ...state,
-        });
+          isLoading: false,
+          isFetchFailure: true,
+          errorMessage: action.err,
+        })
+
       case ADD_POST_SUCCESS:
         return ({
           ...state,
@@ -365,12 +371,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
             ...action.post,
           },
         });
-
-      case REQUEST_EDIT_POST:
-        // TODO:
-        return ({
-          ...state,
-        });
       case EDIT_POST_SUCCESS:
         return ({
           ...state,
@@ -378,25 +378,11 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
             ...action.post,
            }
         });
-      case EDIT_POST_FAILURE:
-        // TODO: UI error message
-        return state;
-
-      case REQUEST_DELETE_POST:
-        // TODO:
-        return state;
       case DELETE_POST_SUCCESS:
         let newState = {...state};
         delete newState[action.id]
-
         return newState;
-      case DELETE_POST_FAILURE:
-        // TODO: UI error message
-        return state;
 
-      case REQUEST_VOTE_ON_POST:
-        // TODO:
-        return state;
       case VOTE_ON_POST_SUCCESS:
         return ({
           ...state,
@@ -405,10 +391,8 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
             voteScore: action.voteScore,
           }
         });
-      case VOTE_ON_POST_FAILURE:
-          // TODO: UI error message
-          return state;
 
+      // update commentCount on Posts
       case ADD_COMMENT_SUCCESS:
         return ({
           ...state,
@@ -426,6 +410,14 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
           }
         });
 
+      case FETCH_POSTS_FAILURE:
+      case ADD_POST_FAILURE:
+      case EDIT_POST_FAILURE:
+      case DELETE_POST_FAILURE:
+      case VOTE_ON_POST_FAILURE:
+        // TODO: UI error message
+        // TODO: set loading spinner off
+        return state;
 
       default:
         return state;
@@ -433,5 +425,4 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
   }
 
 
-// export default post
 export default posts
