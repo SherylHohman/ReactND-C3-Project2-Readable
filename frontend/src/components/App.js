@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Route, Redirect } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { Link, Switch } from 'react-router-dom';
 import Categories from './Categories';
 import Posts from './Posts';
@@ -24,14 +25,8 @@ class App extends Component{
   render() {
     // console.log('____App render, this.props', this.props);
 
-    // same info as routerProps, but derived differently, hence using a diff name
-    const appRouterProps = {
-      history:  this.props.history,
-      location: this.props.location,
-      match:    this.props.match,
-    }
-
     return (
+      <BrowserRouter>
       <div className="app-container">
 
         <header className="app-header">
@@ -43,8 +38,8 @@ class App extends Component{
             <small> - an app to share your posts and comments - </small>
           </div>
 
-        {/*Categories*/}
-        <Categories routerProps={ appRouterProps }/>
+          {/*Categories*/}
+          <Categories />
 
         </header>
 
@@ -71,7 +66,7 @@ class App extends Component{
           )} />
 
           {/* Category Route (above) will also absorb Invalid URLs */}
-          {/* so it checks for invalid "category paths", and calls PageNotFound */}
+          {/* so Categories checks for invalid "category paths", and calls PageNotFound */}
           <Route render={(routerProps) => (
             <PageNotFound routerProps={ routerProps } />
           )} />
@@ -79,6 +74,7 @@ class App extends Component{
 
         <hr />
       </div>
+      </BrowserRouter>
     );
   }
 }

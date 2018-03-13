@@ -27,6 +27,14 @@ export class EditPost extends Component {
   componentDidMount(){
     // console.log('in EditPost componentDidMount');
 
+    // synch store with current URL
+    if (this.props.uri){
+      // console.log('__EditPost cDM calling changeView, this.props.uri:', this.props.uri);
+      // console.log('__EditPost routerProps:', this.props.routerProps);
+      // console.log('__EditPost uri:-----', this.props.uri);
+      this.props.changeViewByUri(this.props.uri);
+    }
+
     if (!this.props.post) {
       // needed when page is loaded from a saved url
       this.props.fetchPost(this.props.postId);
@@ -53,6 +61,14 @@ export class EditPost extends Component {
         author: nextProps.post.author,
       })
     }
+
+    // if (nextProps.uri && nextProps.uri !== this.props.uri){
+    //   console.log('__EditPost cWRP calling changeView, this.props.uri:', this.props.uri);
+    //   console.log('__EditPost routerProps:', this.props.routerProps);
+    //   console.log('__EditPost uri:', this.props.uri);
+    //   this.props.changeViewByUri(this.props.uri);
+    // }
+
   }
 
   canSubmit(){
@@ -254,14 +270,16 @@ EditPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
-    changeView: (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
-    changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
+    changeViewByUri: (uri) => dispatch(changeView({ uri })),
+    // changeView: (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
+    // changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
   })
 }
 
 function mapStoreToProps ( store, ownProps) {
   // console.log('store:', store)
+  // console.log('__EditPost ownProps', ownProps);
 
   // const postId = store.viewData.currentId;
   // if parent component does not pass down routerProps, pass "store" as 2nd param as a fallback
@@ -272,11 +290,14 @@ function mapStoreToProps ( store, ownProps) {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
+  const uri = getUri(ownProps.routerProps) || null;
+
   return {
     categoriesObject: store.categories,
     categoryNames,
     postId,
     post: store.posts[postId],
+    uri,
   }
 };
 
