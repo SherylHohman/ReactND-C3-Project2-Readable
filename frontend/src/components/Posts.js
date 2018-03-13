@@ -138,51 +138,64 @@ export class Posts extends Component {
              <div>
               <ol>
                 { this.state.posts.map(post => {
+                    // EVERY element AND div has a unique key, yet the warning persists
+                    // What am I missing here ?? What more can it want
+                    //  And, can I REMOVE some of these keys ??
+                    const id=post.id;
                     return (
                       <li key={post.id}>
-                        <div>
+                        <div key={`key-post-wrapper-div-${id}`}>
 
-                          <Link to={`${ROUTES.post.base}${post.id}`}>
-                            <h1>{post.title}</h1>
+                          <Link key={`key-linkto-post-${id}`}
+                                 to={`${ROUTES.post.base}${post.id}`}>
+                            <h1 key={`key-${post.title}-${id}`}>
+                                {post.title}
+                                </h1>
                           </Link>
 
-                          <div className="vote centered">
-                            <p
-                              className="comment-up-vote centered"
-                              onClick={() => {this.props.onUpVotePost(post.id)}}
-                              >
-
+                          <div key={`key-voting-${id}`}
+                               className="vote centered">
+                            <p key={`key-post-up-vote-${id}`}
+                               className="comment-up-vote centered"
+                               onClick={() => {this.props.onUpVotePost(post.id)}}
+                               >
                             </p>
-                            <p
-                              className="comment-down-vote centered"
-                              onClick={() => {this.props.onDownVotePost(post.id)}}
-                              >
+                            <p key={`key-post-down-vote-${id}`}
+                               className="comment-down-vote centered"
+                               onClick={() => {this.props.onDownVotePost(post.id)}}
+                               >
                             </p>
                           </div>
 
-                          <div>
-                             <div>
-                              <Link
-                                to={`${ROUTES.category.base}${this.props.categoryPath}`}
-                                onClick={() => {this.props.deletePost(post.id)}}
-                                >
-                                Delete Post
-                              </Link>
+                          <div key={`key-edit-delete-div-${id}`}>
+                            <Link key={`key-linkTo-deletePost-${id}`}
+                                  to={`${ROUTES.category.base}${this.props.categoryPath}`}
+                                  onClick={() => {this.props.deletePost(post.id)}}
+                                  >
+                              Delete Post
+                            </Link>
 
-                              <Link to={`${ROUTES.editPost.base}${post.id}`}>
-                                Edit Post
-                              </Link>
-                            </div>
-                        </div>
+                            <Link key={`key-linkTo-editPost-${id}`}
+                                  to={`${ROUTES.editPost.base}${post.id}`}
+                                  >
+                              Edit Post
+                            </Link>
+                          </div>
 
-                         <p>by: {post.author}, {dateMonthYear(post.timestamp)}</p>
+                          <p key={`key-author-and-datePublished-${id}`}>
+                            by: {post.author}, {dateMonthYear(post.timestamp)}
+                          </p>
 
-                          <div className="counts">
+                          <div key={`key-votes-comments-counts-${id}`} className="counts">
                             {post.voteScore} Votes | {post.commentCount} Comments
                           </div>
-                          <p>{titleCase(post.category)}</p>
-                          <div></div>
-                          <hr />
+
+                          <p key={`key-postCategory-${id}`}>
+                            {titleCase(post.category)}
+                          </p>
+
+                          <div key={`key-empty-div-${id}`}></div>
+                          <hr  key={`key-hr-after-post-${id}`}/>
                        </div>
                       </li>
                     )

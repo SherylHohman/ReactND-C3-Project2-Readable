@@ -58,17 +58,18 @@ export class Categories extends Component {
             (
               <ul className="nav filter">
 
-                <li className="no-link"> Category: </li>
+                <li key="categories-label-makeSureThisKeyIsUnique"
+                        className="no-link"> Category: </li>
 
                 { isExactPath(HOME.category.path) ?
-                  ( <li className = "selected"
-                        key="static-all-categories-makeSureThisKeyIsUnique"
+                  ( <li key="disabled-all-categories-makeSureThisKeyIsUnique"
+                        className = "selected"
                         aria-current="true" /* to mimic what NavLink does */
                         >
                         All
                     </li>
                   ) : (
-                    <NavLink key="all-categories-makeSureThisKeyIsUnique"
+                    <NavLink key="navlink-all-categories-makeSureThisKeyIsUnique"
                         to={(HOME.category.path)}
                         activeClassName={"selected"}
                         isActive={isExactPath}
@@ -83,11 +84,11 @@ export class Categories extends Component {
                 {this.props.categories.map(category => {
                   if (isExactPath(category.path)) {
                     return (
-                      <div
+                      <div key={'div-disabled-'+category.name}
                         className = "selected"
                         aria-current="true" /* to mimic what NavLink does */
                         >
-                        <li key={category.name}>
+                        <li key={'disabled-'+category.name}>
                         {titleCase(category.name)}
                         </li>
                       </div>
@@ -95,8 +96,7 @@ export class Categories extends Component {
                   }
                   else {
                     return (
-                      <NavLink key={category.name}
-                        /*to={`${ROUTES.category.base}${category.path}`}*/
+                      <NavLink key={"navlink-"+category.name}
                         to={makeCategoryLink(category.path)}
                         activeClassName="selected"
                         >
