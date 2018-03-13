@@ -50,7 +50,7 @@ export class Post extends Component {
         <div>
           <p>First render should have initiated a fetch..</p>
           <p>..but then either "isLoading" or "isFetchFailure" should kick in</p>
-          <p><i>Should't get this far.. (why was there no early return??)</i></p>
+          <p><i>Should not get this far.. (why was there no early return??)</i></p>
           <p>Post: post wasn\'t present in props, do I have the postID?: {postId}</p>
         </div>
       );
