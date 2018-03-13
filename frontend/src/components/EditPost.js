@@ -78,8 +78,8 @@ export class EditPost extends Component {
     })
   }
   validateField(key, newText){
-    // setState is async, so cannot use it's value
-    // hence passing and validating on newText (what setState is being set to)
+    // setState is async, so cannot use state's value
+    // hence validating on newText (the value setState is setting the field to)
     const isValid = !!newText;  // !! empty string, null, undefined
     this.setState({
       validField: {
@@ -127,6 +127,7 @@ export class EditPost extends Component {
 
     // console.log('postId:', this.props.postId, 'post:', this.props.post);
 
+    // TODO:
     // if (FETCH ERROR){
     //   // bad postId/deleted-post (likely form saved Url, or browser Back Button)
     //   // redirect/link to home or last viewed category page (persistentCategoryPath)
@@ -233,7 +234,6 @@ export class EditPost extends Component {
           <hr />
           {/* uses props */}
           <div className="edited">
-            {/* <h4> Edited post </h4> */}
             <h3> {this.state.title} </h3>
             <p className="post-body">  {this.state.body}  </p>
             <p className="italic">  Category: {this.state.categoryName}</p>
@@ -271,8 +271,6 @@ function mapDispatchToProps(dispatch){
   return ({
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
     changeViewByUri: (uri) => dispatch(changeView({ uri })),
-    // changeView: (url, id) => dispatch(changeView({ currentUrl:url, currentId:id })),
-    // changeViewByCategory: (category) => dispatch(changeView({ persistentCategory:category })),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
   })
 }
@@ -282,8 +280,6 @@ function mapStoreToProps ( store, ownProps) {
   // console.log('__EditPost ownProps', ownProps);
 
   // const postId = store.viewData.currentId;
-  // if parent component does not pass down routerProps, pass "store" as 2nd param as a fallback
-  // const postId = getUri(null, store).currentId;  //postId not returned when passing "store"
   const postId = getUri(ownProps.routerProps).postId || null;//currentId;
 
   const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {

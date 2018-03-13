@@ -1,6 +1,5 @@
- import React, { Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import { Redirect } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { ROUTES, HOME } from '../store/viewData';
@@ -24,16 +23,6 @@ export class Post extends Component {
   }
 
   render(){
-
-    // Should Never Happen..
-    if (!this.props){
-      console.log('Post, render: props is undefined Uh Oh!');
-      return(
-        <div>
-          <p>Post props is undefined'</p>
-        </div>
-      )
-    }
 
     const { isLoading, isFetchFailure } = this.props.fetchStatus;
     const postId = this.props.postId;
@@ -168,22 +157,15 @@ function mapStoreToProps (store, ownProps) {
   // so can redirect to Post's (former) category when deleting the post
   const categoryName = (post && post.category) || null;
   const category  = categoryName && store.categories[categoryName];
-  const categoryPath = (category && store.categories[categoryName].path) || null //HOME.category.path || null;
+  const categoryPath = (category && store.categories[categoryName].path) || null
+        //HOME.category.path || null;
 
   return {
     fetchStatus,
-
     postId,
     post,
-
-    // ref to the url of this post's category
-    categoryPath,
-
-    // view data data stored in url's - keep data in synch w/ browser url
-    uri,
-
-    // so don't have to refactor history.push references
-    // history: ownProps.routerProps.history
+    categoryPath,  // ref to the url of this post's category
+    uri,           // keep data in synch w/ browser url
   }
 };
 

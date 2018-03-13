@@ -9,7 +9,7 @@ export class NewComment extends Component {
 
   state = {
     body   : '',
-    author : '',  // TODO auto fill by logged in User
+    author : '',   // TODO auto fill viA logged in User
     validField: {
       author: false,
       body:   false,
@@ -23,8 +23,8 @@ export class NewComment extends Component {
     })
   }
   validateField(key, newText){
-    // setState is async, so cannot use it's value
-    // hence passing and validating on newText (what setState is being set to)
+    // setState is async, so cannot use state's value for this field
+    // hence validating on newText (the value setState is setting the field to)
     const isValid = !!newText;  // !! empty string, null, undefined
     this.setState({
       validField: {

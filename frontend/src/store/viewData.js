@@ -2,8 +2,7 @@
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SELECT_CATEGORY = 'SELECT_CATEGORY';
 export const SORT_BY = 'SORT_BY';
-// export const SORT_ORDER = 'SORT_ORDER'; // Descending, Ascending
-
+// TODO: export const SORT_ORDER = 'SORT_ORDER'; // Descending, Ascending
 
 // Valid Values
   // TODO: Map over these to populate the Heading/Sort Options in the UI
@@ -20,8 +19,7 @@ export const SORT_BY = 'SORT_BY';
 export const ROUTES= {
   home:     {
     base:     '/',
-    param:    ''
-    // param:    ':filter?',
+    param:    '' ,
   },
   category: {
     base:     '/',

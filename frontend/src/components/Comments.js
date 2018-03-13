@@ -49,8 +49,8 @@ export class Comments extends Component {
     });
   }
   validateField(key, newText){
-    // setState is async, so cannot use it's value
-    // hence passing and validating on newText (what setState is being set to)
+    // setState is async, so cannot use the value state has for this field
+    // hence validating on newText (the value setState is setting the field to)
     const isValid = !!newText;  // !! empty string, null, undefined
     this.setState({
       validField: {
@@ -259,14 +259,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  // const postId = store.viewData.currentId || null;
-  // const uri = getUri(ownProps.routerProps) || null;
-
-  // passed as props from Post - change this when put uri into store
-  // const uri = ownProps.uri;
-
-  // either pass "store" in as second prop, or parent component needs to pass uri
-  // const uri = getUri(null, store) || null;
+  // const postId = store.viewData.currentId  || null;
   const uri = getUri(ownProps.routerProps) || null;
 
 

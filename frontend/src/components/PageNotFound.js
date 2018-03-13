@@ -1,14 +1,12 @@
 import React from 'react';
-// import { Redirect } from 'react-router-dom';
-// import { changeView, getUri, HOME } from '../store/viewData';
 
- function PageNotFound (props){
-    return (
-        <div style={{margin: 100}}>
-          404 PageNotFound
-          {/*<Redirect to={HOME.url} />*/}
-        </div>
-      );
-    }
+ // no need for a link to the home page, because all links are in the header
+function PageNotFound (props){
+  return (
+    <div style={{margin: 100}}>
+      404 PageNotFound
+    </div>
+  );
+}
 
 export default PageNotFound

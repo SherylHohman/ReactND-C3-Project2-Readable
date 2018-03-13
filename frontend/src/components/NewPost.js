@@ -15,7 +15,7 @@ export class NewPost extends Component {
     body:   '',
     categoryName: HOME.category.name,
 
-    // though an empty field is invalid, don't want to highlight it as such
+    // though an empty field is invalid, don't want to highlight them RED
     // at page load. instead only "invalidate" the field once it's been "touched"
     validField: {
       title:  true,
@@ -46,14 +46,15 @@ export class NewPost extends Component {
          Array.isArray(nextProps.categoryNames) &&
          nextProps.categoryNames[0]
        ){
-          // default: initialize "selected" category to the first in the list
-          this.setState({
-            categoryName: nextProps.categoryNames[0],
-          })
+        // default: initialize "selected" category to the first in the list
+        this.setState({
+          categoryName: nextProps.categoryNames[0],
+        })
       }
   }
 
   canSubmit(){
+    // all fields touched and valid
     const keys = Object.keys(this.state.validField);
     return keys.every((key) => {
       return this.state.touchedField[key] && this.state.validField[key];
@@ -68,8 +69,8 @@ export class NewPost extends Component {
     });
   }
   validateField(key, newText){
-    // setState is async, so cannot use it's value
-    // hence passing and validating on newText (what setState is being set to)
+    // setState is async, so cannot validate on state's value of the field
+    // hence validating on newText (the value setState is setting the field to)
     const isValid = !!newText;  // not empty string, null, undefined
     this.setState({
       validField: {
@@ -124,7 +125,7 @@ export class NewPost extends Component {
   }
 
   onCancel(){
-    //  TODO: return to prev url, via history object.
+    //  TODO: return to prev url, via history object, instead of the Home Page
     this.loadHomePage();
   }
 
@@ -274,14 +275,13 @@ function mapStoreToProps (store, ownProps) {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
+  // so this.props.history.push() still works without refactor
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
 
   return {
     categoriesObject: store.categories,
     categoryNames: categoryNames || null,
     categoryName: categoryNames[0] || HOME.category,
-
-    // so this.props.history.push() still works without refactor
     history,
   }
 };

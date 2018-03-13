@@ -6,27 +6,11 @@ import * as ReaderAPI from '../utils/api';
   export const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
   export const SET_CURRENT_CATEGORY = 'SET_CURRENT_CATEGORY';
 
-// THUNK ACTION CREATORS (allows side effects: api calls)
-  //  library automatically calls the returned functions with
-  //    dispatch as the 1st argument (saves typing)
-  //  automatically 'getState' is automatically passed into these
-  //    (thunk action creators)
-  //    as a 2nd param, so state is automatically available inside
-  //    thunk action creators.
-  //
-
-// FAT ACTION CREATORS (business logic, then call dispatch on results)
-  //  downside: no access to global state.
-  //  So if global state is needed to make business logic decision with,
-  //  it needs to be passed through components (including intermediary
-  //    components)
-  //  in that case: refactor to use redux-thunks instead (THUNK ACTION CREATOR)
-
   export function fetchCategories(){
     return (dispatch) => {
 
       dispatch({ type: FETCH_CATEGORIES });
-      // TODO: show loading spinner
+        // TODO: show loading spinner
 
         ReaderAPI.fetchCategories()
         // fetchCategoriesAPI()
@@ -36,13 +20,11 @@ import * as ReaderAPI from '../utils/api';
               console.log('__response NOT OK, fetchCategories');
               throw Error(response.statusText);
             }
-
             // TODO
             // dispatch({
             //   type: IS_LOADING_FALSE,
             //   showLoadingSpinner: false,
             // });
-
             return response;
 
           })
