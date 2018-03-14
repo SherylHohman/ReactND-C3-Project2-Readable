@@ -8,6 +8,7 @@ import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 import NewComment from './NewComment';
 import Modal from 'react-responsive-modal';
 import PropTypes from 'prop-types';
+import { createSelector } from'reselect';
 
 
 export class Comments extends Component {
@@ -144,13 +145,7 @@ export class Comments extends Component {
     return  (
       <div>
         <hr />
-        {comments.filter((comment) => !comment.deleted && !comment.parentDeleted)
-          .sort((commentA, commentB) => {
-            if (commentA === commentB) return 0;
-            if (commentA.timestamp < commentB.timestamp) return 1;
-            return -1;
-          })
-          .map((comment) => {
+        {comments.map((comment) => {
             return (
               <li key={comment.id}>
                 <p>{comment.body}</p>
@@ -266,14 +261,29 @@ function mapStoreToProps (store, ownProps) {
   const postId = uri && uri.currentId;  // or uri.params.postId // or uri.postId
   // console.log('Comments, mSTP, uri', uri);
 
-  const commentIds = Object.keys(store.comments);
-  const comments = commentIds.reduce((acc, commentId) => {
-    return acc.concat([store.comments[commentId]]);
-  }, []);
+  const getSortedComments = createSelector(
+    state => store.comments,
+    (comments) => {
+      return (
+        Object.keys(comments)
+        .reduce((acc, commentId) => {
+          return acc.concat([store.comments[commentId]]);
+         }, [])
+        .filter((comment) => !comment.deleted && !comment.parentDeleted)
+          // most recently edited/added to the top/start of the list
+        .sort((commentA, commentB) => {
+          if (commentA === commentB) return 0;
+          if (commentA.timestamp < commentB.timestamp) return 1;
+          return -1;
+        })
+      );
+    }
+  );
+  const sortedComments = getSortedComments(store);
 
   return {
     postId,
-    comments,
+    comments : sortedComments,
   }
 };
 
