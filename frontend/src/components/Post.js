@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Comments from './Comments';
 import { ROUTES, HOME } from '../store/viewData';
-import { changeView, getUri } from '../store/viewData';
+import { changeView, getLoc } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -11,19 +11,29 @@ import PropTypes from 'prop-types';
 export class Post extends Component {
 
   componentDidMount() {
-    // console.log('in Post componentDidMount, props:', this.props);
+    // console.log('Post.cDM, props:', this.props);
 
     if (this.props.postId && !this.props.post){
+    //   console.log('Post.cDM ..fetching, post for postId:', this.props.postId);
       this.props.fetchPost(this.props.postId);
     }
 
-    if (this.props.uri){
-      this.props.changeView(this.props.uri)
+    if (this.props.routerProps){
+      // console.log('Post.cDM calling changeView, post with routerProps:', this.props.routerProps);
+      this.props.changeView(this.props.routerProps)
     }
+    // else {
+      // console.log('Post.cDM _NOT_ calling changeView, post for routerProps:', this.props.routerProps);
+    // }
+  }
+
+  disableClick(e){
+    e.preventDefault();
   }
 
   render(){
 
+    // console.log('Post.render fetchStatus', this.props.fetchStatus);
     const { isLoading, isFetchFailure } = this.props.fetchStatus;
     const postId = this.props.postId;
 
@@ -75,8 +85,11 @@ export class Post extends Component {
     return (
       <div>
         <div>
-            <Link to={`${ROUTES.post.base}${postId}`}>
-              <h2>{title}</h2>
+            <Link to={`${ROUTES.post.base}${categoryName}/${postId}`}
+                  onClick={this.disableClick}
+                  style={{cursor:"default"}}
+              >
+              <h2 className="selected">{title}</h2>
             </Link>
 
             <div>
@@ -134,7 +147,7 @@ function mapDispatchToProps(dispatch){
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
 
     deletePost: (postId) => dispatch(deletePost(postId)),
-    changeView: (uri) => dispatch(changeView({ uri })),
+    changeView: (routerProps) => dispatch(changeView(routerProps)),
 
     fetchPost:  (id) => dispatch(fetchPost(id)),
   })
@@ -144,19 +157,23 @@ function mapStoreToProps (store, ownProps) {
   // console.log('Post store:', store);
   // console.log('Post ownProps:', ownProps);
 
-  const uri = getUri(ownProps.routerProps) || null;
-  const postId = uri.postId  || null;
-  const post = store.posts[postId] || null;
+  const loc = getLoc(ownProps.routerProps) || null;
+  // const loc = store.viewData.loc;
+  const postId = loc.postId;  // === store.viewData.loc.postId; //loc.postId  || null;
+  const post = store.fetchedPosts.posts[postId] || null;
+  // console.log('Post.mSTP, post', post, 'posts', store.fetchedPosts.posts);
 
-  const fetchStatus = {
-    isLoading:      store.posts.isLoading,
-    isFetchFailure: store.posts.isFetchFailure,
-    errorMessage:   store.posts.errorMessage,
-  }
+  // const fetchStatus = {
+  //   isLoading:      store.posts.isLoading,
+  //   isFetchFailure: store.posts.isFetchFailure,
+  //   errorMessage:   store.posts.errorMessage,
+  // }
+  const fetchStatus = store.fetchedPosts.fetchStatus;
+  // console.log('Post.mSTP, post', fetchStatus, 'posts', fetchStatus);
 
   // so can redirect to Post's (former) category when deleting the post
   const categoryName = (post && post.category) || null;
-  const category  = categoryName && store.categories[categoryName];
+  const category     = categoryName && store.categories[categoryName];
   const categoryPath = (category && store.categories[categoryName].path) || null
         //HOME.category.path || null;
 
@@ -165,7 +182,7 @@ function mapStoreToProps (store, ownProps) {
     postId,
     post,
     categoryPath,  // ref to the url of this post's category
-    uri,           // keep data in synch w/ browser url
+    loc,           // data parsed from Browser Url
   }
 };
 

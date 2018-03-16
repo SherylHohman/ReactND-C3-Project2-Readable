@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getUri } from '../store/viewData';
+import { getLoc } from '../store/viewData';
 import { fetchComments } from '../store/comments';
 import { upVoteComment, downVoteComment } from '../store/comments';
 import { editComment, deleteComment } from '../store/comments';
@@ -76,6 +76,9 @@ export class Comments extends Component {
     this.updateFieldStatus('author', currentText)
   }
 
+  clickDisabled(e){
+    e.preventDefault();
+  }
   canSubmit(){
     const keys = Object.keys(this.state.validField);
     const allFieldsValid = keys.every((key) => {
@@ -220,7 +223,10 @@ export class Comments extends Component {
 
                 <button
                   className={canSubmit ? "on-save" : "has-invalid-field"}
-                  onClick={() => {this.onSave()}}
+                    onClick={canSubmit
+                              ? ()  => {this.onSave()}
+                              : (e) => {this.clickDisabled}
+                            }
                   >
                   Save
                 </button>
@@ -254,12 +260,12 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  // const postId = store.viewData.currentId  || null;
-  const uri = getUri(ownProps.routerProps) || null;
+  const loc = getLoc(ownProps.routerProps) || null;
+  // const loc = store.viewData.loc;
 
-
-  const postId = uri && uri.currentId;  // or uri.params.postId // or uri.postId
-  // console.log('Comments, mSTP, uri', uri);
+  // const postId = store.viewData.loc.postId  || null;
+  const postId = loc && loc.postId;  // or loc.params.postId // or loc.postId
+  // console.log('Comments, mSTP, loc', loc);
 
   const getSortedComments = createSelector(
     state => store.comments,

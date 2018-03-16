@@ -1,5 +1,6 @@
 import * as ReaderAPI from '../utils/api';
 import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
+import { combineReducers } from 'redux';
 
 // ACTION TYPES
   export const REQUEST_POSTS = 'REQUEST_POSTS';
@@ -27,7 +28,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
    const VOTE_ON_POST_SUCCESS = 'VOTE_ON_POST_SUCCESS';
 
 
-// FAT ACTION CREATORS
+// THUNK ACTION CREATORS
 
   export function fetchPosts(category=null){
     //  fetch ALL posts:   fetchPosts(), or fetchPosts(null)
@@ -96,7 +97,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
         .then((response) => response.json())
         .then((post) => {
-          // console.log('__got the post!:', post);
           return (
             dispatch({
               type: FETCH_POST_SUCCESS,
@@ -291,11 +291,7 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
 
 // INITIAL STATE
-  const postsInitialState = {
-    isLoading: false,
-    isFetchFailure: false,
-    errorMessage: '',
-  }
+  const postsInitialState = {};
 
 // SAMPLE DATA
   // const samplePost = {
@@ -320,52 +316,33 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
   // state is an object of (multiple) post objects
   function posts(state=postsInitialState, action) {
+    // console.log('posts reducer, state', state)
     // console.log('posts reducer, action', action)
 
     // TODO: refactor. combine cases.
     switch (action.type){
 
+      case REQUEST_POST:
       case REQUEST_POSTS:
       case REQUEST_ADD_POST:
       case REQUEST_EDIT_POST:
       case REQUEST_DELETE_POST:
       case REQUEST_VOTE_ON_POST:
-        // TODO set loading spinner on
         return state;
 
       case FETCH_POSTS_SUCCESS:
         // fetch All Posts, AND
         // fetch Posts by Category
+        // REPLACES all posts in store with current fetched results
         return ({
-          // TODO: turn loading spinner off
-          // REPLACES all posts in store with current fetched results
           ...action.posts,
         });
 
-      case REQUEST_POST:
-        // TODO set loading spinner on
-        return ({
-          ...state,
-          isLoading: true,
-          isFetchFailure: false,
-          errorMessage: '',
-        })
       case FETCH_POST_SUCCESS:
         return ({
           ...state,
           [action.post.id]: action.post,
-          isLoading: false,
-          isFetchFailure: false,
-          errorMessage: '',
          });
-      case FETCH_POST_FAILURE:
-        return ({
-          ...state,
-          isLoading: false,
-          isFetchFailure: true,
-          errorMessage: action.err,
-        })
-
       case ADD_POST_SUCCESS:
         return ({
           ...state,
@@ -413,13 +390,12 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
           }
         });
 
+      case FETCH_POST_FAILURE:
       case FETCH_POSTS_FAILURE:
       case ADD_POST_FAILURE:
       case EDIT_POST_FAILURE:
       case DELETE_POST_FAILURE:
       case VOTE_ON_POST_FAILURE:
-        // TODO: UI error message
-        // TODO: set loading spinner off
         return state;
 
       default:
@@ -427,5 +403,65 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
     }
   }
 
+  const fetchStatusInitialState = {
+    isLoading: false,
+    isFetchFailure: false,
+    errorMessage: '',
+  }
+  function fetchStatus(state=fetchStatusInitialState, action) {
+    // console.log('posts.fetchStatus reducer, state', state)
+    // console.log('posts.fetchStatus reducer, action', action)
 
-export default posts
+    switch (action.type){
+
+      case REQUEST_POSTS:
+      case REQUEST_ADD_POST:
+      case REQUEST_EDIT_POST:
+      case REQUEST_DELETE_POST:
+      case REQUEST_VOTE_ON_POST:
+      case REQUEST_POST:
+        return ({
+          ...state,
+          isLoading: true,
+          isFetchFailure: false,
+          errorMessage: '',
+        })
+      case FETCH_POST_SUCCESS:
+      case FETCH_POSTS_SUCCESS:
+      case ADD_POST_SUCCESS:
+      case EDIT_POST_SUCCESS:
+      case DELETE_POST_SUCCESS:
+      case VOTE_ON_POST_SUCCESS:
+        return ({
+          ...state,
+          isLoading: false,
+          isFetchFailure: false,
+          errorMessage: '',
+         });
+      case FETCH_POST_FAILURE:
+      case FETCH_POSTS_FAILURE:
+      case ADD_POST_FAILURE:
+      case EDIT_POST_FAILURE:
+      case DELETE_POST_FAILURE:
+      case VOTE_ON_POST_FAILURE:
+        // TODO: UI error message
+        // TODO: set loading spinner off
+        return ({
+          ...state,
+          isLoading: false,
+          isFetchFailure: true,
+          errorMessage: action.err,
+        })
+
+      default:
+        return state;
+    }
+  }
+
+const fetchedPosts = combineReducers({
+  posts,
+  fetchStatus,
+});
+
+
+export default fetchedPosts

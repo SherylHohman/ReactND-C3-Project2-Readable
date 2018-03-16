@@ -57,7 +57,7 @@ class App extends Component{
             <EditPost routerProps={ routerProps }/>
           )} />
 
-          <Route exact path="/category/:postId" render={(routerProps) => (
+          <Route exact path="/:categoryPath/:postId" render={(routerProps) => (
             <Post     routerProps={ routerProps } />
           )} />
 

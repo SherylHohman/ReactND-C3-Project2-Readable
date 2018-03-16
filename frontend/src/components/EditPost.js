@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { editPost } from '../store/posts';
 import { HOME, ROUTES } from '../store/viewData';
-import { changeView, getUri } from '../store/viewData';
+import { changeView, getLoc } from '../store/viewData';
 import { fetchPost } from '../store/posts';
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
@@ -28,11 +28,11 @@ export class EditPost extends Component {
     // console.log('in EditPost componentDidMount');
 
     // synch store with current URL
-    if (this.props.uri){
-      // console.log('__EditPost cDM calling changeView, this.props.uri:', this.props.uri);
+    if (this.props.loc){
+      // console.log('__EditPost cDM calling changeView, this.props.loc:', this.props.loc);
       // console.log('__EditPost routerProps:', this.props.routerProps);
-      // console.log('__EditPost uri:-----', this.props.uri);
-      this.props.changeViewByUri(this.props.uri);
+      // console.log('__EditPost loc:-----', this.props.loc);
+      this.props.changeViewByLoc(this.props.loc);
     }
 
     if (!this.props.post) {
@@ -62,11 +62,11 @@ export class EditPost extends Component {
       })
     }
 
-    // if (nextProps.uri && nextProps.uri !== this.props.uri){
-    //   console.log('__EditPost cWRP calling changeView, this.props.uri:', this.props.uri);
+    // if (nextProps.loc && nextProps.loc !== this.props.loc){
+    //   console.log('__EditPost cWRP calling changeView, this.props.loc:', this.props.loc);
     //   console.log('__EditPost routerProps:', this.props.routerProps);
-    //   console.log('__EditPost uri:', this.props.uri);
-    //   this.props.changeViewByUri(this.props.uri);
+    //   console.log('__EditPost loc:', this.props.loc);
+    //   this.props.changeViewByLoc(this.props.loc);
     // }
 
   }
@@ -270,7 +270,7 @@ EditPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
-    changeViewByUri: (uri) => dispatch(changeView({ uri })),
+    changeViewByLoc: (loc) => dispatch(changeView({ loc })),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
   })
 }
@@ -279,21 +279,21 @@ function mapStoreToProps ( store, ownProps) {
   // console.log('store:', store)
   // console.log('__EditPost ownProps', ownProps);
 
-  // const postId = store.viewData.currentId;
-  const postId = getUri(ownProps.routerProps).postId || null;//currentId;
+  // const postId = store.viewData.loc.postId;
+  const postId = getLoc(ownProps.routerProps).postId || null;
 
   const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
     return acc.concat([store.categories[categoryKey].name]);
   }, []);
 
-  const uri = getUri(ownProps.routerProps) || null;
+  const loc = getLoc(ownProps.routerProps) || null;
 
   return {
     categoriesObject: store.categories,
     categoryNames,
     postId,
     post: store.posts[postId],
-    uri,
+    loc,
   }
 };
 

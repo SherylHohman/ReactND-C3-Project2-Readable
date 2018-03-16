@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { fetchPosts } from '../store/posts';
 import { ROUTES, HOME } from '../store/viewData';
 import PageNotFound from './PageNotFound';
-import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
+import { changeView, getLoc, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts';
 import { dateMonthYear, titleCase } from '../utils/helpers';
 import { createSelector } from 'reselect';
@@ -18,9 +18,9 @@ export class Posts extends Component {
   }
 
   isInValidUrl(){
-    if (!this.props || !this.props.validUrls || !this.props.uri ||
-        this.props.validUrls.indexOf(this.props.uri.url) === -1){
-      // console.log('Posts, isInValidUrl, url:', this.props && this.props.uri && this.props.uri.url)
+    if (!this.props || !this.props.validUrls || !this.props.loc ||
+        this.props.validUrls.indexOf(this.props.loc.url) === -1){
+      // console.log('Posts, isInValidUrl, url:', this.props && this.props.loc && this.props.loc.url)
       return true;
     }
     return false;
@@ -28,17 +28,19 @@ export class Posts extends Component {
 
   componentDidMount() {
     // console.log('Posts componentDidMount');
+
+    this.setState({ sortBy: this.props.sortBy });
     this.props.fetchPosts(this.props.categoryPath);
     // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
-    if (this.props.uri){
-      // console.log('Posts cDM calling changeView, this.props.uri', this.props.uri);
-      this.props.changeViewByUri(this.props.uri)
+    if (this.props.routerProps){
+      // console.log('Posts cDM calling changeView, this.props.loc', this.props.loc);
+      this.props.changeView(this.props.routerProps);
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('Posts cWRP nextProps: ', nextProps);
-    // console.log('Posts cWRP this.Props:', this.props);
+    // console.log('Posts.cWRP nextProps: ', nextProps);
+    // console.log('Posts.cWRP this.Props:', this.props);
 
     if (nextProps.sortBy !== this.props.sortBy) {
       this.setState({ sortBy: nextProps.sortBy });
@@ -51,18 +53,26 @@ export class Posts extends Component {
       this.setState({ posts: sortedPosts });
     }
 
-    if (nextProps.uri && this.props.uri &&
-        nextProps.uri.url !== this.props.uri.url){
-      // console.log('__Posts cWRP,     calling changeView, nextProps.uri:', nextProps.uri);
-      this.props.changeViewByUri(nextProps.uri)
+    // if (nextProps.loc && this.props.loc &&
+    //     nextProps.loc.url !== this.props.loc.url){
+    //   console.log('__Posts cWRP,     calling changeView, nextProps.loc:', nextProps.loc);
+    if ((nextProps.routerProps  && this.props.routerProps) &&
+        (nextProps.routerProps !== this.props.routerProps)){
+      // console.log('__Posts.cWRP,     calling changeView, nextProps.routerProps', nextProps.routerProps);
+      this.props.changeView(nextProps.routerProps, this.props.routerProps);
       this.props.fetchPosts(nextProps.categoryPath);
     }
     else {  // for monitoring how app works
-      // console.log('Posts cWRP, NOT calling changeView, nextProps.uri.url:',
-      //             nextProps.uri.url, ', this.props.uri.url:', this.props.uri.url);
+      // console.log('Posts.cWRP, NOT calling changeView, nextProps.loc.url:',
+      //             nextProps.loc.url, ', this.props.loc.url:', this.props.loc.url);
+      // console.log('Posts cWRP, NOT calling changeView, nextProps.loc.url:',
+      //             nextProps.loc.url, ', this.props.loc.url:', this.props.loc.url);
     }
   }
 
+  disableClick(e){
+    e.preventDefault();
+  }
   onChangeSort(e, sortBy){
     e.preventDefault();
     this.props.onChangeSort(sortBy);
@@ -72,7 +82,7 @@ export class Posts extends Component {
     // console.log('re-render Posts');
 
     if (this.isInValidUrl()){
-      // console.log('PageNotFound from within Posts component, uri:', this.props.uri)
+      // console.log('PageNotFound from within Posts component, loc:', this.props.loc)
       return (
         <div>
           <PageNotFound routerProps={ this.props.routerProps } />
@@ -96,11 +106,27 @@ export class Posts extends Component {
       }
     }
 
+    const getPostUrl = (post) => {
+      // technically post.category is a categoryName, not a categoryPath.
+      // currently in my DB, a categoryPath === categoryName
+      // so this shortcut wroks - BEWARE for BUGS if change defined categories,
+      //   and this is not longer the case.
+      // console.log('____Posts.render.getPostUrl',
+      //             '\npost.id:', post.id,
+      //             '\ntpost.category', post.category,
+      //             );
+      const categoryPath = post.category;
+      const postLink = `${ROUTES.post.base}${categoryPath}/${post.id}`;
+      // console.log('____Posts.render.getPostUrl, post url:', postLink);
+      return postLink;
+    }
+
     return (
       <div>
 
           {/*New Post*/}
-          <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}
+          {/*<Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}*/}
+          <Link to={ROUTES.newPost.route}
                 style={{"height":"100%",
                         "width" :"100%"
                       }}
@@ -116,13 +142,19 @@ export class Posts extends Component {
               <li className="no-link"> Sort By : </li>
               <li
                 className={`${this.state.sortBy==='date' ? "selected" : ""}`}
-                onClick={(e) => {this.onChangeSort(e, 'date')}}
+                  onClick={this.state.sortBy==='date'
+                            ? (()  => {this.disableClick})
+                            : ((e) => {this.onChangeSort(e, 'date')})
+                          }
                 >
                 Most Recent
               </li>
               <li
                 className={(this.state.sortBy==='voteScore' ? "selected" : "")}
-                onClick={(e) => {this.onChangeSort(e, 'voteScore')}}
+                  onClick={this.state.sortBy==='voteScore'
+                          ? ()  => {this.disableClick}
+                          : (e) => {this.onChangeSort(e, 'voteScore')}
+                        }
               >
                 Most Votes
               </li>
@@ -147,7 +179,8 @@ export class Posts extends Component {
                         <div key={`key-post-wrapper-div-${id}`}>
 
                           <Link key={`key-linkto-post-${id}`}
-                                 to={`${ROUTES.post.base}${post.id}`}>
+                                 to={getPostUrl(post)}
+                                 >
                             <h1 key={`key-${post.title}-${id}`}>
                                 {post.title}
                                 </h1>
@@ -238,7 +271,8 @@ function mapDispatchToProps(dispatch){
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
     deletePost: (postId) => dispatch(deletePost(postId)),
 
-    changeViewByUri: (uri) => dispatch(changeView({ uri })),
+    // changeViewByLoc: (loc) => dispatch(changeView({ loc })),
+    changeView: (routerProps) => dispatch(changeView(routerProps)),
     onChangeSort: (sortBy) => dispatch(changeSort(sortBy)),
   })
 }
@@ -247,8 +281,9 @@ function mapStoreToProps (store, ownProps) {
   // console.log('store:', store);
   // console.log('Posts ownProps:', ownProps);
 
-  const uri = getUri(ownProps.routerProps) || null;
-  // console.log('Posts, uri:', uri);
+  // const loc = store.viewData.loc || null;
+  const loc = getLoc(ownProps.routerProps) || null;
+  // console.log('Posts.mSTP, loc :', loc);
 
   // const for the life of the app, as categories don't change
   // valid /:category routes - vs 404
@@ -266,30 +301,32 @@ function mapStoreToProps (store, ownProps) {
   );
   const validCategoryUrls = getValidCategoryUrls(store)
 
-  if (!uri || (validCategoryUrls.indexOf(uri.url) === -1)) {
+  if (!loc || (validCategoryUrls.indexOf(loc.url) === -1)) {
     // TODO: exit ASAP - before compute below constants ! - just want to render 404 mssg
     //    keep computations minimal:
     //    set as many values to NULL or CONSTANTS as possible..
     //    while not breaking the component
-    // console.log('__Posts, mSTPs, invalidCategoryUrl - EXITING mSTP early, uri.url:',
-    //             uri.url, validCategoryUrls, validCategoryUrls.indexOf(uri.url));
+    // console.log('__Posts, mSTPs, invalidCategoryUrl - EXITING mSTP early, loc.url:',
+    //             loc.url, validCategoryUrls, validCategoryUrls.indexOf(loc.url));
     return ({
           posts:     null,
           sortBy:    DEFAULT_SORT_BY,
           sortOrder: DEFAULT_SORT_ORDER,
           validUrls: null,  //validCategoryUrls,
-          uri,
-          categoryPath: uri.currentId,
+          loc,
+          categoryPath: loc.currentId,
         })
   }
 
   // TODO: move these selectors to ?? reducers files ??
   const getAllPosts = createSelector(
-    store => store.posts,
-    store => store.viewData.persistentSortBy,
-    (postsObj, persistentSortBy) => {
+    store => store.fetchedPosts,
+    (fetchedPosts) => {
+      if (!fetchedPosts.posts){ return []; }
       // object to array
+      const postsObj = fetchedPosts.posts;
       const allPosts = Object.keys(postsObj).reduce((acc, postId) => {
+        // console.log('Posts.mSTP.getAllPosts', postsObj, postId);
         return acc.concat([postsObj[postId]]);
       }, []);
       return allPosts;
@@ -301,37 +338,46 @@ function mapStoreToProps (store, ownProps) {
   // const getPostIdsByCategory = createSelector(
   // );
   // const postIdsByCategory = getPostIdsByCategory(store);
-  // const postIdsCurrentCategory = postIdsByCategory[uri.currentId] || null;
+  // const postIdsCurrentCategory = postIdsByCategory[loc.currentId] || null;
 
   const getPostsCurrentCategory = createSelector(
-    store => store.viewData.currentId,
-    store => store.viewData.url,
-    store => store.persistentSortBy,
-    (currentCategoryPath, url, persistentSortBy) => {
-      // uses memoized selectors allPosts, and validCategoryUrls (defined above)
+    getAllPosts,
+    store => store.viewData.loc,
+    (allPosts, loc) => {
+      // console.log('Posts.mSTP.getPostsCurrentCategory',
+      //             '\nloc.categoryPath', loc.categoryPath,
+      //            );
+      if (loc.route === ROUTES.home.route){
+        return allPosts;
+      }
       const postsCurrentCategory = allPosts.filter( (post) => {
-        return post.category === uri.currentId;
+        // console.log('Posts.mSTP.getPostsCurrentCategory',
+        //             'post.category:', post.category,
+        //             'loc.categoryPath:', loc.categoryPath,
+        //             );
+        return post.category === loc.categoryPath;
       });
-      const currentPosts = (uri.currentId === HOME.category.path)
-                   ? allPosts
-                   : postsCurrentCategory
-      return currentPosts;
+      return postsCurrentCategory;
     }
   );
   const postsCurrentCategory = getPostsCurrentCategory(store);
+  // console.log('Posts.mSTP, posts:', postsCurrentCategory);
 
-  // const sortedPosts = sortPosts(allPosts, uri.persistentSortBy);
-  // const sortedPosts = sortPosts(postsCurrentCategory, uri.persistentSortBy);
+  // const sortedPosts = sortPosts(allPosts, loc.persistentSortBy);
+  // const sortedPosts = sortPosts(postsCurrentCategory, loc.persistentSortBy);
   // console.log('__Posts, mSTPs, sortedPosts', sortedPosts)
 
+  const fetchStatus = store.fetchedPosts.fetchStatus;
+
   return {
-    posts:     postsCurrentCategory, //sortedPosts,
-    sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
-    sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
+    posts:     postsCurrentCategory,
+    sortBy:    store.viewData.persistentSortBy,
+    sortOrder: store.viewData.persistentSortOrder,
 
     validUrls: validCategoryUrls,
-    uri,
-    categoryPath: uri.currentId,
+    loc,
+    categoryPath: loc.categoryPath || null,
+    fetchStatus,
   }
 };
 

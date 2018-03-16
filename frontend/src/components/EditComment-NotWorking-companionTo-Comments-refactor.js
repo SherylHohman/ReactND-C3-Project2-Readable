@@ -20,7 +20,7 @@ export class EditComment extends Component {
   };
 
   componentDidMount(){
-    console.log('cDM, props:', this.props);
+    // console.log('cDM, props:', this.props);
     if (this.props && this.props.comment){
     // if (this.props && this.props.comment){
       // this.setState({ body: this.props.comment.body });
@@ -120,8 +120,8 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  console.log('ownProps:', ownProps);
-  console.log('store.comments[ownProps.comment]:', store.comments[ownProps.comment]);
+  // console.log('ownProps:', ownProps);
+  // console.log('store.comments[ownProps.comment]:', store.comments[ownProps.comment]);
   // console.log('store.comments[ownProps.commentId]:', store.comments[ownProps.commentId]);
   const id = ownProps.comment.id
   return {

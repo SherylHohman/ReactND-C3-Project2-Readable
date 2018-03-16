@@ -120,8 +120,8 @@ export class NewPost extends Component {
     this.props.history.push(url);
   }
 
-  loadPostPage(postId){
-    this.props.history.push(`${ROUTES.post.base}${postId}`);
+  loadPostPage(categoryPath, postId){
+    this.props.history.push(`${ROUTES.post.base}${categoryPath}/${postId}`);
   }
 
   onCancel(){
@@ -145,7 +145,7 @@ export class NewPost extends Component {
     }
 
     this.props.onSave(newPostData);
-    this.loadPostPage(newPostData.id);
+    this.loadPostPage(newPostData.category, newPostData.id);
   }
 
   onSubmit(e){
