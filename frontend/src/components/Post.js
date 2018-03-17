@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Comments from './Comments';
 import { ROUTES, HOME } from '../store/viewData';
 import { changeView, getLoc } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear, titleCase } from '../utils/helpers';
+import Comments from './Comments';
+import PageNotFound from './PageNotFound';
 import PropTypes from 'prop-types';
 
 export class Post extends Component {
@@ -63,14 +64,8 @@ export class Post extends Component {
     }
 
     if (!this.props.post) {
-      // console.log('Post: no post data. Has FETCH POST been initiated?: post wasn\'t present in props, postID?:', this.props.postId);
       return (
-        <div>
-          <p>First render should have initiated a fetch..</p>
-          <p>..but then either "isLoading" or "isFetchFailure" should kick in</p>
-          <p><i>Should't get this far.. (why was there no early return??)</i></p>
-          <p>Post: post wasn\'t present in props, do I have the postID?: {postId}</p>
-        </div>
+        <PageNotFound routerProps={ this.props.routerProps } />
       );
     }
 
