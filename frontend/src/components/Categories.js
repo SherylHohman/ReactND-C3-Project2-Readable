@@ -8,25 +8,38 @@ import { ROUTES } from '../store/viewData';
 import { changeView, HOME, DEFAULT_SORT_BY } from '../store/viewData';
 import { titleCase } from '../utils/helpers';
 import { createSelector } from 'reselect';
+import { getCategoriesArray, getValidCategoryUrls, getValidCategoryPaths } from '../store/categories';  // category selectors
 
 export class Categories extends Component {
 
   componentDidMount() {
-    this.props.fetchCategories();
+    // only ever needs tobe called once - they never change for life of the app
+    // TODO: already called from App
+    //   remove call from here, or remove call from App
+    // this.props.fetchCategories();
     // console.log('Categories componentDidMount ..fetching, categories');
 
-    // if (this.props.loc){
-    //   console.log('Categories cDM calling changeView, this.props.loc', this.props.loc);
-    //   this.props.changeView(this.props.loc)
-    // }
-    // else {  // for app monitoring
-    //   console.log('Categories cDM NOT calling changeView, this.props.loc', this.props.loc);
-    // }
+  //   // TODO: Probably Delete changeView calls for Categories Component..
+  //   console.log('Categories cDM calling changeView, this.props.routerProps', this.props.routerProps);
+  //   this.props.changeView(this.props.routerProps)
   }
 
   componentWillReceiveProps(nextProps){
     // console.log('__Categories cWRP nextProps: ', nextProps);
     // console.log('__Categories cWRP this.Props:', this.props);
+
+    // TODO: if remove from cDM, then remove from here too !
+    // this.props.fetchCategories();
+    // console.log('Categories.cWRP ..fetching, categories');
+
+    // // TODO: Probably Delete changeView calls for Categories Component..
+    // if (this.props.routerProps){
+    //   console.log('Categories.cWRP    calling changeView, this.props.routerProps', this.props.routerProps);
+    //   this.props.changeView(this.props.routerProps)
+    // }
+    // else {
+    //   console.log('Categories.cWRP NOT calling changeView, this.props.routerProps', this.props.routerProps);
+    // }
   }
 
   clickDisabled(e){
@@ -134,7 +147,6 @@ export class Categories extends Component {
 function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
-    // fetchCategories: () => dispatch(categoriesStore.fetchCategories()),
     changeView: (loc) => dispatch(changeView({ loc })),
   })
 }
@@ -146,65 +158,41 @@ function mapStoreToProps (store, ownProps) {
   // console.log('store.categories:', store.categories)
   // console.log('Categories, ownProps:', ownProps)
 
-  // This Component's routerProps will match on '/', so pull loc values from store, DON'T
-  //  compute loc from routerProps.
-  // const { match, location, history } = ownProps;
-  // const routerProps = { match, location, history };
-  // // console.log(routerProps);
-  // const loc = getLoc(routerProps) || null;
-  // console.log('__Categories, loc:', loc);
-
-  const getCategoriesArray = createSelector(
-    store => store.categories,
-    (categories) => Object.keys(categories).reduce((acc, categoryKey) => {
-      return acc.concat([categories[categoryKey]]);
-     }, [])
-  );
   const categoriesArray = getCategoriesArray(store);
-  // const categoriesArray = categoriesStore.getCategoriesArray(store);
 
-  // // this value does not change for the life of the app
-  // const getValidCategoryPaths = createSelector(
-  //   store => store.categories,
-  //   (categories) => Object.keys(categories).reduce((acc, categoryKey) => {
-  //     return acc.concat([categories[categoryKey].path]);
-  //    }, []).concat(HOME.category.path)
-  // );
-  // const validCategoryPaths = getValidCategoryPaths(store);
-  // const validCategoryPaths = categoriesStore.getValidCategoryPaths(store);
+  const getSelectedCategoryPath = createSelector(
+    store => store.viewData.loc,
+    getValidCategoryPaths,
+    (loc, validCategoryPaths) => {
+      console.log('Categories.mSTP.getSelectedCategoryPath, loc:', loc);
+      // if currentUrl EXACTLY matches a valid Category Url
+      const categoryPath = (loc && loc.categoryPath)
+                            ? loc.categoryPath
+                            : null;
 
-  // const getSelectedCategoryPath = createSelector(
-  //   store => store.viewData.loc,
-  //   // validCategoryPaths,
-  //   getValidCategoryPaths,
-  //   (loc, validCategoryPaths) => {
-  //     console.log('Categories.mSTP.getSelectedCategoryPath, loc:', loc);
-  //     // if currentUrl EXACTLY matches a valid Category Url
-  //     // const categoryPath = loc.categoryPath || null;  // null or '' ??
-  //     const categoryPath = (loc && loc.categoryPath) ? loc.categoryPath : null;  // null or '' ??
-
-  //     // console.log('__validCategoryPaths', validCategoryPaths);
-  //     if ((validCategoryPaths.indexOf(categoryPath) !== -1) &&
-  //         // in case more ROUTES get added that incorporate categoryPath (categoryPath)
-  //         (loc.url === ROUTES.category.base + categoryPath)
-  //         ){
-  //       return categoryPath;
-  //     }
-  //     else {
-  //       // any other url memoizes as null, to ensure
-  //       //  categories won't re-render on non Categories route
-  //       //  (Categories shows on all pages, not just '/:categoryPath')
-  //       return null;
-  //     }
-  //   }
-  // );
-  // const selectedCategoryPath = getSelectedCategoryPath(store);
-  // const selectedCategoryPath = categoriesStore.getSelectedCategoryPath(store);
-  const selectedCategoryPath = store.viewData.loc.categoryPath || null;
+      // or use categories.calculateRouteUrlFromLoc()
+      if (categoryPath &&
+         (validCategoryPaths.indexOf(categoryPath) !== -1) &&
+          // future proof validation
+          //   in case more ROUTES get added that incorporate :categoryPath (categoryPath)
+          (loc.url === ROUTES.category.base + categoryPath)
+          ){
+        return categoryPath;
+      }
+      else {
+        // memoize any other url as null, to
+        //  prevent Categories re-render on a non /:categoryPath route
+        //  (because Categories UI displays on ALL pages, not just '/:categoryPath')
+        return null;
+      }
+    }
+  );
+  const selectedCategoryPath = getSelectedCategoryPath(store);
+  // const selectedCategoryPath = store.viewData.loc.categoryPath || null;
   // console.log('__Categories.selectedCategoryPath:', selectedCategoryPath);
 
 
-  const loc = store.viewData.loc;    //|| HOME.,
+  const loc = store.viewData.loc;
   // console.log('Categories.mSTP loc:', loc);
 
   return {

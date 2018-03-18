@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
 import { ROUTES, HOME } from '../store/viewData';
 import { changeView, getLoc } from '../store/viewData';
+
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
 import { dateMonthYear, titleCase } from '../utils/helpers';
+
 import Comments from './Comments';
 import PageNotFound from './PageNotFound';
+import { getPostsAsObjects, getFetchStatus } from '../store/posts';
 import PropTypes from 'prop-types';
 
 export class Post extends Component {
@@ -14,19 +18,27 @@ export class Post extends Component {
   componentDidMount() {
     // console.log('Post.cDM, props:', this.props);
 
-    if (this.props.postId && !this.props.post){
-    //   console.log('Post.cDM ..fetching, post for postId:', this.props.postId);
-      this.props.fetchPost(this.props.postId);
-    }
-
     if (this.props.routerProps){
       // console.log('Post.cDM calling changeView, post with routerProps:', this.props.routerProps);
       this.props.changeView(this.props.routerProps)
     }
-    // else {
-      // console.log('Post.cDM _NOT_ calling changeView, post for routerProps:', this.props.routerProps);
-    // }
+
+    if (this.props.postId && !this.props.post){
+    //   console.log('Post.cDM ..fetching, post for postId:', this.props.postId);
+      this.props.fetchPost(this.props.postId);
+    }
   }
+
+  // componentWillReceiveProps(nextProps){
+  //   if (nextProps.postId && nextProps.postId !== this.props.postId){
+  //     //   console.log('Post.wRP ..fetching, post for postId:', this.props.postId);
+  //     this.props.fetchPost(this.props.postId);
+  //   }
+  //   if (nextProps.routerProps &&
+  //      (nextProps.routerProps !== this.props.routerProps)){
+  //     this.props.changeView(this.props.routerProps)
+  //   }
+  // }
 
   disableClick(e){
     e.preventDefault();
@@ -72,10 +84,10 @@ export class Post extends Component {
     // only set these constants After early return for non-existant this.props.post (isLoading, or isFetchFailure)
     const {title, body, voteScore, commentCount, author, timestamp } = this.props.post;
 
+    const categoryName = this.props.post.category;
     // disambiguate category --> categoryName:
     // category is an {name, path} object on categories, yet
     // category on a post refers to a category.name
-    const categoryName = this.props.post.category;
 
     return (
       <div>
@@ -152,32 +164,38 @@ function mapStoreToProps (store, ownProps) {
   // console.log('Post store:', store);
   // console.log('Post ownProps:', ownProps);
 
-  const loc = getLoc(ownProps.routerProps) || null;
+  //  Either call getLoc from routerProps to get most up-to-date postId
+  //    here, and call fetch from componentDidMount
+  // NOPE: DOESNT WORK: OR get loc directly from store, let componentDidMount update loc
+  //      using routerProps, but WAIT to call Fetch from componentWillReceiveProps
+  //      as postId may change in the process, and we don't want to make an
+  //      unnecessary network request on the postId, only to immediately make another
+  //      request with the correct postId.
+  //  Not sure which is considered best practice.
+  //  It does not seem quite right to not use store to retrieve loc,
+  //    Then again, router *is* the source of truth, and I'm simply keeping store
+  //    in synch with router..
+
   // const loc = store.viewData.loc;
-  const postId = loc.postId;  // === store.viewData.loc.postId; //loc.postId  || null;
-  const post = store.fetchedPosts.posts[postId] || null;
-  // console.log('Post.mSTP, post', post, 'posts', store.fetchedPosts.posts);
+  const loc = getLoc(ownProps.routerProps) || null;
+  const postId = loc.postId;
 
-  // const fetchStatus = {
-  //   isLoading:      store.posts.isLoading,
-  //   isFetchFailure: store.posts.isFetchFailure,
-  //   errorMessage:   store.posts.errorMessage,
-  // }
-  const fetchStatus = store.fetchedPosts.fetchStatus;
-  // console.log('Post.mSTP, post', fetchStatus, 'posts', fetchStatus);
+  const post = getPostsAsObjects(store)[postId] || null;
+  const fetchStatus = getFetchStatus(store);
+  // (isLoading, isFetchFailure, errorMessage)
 
-  // so can redirect to Post's (former) category when deleting the post
+  // get his post's categoryPath so can redirect to Post's (former) category
+  //   when deleting the post. Here I have access to store.categories, which
+  //   is only used as an intermediate step for this one-time calc.
   const categoryName = (post && post.category) || null;
   const category     = categoryName && store.categories[categoryName];
-  const categoryPath = (category && store.categories[categoryName].path) || null
-        //HOME.category.path || null;
+  const categoryPath = (category    && store.categories[categoryName].path) || null
 
   return {
-    fetchStatus,
     postId,
     post,
-    categoryPath,  // ref to the url of this post's category
-    loc,           // data parsed from Browser Url
+    categoryPath,
+    fetchStatus,
   }
 };
 

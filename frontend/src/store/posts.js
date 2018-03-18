@@ -1,6 +1,9 @@
 import * as ReaderAPI from '../utils/api';
 import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 import { combineReducers } from 'redux';
+import { createSelector } from 'reselect';
+import { getLoc } from '../store/viewData';
+import { ROUTES, HOME } from '../store/viewData';
 
 // ACTION TYPES
   export const REQUEST_POSTS = 'REQUEST_POSTS';
@@ -463,5 +466,78 @@ const fetchedPosts = combineReducers({
   fetchStatus,
 });
 
-
 export default fetchedPosts
+
+// SELECTORS - Return store data in format ready to be consumed by UI
+export const getPosts = createSelector(
+  (store) => store.fetchedPosts.posts,
+  (postObjects) => {
+    if (!postObjects){ return []; }
+    // object to array
+    const postsArray = Object.keys(postObjects).reduce((acc, postId) => {
+      return acc.concat([postObjects[postId]]);
+    }, []);
+    return postsArray;
+  }
+);
+
+// B  -- requires less rendering and fewer function calls than A)
+const getRouterCategoryPath = (store, ownProps) =>
+  (getLoc(ownProps.routerProps).categoryPath);
+// (only valid Category Routes make it to this function)
+export const getPostsCurrentCategory = createSelector(
+  getPosts,
+  getRouterCategoryPath,
+  (allPosts, categoryPath) => {
+    // console.log('posts.getPostsCurrentCategory, categoryPath, allPosts', categoryPath, allPosts);
+    // home route (all posts) has no categoryPath
+    if (!categoryPath) {return allPosts}
+    const postsCurrentCategory = allPosts.filter( (post) => {
+      return post.category === categoryPath;
+    });
+    return postsCurrentCategory;
+  }
+);
+
+// TODO: save categorized posts filtered by category
+// const getPostIdsByCategory = createSelector(
+// );
+// const postIdsByCategory = getPostIdsByCategory(store);
+// const postIdsCurrentCategory = postIdsByCategory[loc.currentId] || null;
+
+
+export const getPostsAsObjects = (store) => store.fetchedPosts.posts;
+
+export const getFetchStatus = (store) => store.fetchedPosts.fetchStatus;
+
+
+// KEEP THIS AS A NOTE ON SELECTOR DESIGN
+  // // A  -- less efficient than B)
+  // // A - requires more function calls, more rendering passes, (maybe fewer fetches?)
+  // // Swap them out, with comments in place Here and in Posts to see the diff !
+  // // A Doesn't memoise well!
+  // // Difference is:
+  // //  - this uses LOC as an input selector;
+  // //  - that uses CATEGORYPATH as an input selector
+
+  // // A
+  // const getRouterLoc = (store, ownProps) =>
+  //   (getLoc(ownProps.routerProps));
+  // export const getPostsCurrentCategory = createSelector(
+  //   getPosts,
+  //   getRouterLoc,
+  //   (allPosts, loc) => {
+  //     console.log('posts.getPostsCurrentCategory, loc.categoryPath, allPosts', loc.categoryPath, allPosts);
+  //     // if (loc.route === ROUTES.home.route){
+  //     //   return allPosts;
+  //     // }
+  //     // (only valid Category Routes make it to this function)
+  //     // home route has "falsey" categoryPath
+  //     if (!loc.categoryPath) {return allPosts}
+  //     const postsCurrentCategory = allPosts.filter( (post) => {
+  //       return post.category === loc.categoryPath;
+  //     });
+  //     return postsCurrentCategory;
+  //   }
+  // );
+

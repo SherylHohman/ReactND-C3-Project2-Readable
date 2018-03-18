@@ -1,3 +1,5 @@
+import { createSelector } from 'reselect';
+
 // ACTION TYPES
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SELECT_CATEGORY = 'SELECT_CATEGORY';
@@ -15,7 +17,7 @@ export const SORT_BY = 'SORT_BY';
     {sortOrder: "ascending",  text: 'Low to High'}
   ];
 
-  // TODO: get paths from App.js, then use to populate App.js
+  // TODO: change to an Array, then map over it to populate App.js Routes
 export const ROUTES= {
   // Special Case: when params list is {}, set its value to '' instead
   home:     {
@@ -60,6 +62,20 @@ export const ROUTES= {
   //   base:     '',
   // }
 };
+// See also related Selector Function at end of file
+export function calculateRouteUrlFromLoc(loc){
+  const routeDef =ROUTES[loc.routeName];
+  let routeUrl = routeDef.base;
+  if (routeDef.params !== []) {
+     for (let param in routeDef.params){
+      routeUrl += loc[param] + '/';
+    }
+    //  remove extra trailing '/'
+    routeUrl = routeUrl.slice(0, -1);
+  }
+  return routeUrl;
+}
+// used to calculate a url to navigate to, based on routeName supplied by component
 export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
   if (!routeName) {routeName = loc.route || 'home';}
   let computedUrl = ROUTES[routeName].base;
@@ -70,13 +86,15 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
   return computedUrl;
 }
 
-  // "id" is one of: post.id, comment.id, category.name
-  // "url" is an exact path, as per browser window
-  // "route" is a route format, where `:` prefix represents a variable name
-  // "sortOrder" is "Ascending" or "Descending". Not implemented.
-  // "category.path" is a url-safe string for the category url. Not including'/''
+  //  "url" is an exact path, as per browser window
+  //  (params, when exist are:) "categoryPath", "postId"
+  //    ("categoryPath" is a url-safe string for the category url. Not including'/'')
+  //  "route" is a route format, where `:` prefix represents a variable name
+  //  "sortOrder" is "Ascending" or "Descending". Not implemented.
 
   // ensure consistancy
+  // ALL_POSTS_CATEGORY compliments the "categories" defined on server,
+  //  adds a "category" definition for the home page: posts for "All" Categories
   const ALL_POSTS_CATEGORY= {name: '', path: ''};
   const ALL_POSTS_ID  = '' ;
   const ALL_POSTS_URL = '/';
@@ -84,7 +102,9 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
   export const DEFAULT_SORT_ORDER = 'high_to_low';
 
   export const HOME  = {
-    id: ALL_POSTS_ID,
+    // id: ALL_POSTS_ID,
+    // replaced id with categoryPath
+    categoryPath: ALL_POSTS_CATEGORY.path,
     url: ALL_POSTS_URL,
     category: ALL_POSTS_CATEGORY,
   }
@@ -93,11 +113,15 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
     // console.log('getLoc, routerProps:', routerProps);
     // console.log('getLoc, routerProps.location:', routerProps.location);
     // console.log('getLoc, routerProps.match:', routerProps.match);
+    if (!routerProps){
+      console.log('viewData.getLoc, invalid routerProps (prob checking for prevRouterProps)')
+      return null;
+    }
     const match    = (routerProps && routerProps.match)    || null;
     const location = (routerProps && routerProps.location) || null;
     // console.log('viewData.getLoc, routerProps.location:', location);
     if (!match) {
-      // console.log('getLoc, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
+      console.log('getLoc, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
       // return null;
     }
     const route = (match && match.path) || ROUTES.home.route;
@@ -107,55 +131,36 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
       // routeName is the same as its key, so can refactor using ke as a shortcut
       const routeKeys = Object.keys(ROUTES);
       const matchedRouteKey = routeKeys.find((key) => {
-        // console.log('---- viewData.getLoc.getRouteName',
-        //             '\nkey ', key,
-        //             '\nkey.route ', ROUTES[key].route,
-        //             '\nroute ', route,
-        //             '\nIS ROUTE? ', ROUTES[key].route === route
-        //             );
         return ROUTES[key].route === route;  //url
       });
-      // console.log('viewData.getLoc.getRouteName',
-      //             '\nmatchedRouteKey:', matchedRouteKey,
-                  // '\nrouteName: ', ROUTES[matchedRouteKey].name
-                  // );
-
       // TODO: default value for unmatchec route: null, '', 'home' ??
-      //  usually, it /:category will match bad urls, unless there is another '/'
+      //  usually (unless there is another '/' in the (bad) url),
+      //  the matched (bad) route will be /:category
+      //  or it will be the url of a deleted post /:categoryPath/:poatId
       return ROUTES[matchedRouteKey].name || 'home' //null;
     }
     const routeName = getRouteName(route);
     // console.log('viewData.getLoc, routeName: ', routeName);
-
     // function getComputedRouteFromUrl(url){
-
     // }
 
-    // console.log('__let loc.params = match.params:', match.params);
     const loc = {
       // actual location, not just the "match"ed part
-      url: location.pathname, // null,
+      url: location.pathname,
 
-      // TODO: get rid of params, key, just store params in directly
-      params: match.params, // || null, //'', //null,
+      // got rid of params key, instead store params directly on loc
+      // TODO: do I need to do anything special for "empty" params list?
+      //    ie '', or null ?? Think Not, but uncertain
       ...match.params,
 
       // note, this is the "matched" route - not necessarily the full route
-      //  (for example: called from in Categories component,
-      //   this will always be '/' because it always renders)
+      //  (for example: if accessed from within Categories component,
+      //   route will ALWAYS be '/' because Categories renders/matches ALL routes)
       route,
       routeName,
 
       // I don't use match.url currently, it's ready if I decide it's needed
       // match: match.url,
-
-      // NOTE: if component "matches" on a non-exact route,
-      //  match.path and match.params may NOT reflect the full path
-      //  For example, Categories is rendered on every path
-      //  So ALWAYS match.path === '/' match.params === ''
-      //    even on route '/:categories', path '/react', and params 'categoryPath: react'
-      //  SO.. use location.pathname for actual url
-      //    BUT.. would need to self-parse to get the params of the actual url.
 
     };
     // console.log('viewData.getLoc, loc:', loc);
@@ -164,25 +169,17 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
 
 // ACTION CREATORS
 
-//   export const changeView = (newViewData=HOME) => (dispatch) => {
-//       // console.log('__++__entering viewData.CHANGEVIEW, newViewData:', newViewData);
-//       const loc = newViewData.loc;
-//       // console.log('__++__entering viewData.changeView, loc:', loc);
-//       dispatch ({
-//         type: CHANGE_VIEW,
-//         loc,
-//       })
-// }
   export const changeView = (routerProps, prevRouterProps=null) => (dispatch) => {
       const loc = getLoc(routerProps);
-      // console.log('__++__entering viewData.changeView, loc:', loc);
-      // console.log('__++__entering viewData.CHANGEVIEW, newViewData:', newViewData);
-      if (prevRouterProps && (getLoc(prevRouterProps).url === loc.url)) {
+      // console.log('viewData.changeView, loc:', loc);
+
+      const prevLoc = prevRouterProps ? getLoc(prevRouterProps) : null;
+      if (loc.url === (prevLoc && prevLoc.url)) {
         // url hasn't changed: don't update store
-        // console.log('changeView, ',
-        //             'prev url:', getLoc(prevRouterProps).url,
-        //             'curr url:', loc.url
-        //            );
+        console.log('viewData.changeView, not updating store.loc..',
+                    'prev url:', prevLoc.url,
+                    'curr url:', loc.url
+                   );
         return;
       }
       dispatch ({
@@ -192,7 +189,7 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
   }
 
   export const changeSort = (persistentSortBy='date') => ({
-    // TODO: add this field to (browser) url ??
+    // TODO: add SortBy field to (browser) url ??
     //   if so, then would need to push the new URL
     // TODO: either validate the param given,
     //       or use sortByMethods to populate Component
@@ -210,22 +207,19 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
 // DATA, INITIAL, SAMPLE
 
   const initialState_ViewData = {
-    // currentUrl:   HOME.url,
-    // categoryPath: HOME.categoryPath,
-    // postId: null,
     loc: {
-      url: HOME.url,
-      route: ROUTES.home,
+      url:  HOME.url,
+      route:     ROUTES.home,
       routeName: ROUTES.home.routeName,
-      // TODO: get rid of params, key, just store params in directly
-      params: ROUTES.home.params,
-      // TODO: not sure how to handle empty params: '', null, [], ??
-      ...ROUTES.home.params,
+      // store params directly on loc
+      ...ROUTES.home.params,  // home route has NO params (currently)
+
       // not currently used..
-      //  it is the "matched portion of the route" as determined by <Route> and <Switch>
-      //  not necessarily the same as the route in the url
-      // TODO: not what "default value for match should be set to: home, null,, ..
-      match: HOME.url,
+      //  Leaving definition here, so it's easily available if decide to implement
+      //    it is the "matched portion of the route" as determined by <Route> and <Switch>
+      //    not necessarily the same as the route in the url
+      //  TODO: not what "default value for match should be set to: home, null,,
+      // match: HOME.url,
     },
     // sort method: 'by votes' or 'by date'
     persistentSortBy:    DEFAULT_SORT_BY,
@@ -238,13 +232,12 @@ function viewData(state=initialState_ViewData, action){
   switch (action.type) {
     case CHANGE_VIEW:
       // console.log('viewData state: ', state);
-      // console.log("_++_CHANGE_VIEW, action:", action);
+      // console.log("viewData-actionType _CHANGE_VIEW, action:", action);
       return  ({
                 ...state,
                 loc: action.loc,
               });
     case SORT_BY:
-      // console.log('SORT_BY, action:', action);
       return  ({
                 ...state,
                 // TODO: add sort method stored in url ??
@@ -256,3 +249,42 @@ function viewData(state=initialState_ViewData, action){
 };
 
 export default viewData
+
+// Selectors
+
+// See also related calculatedRouteUrlFromLoc Function near ROUTES definitions
+//    and getComputedUrlFromLocParamsAndRouteName also near ROUTES definitions
+// Essentially the same function (except that this is a selector)
+//   as calculatedRouteUrlFromLoc, but written using reduce instead of for-in
+export const getRouteUrlFromLoc = createSelector(
+  (store) => store.loc,
+  (loc) => {
+    const thisRoute  = ROUTES[loc.routeName]
+    const params     = ROUTES[loc.routeName].params;
+    let routeUrl = params.reduce((acc, param) => {
+        return acc += loc[param] + '/';
+      }, thisRoute.base);
+    //  remove extra trailing '/' ONLY IF added b/c have params
+    if (params != []) {
+      routeUrl = routeUrl.slice(0, -1);
+    }
+    return routeUrl;
+  }
+);
+
+      // NOTE for getLoc:
+      //  url uses location.pathname instead of match.path
+      //
+      //  if component "matches" on a non-exact route,
+      //  match.path and match.params may NOT reflect the full path
+      //  For example, Categories Component is rendered on every path
+      //  So (inside Categories) ALWAYS: match.path === '/' match.params === ''
+      //    even when browser route is
+      //    '/:categories', path '/react', and params is 'categoryPath: react'
+      //  SO.. use location.pathname for actual url
+      //    BUT.. NOTE params would still be incorrect when inside Categories
+      //    - would need to self-parse the url to get the params of the actual url.
+      //    fortunately, params are not CURRENTLY needed in components that
+      //    display/match on multiple/non-exact routes
+      //    (Categories is the only such component currently)
+      //    This Note is for FYI TroubleShooting in case this ever changes.
