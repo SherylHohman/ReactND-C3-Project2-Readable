@@ -1,5 +1,6 @@
 import * as ReaderAPI from '../utils/api';
 import { HOME, getComputedUrlFromLocParamsAndRouteName } from './viewData';
+import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 
 // ACTION TYPES
@@ -61,9 +62,14 @@ import { createSelector } from 'reselect';
 // INITIAL STATES
   const categoriesInitialState = {};
 
+  const fetchStatusInitialState = {
+    isLoading: false,
+    isFetchFailure: false,
+    errorMessage: '',
+  }
 
 // REDUCER(s)
-  function categories(state=categoriesInitialState, action){
+  function fetched(state=categoriesInitialState, action){
     switch (action.type){
       case FETCH_CATEGORIES_SUCCESS:
         return ({
@@ -87,36 +93,59 @@ import { createSelector } from 'reselect';
         return state;
     }
   }
-export default categories;
+
+function fetchStatus(state=fetchStatusInitialState, action){
+  switch (action.type){
+    case FETCH_CATEGORIES_SUCCESS:
+      return ({
+        ...state,
+        isLoading:      true,
+        isFetchFailure: false,
+        errorMessage:   '',
+      });
+    case FETCH_CATEGORIES:
+      return ({
+        ...state,
+        isLoading:      false,
+        isFetchFailure: false,
+        errorMessage:   '',
+      });
+    case FETCH_CATEGORIES_FAILURE:
+      return ({
+        ...state,
+        isLoading:      false,
+        isFetchFailure: true,
+        errorMessage:   action.err,
+      });
+    default:
+      return state;
+  }
+}
+const categories = combineReducers({
+  fetched,
+  fetchStatus,
+});
+export default categories
+
 
 // SELECTORS
+export const getFetchStatus      = (store) => store.categories.fetchStatus;
+export const getCategoriesObject = (store) => store.categories.fetched;
 
+//  categories don't change during the life of the app (they are defined in server file),
+//  These *should* only need be computed once each (at most) !
 export const getCategoriesArray = createSelector(
-    (store) => store.categories,
+    (store) => store.categories.fetched,
     (categories) => Object.keys(categories).reduce((acc, categoryKey) => {
-      console.log('categories.js, recomputing getValidCategoryUrls');  // for monitoring how app/reselect works
+      console.log('+++ categories.js, recomputing getCategoriesArray');  // for monitoring how app/reselect works
       return acc.concat([categories[categoryKey]]);
      }, [])
+    // does NOT include an entry "All" or "" for All Categories
   );
-  // const for the life of the app, as categories don't change
-  // valid /:category routes - vs 404
-export const getValidCategoryUrls = createSelector(
-    (store) => store.categories,
-    (categories) => {
-      console.log('categories.js, recomputing getValidCategoryUrls');  // for monitoring how app/reselect works
-      const categoryNames = Object.keys(categories);
-      let validUrls = categoryNames.map((categoryName) => {
-        return '/' + categories[categoryName].path;
-      });
-      // home path must be LAST in array, so indexOf searches will work as indended
-      validUrls.push(HOME.url);
-      return validUrls;
-    }
-);
 export const getValidCategoryPaths = createSelector(
-    (store) => store.categories,
+    (store) => store.categories.fetched,
     (categories) => {
-      console.log('categories.js, recomputing validCategoryPaths');  // for monitoring how app/reselect works
+      console.log('+++ categories.js, recomputing getValidCategoryPaths');  // for monitoring how app/reselect works
       return Object.keys(categories)
         .reduce((acc, categoryKey) => {
           return acc.concat([categories[categoryKey].path]);
@@ -124,6 +153,31 @@ export const getValidCategoryPaths = createSelector(
         // home path must be LAST in array, so indexOf searches will work as indended
         .concat(HOME.category.path)
   });
+export const getCategoryNames = createSelector(
+    (store) => store.categories.fetched,
+    (categories) => {
+      console.log('+++ categories.js, recomputing getCategoryNames');  // for monitoring how app/reselect works
+      return Object.keys(categories)
+        .reduce((acc, categoryKey) => {
+          return acc.concat([categories[categoryKey].name]);
+         }, [])
+        // does NOT include an entry "All" or "" for All Categories
+        // used for populating category drop down selector options in new/edit post
+  });
+// valid /:category routes - vs 404
+export const getValidCategoryUrls = createSelector(
+    (store) => store.categories.fetched,
+    (categories) => {
+      console.log('+++ categories.js, recomputing getValidCategoryUrls');  // for monitoring how app/reselect works
+      const categoryNames = Object.keys(categories);
+      let validUrls = categoryNames.map((categoryName) => {
+        return '/' + categories[categoryName].path;
+      });
+      // home url must be LAST in array, so indexOf searches will work as indended
+      validUrls.push(HOME.url);
+      return validUrls;
+    }
+);
 
 // const computedCategoryUrl = (loc) => getComputedUrlFromLocParamsAndRouteName('category', loc);
 

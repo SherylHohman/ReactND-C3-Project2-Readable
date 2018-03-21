@@ -1,9 +1,9 @@
-import * as ReaderAPI from '../utils/api';
-import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 import { combineReducers } from 'redux';
 import { createSelector } from 'reselect';
 import { getLoc } from '../store/viewData';
-import { ROUTES, HOME } from '../store/viewData';
+
+import * as ReaderAPI from '../utils/api';
+import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
 // ACTION TYPES
   export const REQUEST_POSTS = 'REQUEST_POSTS';
@@ -318,7 +318,7 @@ import { ROUTES, HOME } from '../store/viewData';
 // REDUCERS
 
   // state is an object of (multiple) post objects
-  function posts(state=postsInitialState, action) {
+  function fetchedPosts(state=postsInitialState, action) {
     // console.log('posts reducer, state', state)
     // console.log('posts reducer, action', action)
 
@@ -461,16 +461,19 @@ import { ROUTES, HOME } from '../store/viewData';
     }
   }
 
-const fetchedPosts = combineReducers({
-  posts,
+const posts = combineReducers({
+  fetchedPosts,
   fetchStatus,
 });
 
-export default fetchedPosts
+export default posts
 
 // SELECTORS - Return store data in format ready to be consumed by UI
+export const getFetchStatus    = (store) => store.posts.fetchStatus;
+export const getPostsAsObjects = (store) => store.posts.fetchedPosts;
+
 export const getPosts = createSelector(
-  (store) => store.fetchedPosts.posts,
+  getPostsAsObjects,
   (postObjects) => {
     if (!postObjects){ return []; }
     // object to array
@@ -480,6 +483,21 @@ export const getPosts = createSelector(
     return postsArray;
   }
 );
+export const getPost = (store, postId) => store.posts[postId];
+// TODO: ..
+//    getPost selector will be useful if create a wrapper container around Post and EditPost
+//      then selector doesn't change between viewing and editing the post
+//     Also, the wrapper container could reuse the code for showing fetching status vs 404
+// const havePostId = (store, postId) => postId;
+//    even better: compute postId from routerProps
+  // const postId = getLoc(ownProps.routerProps).postId || null;
+// export const getPost = createSelector(
+//   getPosts,
+//   // havePostId,
+//   (store, routerProps) => getLoc(routerProps).postId || null,
+//   (posts, postId) => store.fetchedPosts[postId];
+// );
+
 
 // B  -- requires less rendering and fewer function calls than A)
 const getRouterCategoryPath = (store, ownProps) =>
@@ -506,9 +524,6 @@ export const getPostsCurrentCategory = createSelector(
 // const postIdsCurrentCategory = postIdsByCategory[loc.currentId] || null;
 
 
-export const getPostsAsObjects = (store) => store.fetchedPosts.posts;
-
-export const getFetchStatus = (store) => store.fetchedPosts.fetchStatus;
 
 
 // KEEP THIS AS A NOTE ON SELECTOR DESIGN

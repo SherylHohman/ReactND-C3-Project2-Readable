@@ -2,16 +2,22 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { ROUTES, HOME } from '../store/viewData';
+// dispatch functions
 import { changeView, getLoc } from '../store/viewData';
-
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
-import { dateMonthYear, titleCase } from '../utils/helpers';
 
+// Components
 import Comments from './Comments';
-import PageNotFound from './PageNotFound';
+import FetchStatus from './FetchStatus';
+
+// Selectors
 import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+
+// helpers and constants
+import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { dateMonthYear, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
+
 
 export class Post extends Component {
 
@@ -47,43 +53,23 @@ export class Post extends Component {
   render(){
 
     // console.log('Post.render fetchStatus', this.props.fetchStatus);
-    const { isLoading, isFetchFailure } = this.props.fetchStatus;
     const postId = this.props.postId;
 
-    if (isFetchFailure) {
-      // console.log('Post: isFetchFailure, postId', this.props.postId);
-      return (
-        <div>
-          <p>I could not retrieve that post.</p>
-          <p>Either that post does not exist..</p>
-          <p>..or there was a network error.</p>
-          <hr />
-          {/**/}
-          <Link to={HOME.url}>Home Page</Link>
-          <button onClick={() => {this.props.fetchPost(postId)}}>Retry</button>
-          {/**/}
-        </div>
-      )
-    }
-
-    if (isLoading) {
-      // console.log('Post: Loading.. postID:', this.props.postId);
-      return (
-        <div>
-          <p>looking for your Post..</p>
-        </div>
-      )
-    }
-
+    // made this DRY
     if (!this.props.post) {
+      // loading "spinner", fetch failure, or 404
       return (
-        <PageNotFound routerProps={ this.props.routerProps } />
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'post'}
+          item={this.props.post}
+          retryCallback={()=>this.props.fetchPost(postId)}
+        />
       );
     }
 
     // only set these constants After early return for non-existant this.props.post (isLoading, or isFetchFailure)
     const {title, body, voteScore, commentCount, author, timestamp } = this.props.post;
-
     const categoryName = this.props.post.category;
     // disambiguate category --> categoryName:
     // category is an {name, path} object on categories, yet
@@ -122,7 +108,11 @@ export class Post extends Component {
 
             <div>
               <Link
-                to={`${ROUTES.category.base}${this.props.categoryPath}`}
+                /*to={`${ROUTES.category.base}${this.props.categoryPath}`}*/
+                to={computeUrlFromParamsAndRouteName(
+                      {categoryPath: this.props.categoryPath},
+                      'category',
+                    )}
                 onClick={() => {this.props.deletePost(postId)}}
                 >
                 Delete Post
@@ -182,6 +172,7 @@ function mapStoreToProps (store, ownProps) {
 
   const post = getPostsAsObjects(store)[postId] || null;
   const fetchStatus = getFetchStatus(store);
+  // console.log('Post.mSTP fetchStatus:', fetchStatus);
   // (isLoading, isFetchFailure, errorMessage)
 
   // get his post's categoryPath so can redirect to Post's (former) category
@@ -189,7 +180,7 @@ function mapStoreToProps (store, ownProps) {
   //   is only used as an intermediate step for this one-time calc.
   const categoryName = (post && post.category) || null;
   const category     = categoryName && store.categories[categoryName];
-  const categoryPath = (category    && store.categories[categoryName].path) || null
+  const categoryPath = (category    && store.categories[categoryName].path) || null;
 
   return {
     postId,

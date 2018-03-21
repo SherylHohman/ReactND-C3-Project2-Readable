@@ -1,21 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-// Components
-import PageNotFound from './PageNotFound';
-// Selectors
-import { getPosts, getPostsCurrentCategory, getFetchStatus } from '../store/posts';  // post Selectors
-import { getValidCategoryUrls, getValidCategoryPaths } from '../store/categories';  // category selectors
-// Action Creators
+
+// dispatch Action Creators
 import { fetchPosts } from '../store/posts';
 import { changeView, getLoc, changeSort } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts'; // post action creators
-// Actions and Constants
-import { ROUTES, HOME } from '../store/viewData';
+
+// Components
+import FetchStatus from './FetchStatus';
+import PageNotFound from './PageNotFound';
+
+// Selectors
+import { getPosts, getPostsCurrentCategory, getFetchStatus } from '../store/posts';  // post Selectors
+import { getValidCategoryUrls } from '../store/categories';  // category selectors
+
+// Actions and Constants, and helpers
+import { ROUTES } from '../store/viewData';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
-// helpers and other
 import { dateMonthYear, titleCase } from '../utils/helpers';
-import { createSelector } from 'reselect';
+
 
 export class Posts extends Component {
 
@@ -23,15 +27,6 @@ export class Posts extends Component {
     posts: [],
     sortBy: DEFAULT_SORT_BY,
     sortOrder: DEFAULT_SORT_ORDER,
-  }
-
-  isInValidUrl(){
-    if (!this.props || !this.props.validUrls || !this.props.loc ||
-        this.props.validUrls.indexOf(this.props.loc.url) === -1){
-      // console.log('Posts, isInValidUrl, url:', this.props && this.props.loc && this.props.loc.url)
-      return true;
-    }
-    return false;
   }
 
   componentDidMount() {
@@ -53,10 +48,16 @@ export class Posts extends Component {
     // console.log('Posts.cWRP this.Props:', this.props);
 
     if (nextProps.sortBy !== this.props.sortBy) {
-      this.setState({ sortBy: nextProps.sortBy });
+      // console.log('Posts.cWRP nextProps: ', nextProps);
+      const sortedPosts = sortPosts(nextProps.posts,
+                                    nextProps.sortBy || this.state.sortBy);
+      this.setState({
+        posts:  sortedPosts,
+        sortBy: nextProps.sortBy,
+      });
     }
+
     if (nextProps.posts !== this.props.posts) {
-      // console.log('Posts.cWRP got new posts:', nextProps.posts);
       const sortedPosts = sortPosts(nextProps.posts,
                                     nextProps.sortBy || this.state.sortBy);
       this.setState({ posts: sortedPosts });
@@ -79,30 +80,60 @@ export class Posts extends Component {
   }
 
   render() {
+    // console.log('___Posts.render props:', this.props);
+    // console.log('___Posts.render fetchStatus1:', this.props.fetchStatus);
 
-    if (this.isInValidUrl()){
+    let isInValidUrl;
+    if (!this.props || !this.props.validUrls || !this.props.loc ||
+        this.props.validUrls.indexOf(this.props.loc.url) === -1){
+      // console.log('Posts, isInValidUrl, url:', this.props && this.props.loc && this.props.loc.url)
+      isInValidUrl = true;
+    }
+    else { isInValidUrl = false; }
+
+    // console.log('Posts.render props:', this.props);
+    if (isInValidUrl){
       return (
-        <div>
-          <PageNotFound routerProps={ this.props.routerProps } />
-        </div>
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'posts'}
+          item={this.props.posts}
+          retryCallback={()=>this.props.fetchPosts(this.props.categoryPath)}
+        />
       );
     }
 
+    // valid categoryPath can have empty posts array: []
     const havePosts = (this.props && this.props.posts &&
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
                     ? true : false;
 
     // set status message to display TODO: state.statusMessage
     let statusMessage = ''
-    if (this.props) {
-      statusMessage = 'No Posts Data';
+    // if (this.props) {
+    //   taken care of by FetchStatus component
+    //   statusMessage = 'I could not retrieve posts for category: ', this.props.categoryPath;
       if (this.props.posts) {
-        statusMessage = 'Be the first to write a post..';
+        statusMessage = 'Be the first to write a post for category: '
+                         + titleCase(this.props.categoryPath);
           if (!Array.isArray(this.props.posts)) {
-            statusMessage = 'Posts are not in an array - they canot be mapped over !';
+            statusMessage = 'Posts are not in an array format - they canot be mapped over !';
           }
       }
-    }
+    // }
+
+    // console.log('___Posts.render fetchStatus2:', this.props.fetchStatus);
+    // if (!havePosts) {
+    //   // loading "spinner", fetch failure, or 404
+    //   return (
+    //     <FetchStatus routerProps={ this.props.routerProps }
+    //       fetchStatus={this.props.fetchStatus}
+    //       label={'posts'}
+    //       item={this.props.posts}
+    //       retryCallback={()=>this.props.fetchPosts(this.props.categoryPath)}
+    //     />
+    //   );
+    // }
 
     const getPostUrl = (post) => {
       // technically post.category is a categoryName, not a categoryPath.
@@ -293,6 +324,7 @@ function mapStoreToProps (store, ownProps) {
   const categoryPath = loc.categoryPath    || null
 
   const validCategoryUrls = getValidCategoryUrls(store);
+  const fetchStatus = getFetchStatus(store);// ? getFetchStatus(store) : null;
 
   //  early exit to render a 404
   if (!loc || (validCategoryUrls.indexOf(loc.url) === -1)) {
@@ -307,21 +339,23 @@ function mapStoreToProps (store, ownProps) {
           sortOrder: DEFAULT_SORT_ORDER,
           validUrls: null,  //validCategoryUrls,
           loc,
-          categoryPath: loc.currentId,
+          categoryPath, //: loc.categoryPath,
+          fetchStatus,
         })
   }
 
-  const postsCurrentCategory = getPostsCurrentCategory(store, ownProps);
+  const posts = getPostsCurrentCategory(store, ownProps);
+  // console.log('___Posts.mSTP fetchStatus:', fetchStatus);
 
   return {
-    posts:     postsCurrentCategory,
+    posts,
     sortBy:    store.viewData.persistentSortBy,
     sortOrder: store.viewData.persistentSortOrder,
 
     validUrls: validCategoryUrls,
     loc,
     categoryPath,
-    fetchStatus:  getFetchStatus(store),
+    fetchStatus,
   }
 };
 

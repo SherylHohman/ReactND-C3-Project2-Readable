@@ -43,8 +43,8 @@ export const ROUTES= {
   },
   editPost: {
     name :    'editPost',
-    route:    'post/edit/:postId',
-    params :  [],
+    route:    '/post/edit/:postId',
+    params :  ["postId"],
     base:     '/post/edit/',
     // param:    ':postId',
   },
@@ -76,11 +76,27 @@ export function calculateRouteUrlFromLoc(loc){
   return routeUrl;
 }
 // used to calculate a url to navigate to, based on routeName supplied by component
-export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
+export function computeUrlFromLocParamsAndRouteName(loc, routeName){
   if (!routeName) {routeName = loc.route || 'home';}
   let computedUrl = ROUTES[routeName].base;
   for (let param in ROUTES[routeName].params) {
     computedUrl += loc[param];
+  }
+  // console.log('viewData, computeUrlFromLocParamsAndRouteName, computedUrl:', computedUrl);
+  return computedUrl;
+}
+// used to calculate a url to navigate to, based on routeName supplied by component
+// paramValues eg: {postId: '6ni6ok3ym7mf1p33lnez'} or {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
+export function computeUrlFromParamsAndRouteName(paramValues, routeName='home'){
+  let computedUrl = ROUTES[routeName].base;
+  for (let param in ROUTES[routeName].params) {
+    if (!paramValues[param]) {
+      console.log('ERROR: viewData.computeUrlFromParamsAndRouteName, missing param:', param)
+      computedUrl += ''
+    }
+    else {
+      computedUrl += paramValues[param];
+    }
   }
   // console.log('viewData, computeUrlFromLocParamsAndRouteName, computedUrl:', computedUrl);
   return computedUrl;
@@ -109,13 +125,27 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
     category: ALL_POSTS_CATEGORY,
   }
 
+  // 'store' or 'router'
+  function getLocFrom(store, routerProps=null){
+    let loc;
+    if (routerProps){
+      loc = getLoc(routerProps);
+      // console.log('loc from routerProps', loc);
+    }
+    else {
+      loc = store.viewData.loc;
+      // console.log('loc from viewData', loc);
+    }
+    return loc;
+  }
+
   export function getLoc(routerProps=null){
     // console.log('getLoc, routerProps:', routerProps);
     // console.log('getLoc, routerProps.location:', routerProps.location);
     // console.log('getLoc, routerProps.match:', routerProps.match);
     if (!routerProps){
       console.log('viewData.getLoc, invalid routerProps (prob checking for prevRouterProps)')
-      return null;
+      // return null;
     }
     const match    = (routerProps && routerProps.match)    || null;
     const location = (routerProps && routerProps.location) || null;
@@ -124,21 +154,22 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
       console.log('getLoc, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
       // return null;
     }
+    const params = !match ? {} : match.params
     const route = (match && match.path) || ROUTES.home.route;
     // console.log('viewData.getLoc, route:', route);
 
-    const getRouteName = url => {
+    const getRouteName = route => {
       // routeName is the same as its key, so can refactor using ke as a shortcut
       const routeKeys = Object.keys(ROUTES);
       const matchedRouteKey = routeKeys.find((key) => {
         return ROUTES[key].route === route;  //url
       });
-      // TODO: default value for unmatchec route: null, '', 'home' ??
+      // TODO: default value for unmatched route: null, '', 'home' ??
       //  usually (unless there is another '/' in the (bad) url),
       //  the matched (bad) route will be /:category
       //  or it will be the url of a deleted post /:categoryPath/:poatId
       return ROUTES[matchedRouteKey].name || 'home' //null;
-    }
+    };
     const routeName = getRouteName(route);
     // console.log('viewData.getLoc, routeName: ', routeName);
     // function getComputedRouteFromUrl(url){
@@ -148,10 +179,9 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
       // actual location, not just the "match"ed part
       url: location.pathname,
 
-      // got rid of params key, instead store params directly on loc
-      // TODO: do I need to do anything special for "empty" params list?
-      //    ie '', or null ?? Think Not, but uncertain
-      ...match.params,
+      // got rid of params key, instead storing params directly on loc
+      // ...match.params,
+      ...params,
 
       // note, this is the "matched" route - not necessarily the full route
       //  (for example: if accessed from within Categories component,
@@ -163,7 +193,7 @@ export function getComputedUrlFromLocParamsAndRouteName(loc, routeName){
       // match: match.url,
 
     };
-    // console.log('viewData.getLoc, loc:', loc);
+    console.log('viewData.getLoc, loc:', loc);
     return(loc);
   }
 
@@ -254,9 +284,15 @@ export default viewData
 
 // See also related calculatedRouteUrlFromLoc Function near ROUTES definitions
 //    and getComputedUrlFromLocParamsAndRouteName also near ROUTES definitions
-// Essentially the same function (except that this is a selector)
-//   as calculatedRouteUrlFromLoc, but written using reduce instead of for-in
-export const getRouteUrlFromLoc = createSelector(
+// Essentially the same function as calculatedRouteUrlFromLoc.
+//    (except that this is a selector).
+//    Also it has been re-written using reduce instead of for-in
+//    (re-written just to compare the two algorithms)
+export const getDerivedRouteUrlFromLoc = createSelector(
+  //  creates a would-be router url using the routeName from the loc in store
+  //    to pull the "rule" defining that routeName from ROUTE definitions.
+  //    then it combines params from the url/loc in store to create the
+  //    would-be path for that route.  Note:
   (store) => store.loc,
   (loc) => {
     const thisRoute  = ROUTES[loc.routeName]

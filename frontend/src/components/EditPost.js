@@ -1,10 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { editPost } from '../store/posts';
-import { HOME, ROUTES } from '../store/viewData';
+
+// dispatch functions
 import { changeView, getLoc } from '../store/viewData';
+import { editPost }  from '../store/posts';
 import { fetchPost } from '../store/posts';
+
+// Components
+import FetchStatus from './FetchStatus';
+
+// Selectors
+import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+import { getCategoryNames, getCategoriesObject } from '../store/categories';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+
+// helpers and constants
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
@@ -27,21 +38,13 @@ export class EditPost extends Component {
   componentDidMount(){
     // console.log('in EditPost componentDidMount');
 
-    // synch store with current URL
-    if (this.props.loc){
-      // console.log('__EditPost cDM calling changeView, this.props.loc:', this.props.loc);
-      // console.log('__EditPost routerProps:', this.props.routerProps);
-      // console.log('__EditPost loc:-----', this.props.loc);
-      this.props.changeViewByLoc(this.props.loc);
-    }
+    this.props.changeView(this.props.routerProps);
 
     if (!this.props.post) {
       // needed when page is loaded from a saved url
       this.props.fetchPost(this.props.postId);
     }
     else {
-      // console.log('EditPost, cDM, post:', this.props.post);
-      // init controlled input fields
       this.setState({
         title: this.props.post.title,
         body : this.props.post.body,
@@ -61,14 +64,6 @@ export class EditPost extends Component {
         author: nextProps.post.author,
       })
     }
-
-    // if (nextProps.loc && nextProps.loc !== this.props.loc){
-    //   console.log('__EditPost cWRP calling changeView, this.props.loc:', this.props.loc);
-    //   console.log('__EditPost routerProps:', this.props.routerProps);
-    //   console.log('__EditPost loc:', this.props.loc);
-    //   this.props.changeViewByLoc(this.props.loc);
-    // }
-
   }
 
   canSubmit(){
@@ -124,40 +119,25 @@ export class EditPost extends Component {
   }
 
   render(){
-
     // console.log('postId:', this.props.postId, 'post:', this.props.post);
 
-    // TODO:
-    // if (FETCH ERROR){
-    //   // bad postId/deleted-post (likely form saved Url, or browser Back Button)
-    //   // redirect/link to home or last viewed category page (persistentCategoryPath)
-    //   return (
-    //     <div>
-    //       <p>I do not know that post.. Can you find it for me ?</p>
-    //       <Link to={HOME.url}>
-    //         <p>Take me to the home page ;-D </p>
-    //       </Link>
-    //     </div>
-    //   )
-    // }
-
     const postId = this.props.postId;
-    const postUrl = `${ROUTES.post.base}${postId}`;
 
-    if (this.props && this.props.postId && !this.props.post){
-      // console.log('EditPost render, postId, but no Post');
+    // console.log('EditPost.render fetchStatus', this.props.fetchStatus);
+    if (!this.props.post) {
+      // loading "spinner", fetch failure, or 404
       return (
-        <div>
-        <h2> Hold On.. I'm getting your Post </h2>
-          {/* below is until get fetch error handling implemented (then use above section) */}
-          <Link to={HOME.url}>
-            <h3 style={{color: "red"}}> (..unless it doesn't exist..) </h3>
-            <h3>Take me to the home page ;-D </h3>
-          </Link>
-        </div>
-      )
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'post to edit'}
+          item={this.props.post}
+          retryCallback={()=>this.props.fetchPost(postId)}
+        />
+      );
     }
 
+    // const postUrl = `${ROUTES.post.base}${postId}`;
+    const postUrl = computeUrlFromParamsAndRouteName({ postId } ,'post');
     const canSubmit = this.canSubmit();
 
     return  (
@@ -270,30 +250,28 @@ EditPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
-    changeViewByLoc: (loc) => dispatch(changeView({ loc })),
+    changeView: (routerProps) => dispatch(changeView(routerProps)),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
   })
 }
 
 function mapStoreToProps ( store, ownProps) {
-  // console.log('store:', store)
-  // console.log('__EditPost ownProps', ownProps);
+  // console.log('EditPost.mSTP  store:', store)
+  // console.log('EditPost.mSTP  ownProps', ownProps);
 
-  // const postId = store.viewData.loc.postId;
   const postId = getLoc(ownProps.routerProps).postId || null;
+  const post = getPostsAsObjects(store)[postId] || null;
+  const fetchStatus = getFetchStatus(store);
+  // console.log('Post.mSTP fetchStatus:', fetchStatus);
 
-  const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
-    return acc.concat([store.categories[categoryKey].name]);
-  }, []);
-
-  const loc = getLoc(ownProps.routerProps) || null;
 
   return {
-    categoriesObject: store.categories,
-    categoryNames,
+    categoriesObject: getCategoriesObject(store),
+    categoryNames:    getCategoryNames(store),
     postId,
-    post: store.posts[postId],
-    loc,
+    post,
+    // loc,
+    fetchStatus,  //: getFetchStatus(store),
   }
 };
 

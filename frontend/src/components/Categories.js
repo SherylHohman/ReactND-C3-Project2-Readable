@@ -2,79 +2,55 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+
 import { fetchCategories} from '../store/categories';
-// import * as categoriesStore from '../store/categories';
 import { ROUTES } from '../store/viewData';
 import { changeView, HOME, DEFAULT_SORT_BY } from '../store/viewData';
+
 import { titleCase } from '../utils/helpers';
+
+// Components
+import FetchStatus from './FetchStatus';
+
+// selectors
 import { createSelector } from 'reselect';
-import { getCategoriesArray, getValidCategoryUrls, getValidCategoryPaths } from '../store/categories';  // category selectors
+import { getCategoriesArray, getValidCategoryUrls, getValidCategoryPaths, getFetchStatus } from '../store/categories';  // category selectors
+import { getLoc } from '../store/viewData';
+
 
 export class Categories extends Component {
-
-  componentDidMount() {
-    // only ever needs tobe called once - they never change for life of the app
-    // TODO: already called from App
-    //   remove call from here, or remove call from App
-    // this.props.fetchCategories();
-    // console.log('Categories componentDidMount ..fetching, categories');
-
-  //   // TODO: Probably Delete changeView calls for Categories Component..
-  //   console.log('Categories cDM calling changeView, this.props.routerProps', this.props.routerProps);
-  //   this.props.changeView(this.props.routerProps)
-  }
-
-  componentWillReceiveProps(nextProps){
-    // console.log('__Categories cWRP nextProps: ', nextProps);
-    // console.log('__Categories cWRP this.Props:', this.props);
-
-    // TODO: if remove from cDM, then remove from here too !
-    // this.props.fetchCategories();
-    // console.log('Categories.cWRP ..fetching, categories');
-
-    // // TODO: Probably Delete changeView calls for Categories Component..
-    // if (this.props.routerProps){
-    //   console.log('Categories.cWRP    calling changeView, this.props.routerProps', this.props.routerProps);
-    //   this.props.changeView(this.props.routerProps)
-    // }
-    // else {
-    //   console.log('Categories.cWRP NOT calling changeView, this.props.routerProps', this.props.routerProps);
-    // }
-  }
+// TODO refactor to functional component
 
   clickDisabled(e){
     e.preventDefault();
   }
 
   render() {
+
+    // fetch initiated from App.js
+    if (!this.props.categories) {
+      // loading "spinner", fetch failure, or 404
+      return (
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'categories'}
+          item={this.props.categories}
+          retryCallback={()=>this.props.fetchCategories()}
+        />
+      );
+    }
+
     const makeCategoryLink = (categoryPath) => {
       return ROUTES.category.base + categoryPath;
     }
 
     const isExactPath = (thisCategoryPath) => {
-      // console.log('Categories.isExactPath',
-      //             '\nthis.props.selectedCategoryPath', this.props.selectedCategoryPath,
-      //             '\nthisCategoryPath', thisCategoryPath
-      //             );
-      // return this.props.selectedCategoryPath === thisCategoryPath;
-      return this.props.loc.url === makeCategoryLink(thisCategoryPath);
+      // return this.props.loc.url === makeCategoryLink(thisCategoryPath);
+      // return this.props.loc.url === makeCategoryLink(thisCategoryPath);
+      return this.props.selectedCategoryPath === thisCategoryPath;
     }
 
-    // Note: NavLink can apply a different class when the current URL matches
-      //  the NavLink item (so the link LOOKS different - eg: cursor and highlighting)
-      //  BUT it will NOT DISABLE the link
-      //  AND css isDisabled NOT LET me set the cursor (thus it still LOOKS like a link)
-      //  THAT'S WHY I'm hand writing <li> "Links" for the selected Category
-      //  ..Unfortunately, this is adding an extra space in front of every LINK
-      //    that PRECEEDS the Selected "Link" causing the text to shift
-      //    depending on which "Link: is selected.
-      //    Observe: as select Links one-by-one from L to R,
-      //    text accumulates an additional shifted space,
-      //    shifting Links from Current to EndOfList a bit further to the right
-      //    TODO: how to fix ??
-      //      - Already tried wrapping in div..
-      //      - And CSS Computed Properties LOOK the SAME No Matter Which Link is Selected !!
-
+    console.log('Categories.render, re-rendering..');
     return (
       <div>
         {this.props && this.props.categories &&
@@ -147,7 +123,6 @@ export class Categories extends Component {
 function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
-    changeView: (loc) => dispatch(changeView({ loc })),
   })
 }
 
@@ -160,7 +135,7 @@ function mapStoreToProps (store, ownProps) {
 
   const categoriesArray = getCategoriesArray(store);
 
-  const getSelectedCategoryPath = createSelector(
+  const getSelectedCategoryPath1 = createSelector(
     store => store.viewData.loc,
     getValidCategoryPaths,
     (loc, validCategoryPaths) => {
@@ -177,28 +152,71 @@ function mapStoreToProps (store, ownProps) {
           //   in case more ROUTES get added that incorporate :categoryPath (categoryPath)
           (loc.url === ROUTES.category.base + categoryPath)
           ){
+        console.log(categoryPath, 'Categories.mSTP.getSelectedCategoryPath, categoryPath', categoryPath);
         return categoryPath;
       }
       else {
-        // memoize any other url as null, to
-        //  prevent Categories re-render on a non /:categoryPath route
-        //  (because Categories UI displays on ALL pages, not just '/:categoryPath')
+        // memoize all other routes, and invalid urls to null
+        //  to prevent Categories from re-rendering on a non /:categoryPath route
+        //  (b/c Categories UI displays/matches on ALL pages, not just '/:categoryPath')
+        console.log('NULL Categories.mSTP.getSelectedCategoryPath, memoised as NULL');
         return null;
       }
     }
   );
-  const selectedCategoryPath = getSelectedCategoryPath(store);
+  // const selectedCategoryPath = getSelectedCategoryPath1(store);
+
+  const getSelectedCategoryPath2 = createSelector(
+    store => store.viewData.loc.categoryPath || null,
+    getValidCategoryPaths,
+
+    (categoryPath, validCategoryPaths) => {
+      console.log('Categories.mSTP.getSelectedCategoryPath, categoryPath:', categoryPath);
+
+      // if currentUrl EXACTLY matches a valid Category Url
+      if (categoryPath && (validCategoryPaths.indexOf(categoryPath) !== -1)){
+         console.log(categoryPath, 'Categories.mSTP.getSelectedCategoryPath, categoryPath', categoryPath);
+        return categoryPath;
+      }
+      else {
+        // memoize all other routes, and invalid urls to null
+        //  to prevent Categories from re-rendering on a non /:categoryPath route
+        //  (b/c Categories UI displays/matches on ALL pages, not just '/:categoryPath')
+        console.log('NULL Categories.mSTP.getSelectedCategoryPath, memoised as NULL');
+        return null;
+      }
+    }
+  );
+  let selectedCategoryPath2 = getSelectedCategoryPath2(store);
+  if (selectedCategoryPath2 &&
+     (store.viewData.loc.url !== (ROUTES.category.base + selectedCategoryPath2))
+     ){
+      // or use categories.calculateRouteUrlFromLoc()
+      //   future proof validation
+      //   in case more ROUTES get added that incorporate :categoryPath (categoryPath),
+      //   invalidate the selectedCategoryPath2, return null instead
+    selectedCategoryPath2 = null;
+  }
+  const selectedCategoryPath = selectedCategoryPath2;
+  // const selectedCategoryPath = selectedCategoryPath1;
+
   // const selectedCategoryPath = store.viewData.loc.categoryPath || null;
   // console.log('__Categories.selectedCategoryPath:', selectedCategoryPath);
 
-
-  const loc = store.viewData.loc;
-  // console.log('Categories.mSTP loc:', loc);
+  const routerProps = { history:ownProps.history, location: ownProps.location, match: ownProps.match };
+  console.log('__Categories.mSTP viewData',
+              // '\nrouterProps:', routerProps,
+              // '\ngetLoc loc  :', getLoc(routerProps),
+              '\nviewData loc:', store.viewData.loc,
+              // '\nloc         :', loc,
+              '\nselectedCategoryPath:', selectedCategoryPath,
+              );
+  const fetchStatus = getFetchStatus(store);
 
   return {
+      fetchStatus,  //: getFetchStatus(store),
       categories: categoriesArray   || null,
       sortBy: store.viewData.sortBy || DEFAULT_SORT_BY,
-      loc,  //:    store.viewData.loc,    //|| HOME.,
       selectedCategoryPath,  // null if not on a valid category URL (ROUTE.category.path)
   }
 };

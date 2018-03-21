@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+
+// dispatch functions
 import { addPost } from '../store/posts';
-import { HOME, ROUTES } from '../store/viewData';
 import { fetchCategories } from '../store/categories';
+
+// Selectors
+import { getCategoryNames, getCategoriesObject } from '../store/categories';
+
+// helpers and constants
+import { HOME, ROUTES } from '../store/viewData';
 import { createId, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
@@ -31,7 +38,6 @@ export class NewPost extends Component {
 
   componentDidMount(){
     // console.log('in NewPost componentDidMount');
-
     if (this.props.categoryNames){
       this.setState( {categoryName: this.props.categoryNames[0] });
     }
@@ -41,12 +47,12 @@ export class NewPost extends Component {
     // console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
 
     // categories never change in life of app, they are fetched at App load
-    if ( nextProps &&
-         nextProps.categoryNames &&
+    if ( nextProps.categoryNames &&
          Array.isArray(nextProps.categoryNames) &&
          nextProps.categoryNames[0]
        ){
         // default: initialize "selected" category to the first in the list
+        // TODO: add a "Select Category" option, and set it as the default
         this.setState({
           categoryName: nextProps.categoryNames[0],
         })
@@ -189,14 +195,14 @@ export class NewPost extends Component {
               onSubmit={(e)=> {this.onSubmit(e)}}
               >
 
-                <input
-                  component="input"
-                  className={this.state.validField.title ? "" : "invalid-field"}
-                  type="text"
-                  placeholder="Title"
-                  value={this.state.title}
-                  onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
-                />
+              <input
+                component="input"
+                className={this.state.validField.title ? "" : "invalid-field"}
+                type="text"
+                placeholder="Title"
+                value={this.state.title}
+                onChange={ (event) => {this.controlledTitleField(event, event.target.value)} }
+              />
 
               <textarea
                 className={this.state.validField.body ? "" : "invalid-field"}
@@ -216,9 +222,9 @@ export class NewPost extends Component {
                 /* TODO: add user field on Home/Page, that auto populates author field */
                 />
 
-                <div>
-                    {showCategoriesOrLoading}
-                </div>
+              <div>
+                  {showCategoriesOrLoading}
+              </div>
 
               <button
                 className={canSubmit ? "on-save" : "has-invalid-field"}
@@ -233,6 +239,7 @@ export class NewPost extends Component {
               }}>
                 Cancel
               </button>
+
             </form>
 
         <hr />
@@ -271,17 +278,16 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
-    return acc.concat([store.categories[categoryKey].name]);
-  }, []);
+  const history = (ownProps.routerProps && ownProps.routerProps.history )|| null;
+  const categoriesObject = getCategoriesObject(store);
 
-  // so this.props.history.push() still works without refactor
-  const history = (ownProps.routerProps && ownProps.routerProps.history )|| null
+  const categoryNames =    getCategoryNames(store);
+  const categoryName=      categoryNames[0] || HOME.category;
 
   return {
-    categoriesObject: store.categories,
-    categoryNames: categoryNames || null,
-    categoryName: categoryNames[0] || HOME.category,
+    categoriesObject,
+    categoryNames,
+    categoryName,
     history,
   }
 };
