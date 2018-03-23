@@ -83,14 +83,12 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
   };
 
   export function fetchPost(postId){
-    console.log('posts.fetchPost ENTER, postId', postId);
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_POST
       });
 
-      console.log('posts.fetchPost call FETCHPOST, postId', postId);
       ReaderAPI.fetchPost(postId)
         .then((response) => {
           if (!response.ok) {
@@ -102,7 +100,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
         .then((response) => response.json())
         .then((post) => {
-          console.log('posts.fetchPost .then, POST:', post);
           return (
             dispatch({
               type: FETCH_POST_SUCCESS,

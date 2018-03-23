@@ -136,45 +136,23 @@ export class EditPost extends Component {
       );
     }
 
-    // // TEMP to PREVENT CRASH while DEBUGGING
-    // if (!this.props.categories) {
-    //   return (
-    //     <FetchStatus routerProps={ this.props.routerProps }
-    //       fetchStatus={this.props.categoriesFetchStatus}
-    //       label={'category of the post to edit'}
-    //       item={this.props.post}
-    //       retryCallback={()=>this.props.fetchCategorie()}
-    //     />
-    //   );
-    // }
-
     // const postUrl = `${ROUTES.post.base}${postId}`;
     const makePostUrl = () => {
-      console.log('__EditPost.makePostUrl, \nprops:', this.props, '\nstate:', this.state);
       // first render state will have invalid values - early return
       // also need to wait for asynch fetching et al
       if (!this.state.categoryName || !this.props.categoriesObject ||
           !this.props.categoriesObject[this.state.categoryName] ||
           !this.props.categoriesObject[this.state.categoryName].path
           ){
-        console.log('__EditPost.makePostUrl Early Return');
         return '';
       }
 
-      console.log('__EditPost.makePostUrl,',)
-          console.log('    this.state.categoryName', this.state.categoryName,);
-          console.log('    this.props.categoriesObject', this.props.categoriesObject,);
-          console.log('    this.props.categoriesObject[this.state.categoryName]', this.props.categoriesObject[this.state.categoryName],);
-          console.log('    this.props.categoriesObject[this.state.categoryName].path', this.props.categoriesObject[this.state.categoryName].path,);
-                  // );
       const params = {
         postId: this.props.postId,
         categoryPath: this.props.categoriesObject[this.state.categoryName].path
       };
       const routeName = 'post';
-      console.log('EditPost.makePostUrl, routeName:', routeName, 'params:', params);
       const postUrl   = computeUrlFromParamsAndRouteName(params, routeName);
-      console.log('EditPost.makePostUrl, postUrl:', postUrl);
       return postUrl
     }
 
@@ -307,7 +285,6 @@ function mapStoreToProps ( store, ownProps) {
 
   const categoriesObject = getCategoriesObject(store);
   const categoryNames =    getCategoryNames(store);
-  console.log('EditPost.mSTP, categoryNames, categoriesObject', categoryNames, categoriesObject);
   return {
     categoriesObject, //:   getCategoriesObject(store),
     categoryNames,    //:   getCategoryNames(store),
