@@ -12,7 +12,7 @@ import FetchStatus from './FetchStatus';
 
 // Selectors
 import { getPostsCurrentCategory, getFetchStatus } from '../store/posts';
-import { getValidCategoryUrls } from '../store/categories';
+import { getValidCategoryUrls, getCategoriesObject } from '../store/categories';
 
 // Actions and Constants, and helpers
 import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData';
@@ -116,26 +116,13 @@ export class Posts extends Component {
     }
 
     const getPostUrl = (post) => {
-      // technically post.category is a categoryName, not a categoryPath.
-      // currently in my DB, a categoryPath === categoryName
-      // so this shortcut works - BEWARE for BUGS if change defined categories,
-      //   and this is not longer the case.
-      // console.log('____Posts.render.getPostUrl',
-      //             '\npost.id:', post.id,
-      //             '\ntpost.category', post.category,
-      //             );
-      const categoryPath = post.category;
+      const categoryName = post.category;  // categoryName === key for categoriesObject
+      const categoryPath = this.props.categoriesObject[categoryName];
       const postParams = {
           categoryPath,
           postId: post.id,
       };
-      // const postLink = `${ROUTES.post.base}${categoryPath}/${post.id}`;
-      // console.log('____Posts.render.getPostUrl, post url:', postLink);
-      console.log('____Posts.render.getPostUrl, calling computeUrlFromParamsAndRouteName',
-                  'as "post" with postParams:', postParams
-                  );
       const postLink = computeUrlFromParamsAndRouteName( postParams,'post' );
-      console.log('____Posts.render.getPostUrl, post url:', postLink, 'postParams:', postParams);
       return postLink;
     }
 
@@ -329,6 +316,8 @@ function mapStoreToProps (store, ownProps) {
   const posts = getPostsCurrentCategory(store, ownProps);
 
   return {
+    categoriesObject: getCategoriesObject(store),
+
     posts,
     sortBy:    store.viewData.persistentSortBy,
     sortOrder: store.viewData.persistentSortOrder,
