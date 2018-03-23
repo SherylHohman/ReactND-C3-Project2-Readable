@@ -72,11 +72,11 @@ export function computeUrlFromLocParamsAndRouteName(loc, routeName){
   for (let param in ROUTES[routeName].params) {
     computedUrl += loc[param];
   }
-  // console.log('viewData, computeUrlFromLocParamsAndRouteName, computedUrl:', computedUrl);
   return computedUrl;
 }
 // used to calculate a url to navigate to, based on routeName supplied by component
-// paramValues eg: {postId: '6ni6ok3ym7mf1p33lnez'} or {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
+// paramValues eg: {postId: '6ni6ok3ym7mf1p33lnez'}
+//  or {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
 export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home'){
   const requiredParams = ROUTES[routeName].params;
   let computedUrl = requiredParams.reduce((acc, paramName) => {
@@ -90,15 +90,20 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
   return computedUrl;
 }
 
-  //  "url" is an exact path, as per browser window
+  //  "url" is an exact path, as typed into the browser bar
   //  (params, when exist are:) "categoryPath", "postId"
-  //    ("categoryPath" is a url-safe string for the category url. Not including'/'')
+  //  ("categoryPath" is a url-safe string for the category url. Not including'/'')
   //  "route" is a route format, where `:` prefix represents a variable name
+  //    Note: route will be the "matched" part of current route
+  //      that determined that component should render,
+  //      it is not necessarily the full route for the PAGE being viewed
   //  "sortOrder" is "Ascending" or "Descending". Not implemented.
 
-  // ensure consistancy
-  // ALL_POSTS_CATEGORY compliments the "categories" defined on server,
-  //  adds a "category" definition for the home page: posts for "All" Categories
+  // Ensure consistancy: so Home page can easily be referred to as a "category" page,
+  //    but its route is not part of category definitions file.
+  //    Also, it does not have any params (namely, no "categoryPath" param".
+  // ALL_POSTS_CATEGORY compliments the "categories" array defined on server,
+  //  adds a "category" definition for the home page: (to show posts for "All" Categories)
   const ALL_POSTS_CATEGORY= {name: '', path: ''};
   const ALL_POSTS_URL = '/';
   export const DEFAULT_SORT_BY = 'date';
@@ -110,14 +115,14 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
     categoryPath: ALL_POSTS_CATEGORY.path,
   }
 
-  // if provided, uses routerProps to calculate,
-  // else returns value saved in store
-  // (if using routerProps, can pass in "null" instead of "store" as first argument)
+  //  if "routerProps" is provided, loc values are derived from routerProps,
+  //  else it returns loc values last saved to the store
+  //  (when using routerProps, can pass in "null" instead of "store" as 1st argument)
   export function getLocFrom(store, routerProps=null){
     let loc;
     if (routerProps){
       loc = getLoc(routerProps);
-      console.log('loc from routerProps', loc);
+      // console.log('loc from routerProps', loc);
     }
     else {
       if (!store) {
@@ -126,48 +131,40 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
                     );
         return null
       };
-
       loc = store.viewData.loc;
-      console.log('loc from viewData', loc);
+      // console.log('loc from viewData', loc);
     }
     return loc;
   }
 
   export function getLoc(routerProps=null){
-    // console.log('getLoc, routerProps:', routerProps);
-    // console.log('getLoc, routerProps.location:', routerProps.location);
-    // console.log('getLoc, routerProps.match:', routerProps.match);
     if (!routerProps){
-      console.log('viewData.getLoc, invalid routerProps (prob checking for prevRouterProps)')
+      console.log('possible Error: viewData.getLoc, invalid routerProps (prob checking for prevRouterProps)')
       // return null;
     }
     const match    = (routerProps && routerProps.match)    || null;
     const location = (routerProps && routerProps.location) || null;
-    // console.log('viewData.getLoc, routerProps.location:', location);
     if (!match) {
       console.log('ERROR: getLoc, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
       // return null;
     }
     const params = !match ? {} : match.params
     const route = (match && match.path) || ROUTES.home.route;
-    // console.log('viewData.getLoc, route:', route);
 
     const getRouteName = route => {
-      // routeName is the same as its key, so can refactor using ke as a shortcut
       const routeKeys = Object.keys(ROUTES);
       const matchedRouteKey = routeKeys.find((key) => {
         return ROUTES[key].route === route;  //url
       });
       // TODO: default value for unmatched route: null, '', 'home' ??
-      //  usually (unless there is another '/' in the (bad) url),
-      //  the matched (bad) route will be /:category
-      //  or it will be the url of a deleted post /:categoryPath/:poatId
+        //  (unless there is another '/' in the (bad) url),
+        //  usually the matched (bad) route will be /:category
+        //  or the url of a deleted post /:categoryPath/:poatId
+
+      // routeName is the same as its key, so could refactor to use key as a shortcut
       return ROUTES[matchedRouteKey].name || 'home' //null;
     };
     const routeName = getRouteName(route);
-    // console.log('viewData.getLoc, routeName: ', routeName);
-    // function getComputedRouteFromUrl(url){
-    // }
 
     const loc = {
       // actual location, not just the "match"ed part
@@ -215,7 +212,7 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
   );
   const getParamsFromStore = createSelector(
     // params are stored directly in loc, not in a params object
-        // THIS MUST BE UPDATED IF loc changes!
+    //   THIS FUNCITON MUST BE UPDATED IF store.viewData.loc DEFINITION changes!
     (store) => {
       const loc = store.viewData.loc;
       const locKeys = Object.keys(loc);
@@ -227,7 +224,6 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
         }
         return acc;
       }, {});
-      // console.log('viewData.getParamsFromStore, params', params);
       return params;
     }
   );
@@ -241,9 +237,9 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
     }
   );
 
-
-  // if passed in with routerProps, uses routerProps, else uses store
-  // params: (store, routerProps=null)
+  // params: (store, routerProps=null), or (null, routerProps) or (store)
+  // if routerProps is passed in, loc is derived from routerProps,
+  // else it returns loc info last saved to store
   const getRoute = createSelector(
     (store, routerProps) => {
       if (!store && !routerProps) {
@@ -303,15 +299,11 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
   );
 
 
-//--------------------- WIP -------------------
-
+  // routeName is the SAME as its key (by definition),
   const validRouteNames = Object.keys(ROUTES);
-    // routeName is the SAME as its key (by definition),
-    //  thus using key as a shortcut
 
- // WIP -------
   const getSelectedRouteName = createSelector(
-        //  Takes 2 params: store and routerProps.
+      //  Takes 2 params: store and routerProps.
         //  IF called as (null, routerProps), or (store, routerProps) - it **ignores** store
         //    it will use routerProps to get
         //    the currently MATCHED route (for *that component* - see below)
@@ -341,11 +333,10 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
 
         (route) => {
           const matchedRouteKey = validRouteNames.find((validRouteName) => {
-            return ROUTES[validRouteName].route === route;  //url
+            return ROUTES[validRouteName].route === route;
           });
-          const selectedRouteName = ROUTES[matchedRouteKey].name || 'home' //null;
+          const selectedRouteName = ROUTES[matchedRouteKey].name || 'home';
           // (routeKey === routeName by definition) - so could use that as a shortcut
-          console.log('viewData.getLoc, routeName: ', selectedRouteName);
         return selectedRouteName;
       }
   );
@@ -381,7 +372,6 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
       return(loc);
     }
   );
-//---------------------
 
 
 // ACTION CREATORS
@@ -393,10 +383,6 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
       const prevLoc = prevRouterProps ? getLoc(prevRouterProps) : null;
       if (loc.url === (prevLoc && prevLoc.url)) {
         // url hasn't changed: don't update store
-        console.log('viewData.changeView, not updating store.loc..',
-                    'prev url:', prevLoc.url,
-                    'curr url:', loc.url
-                   );
         return;
       }
       dispatch ({
@@ -428,6 +414,7 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
       url:  HOME.url,
       route:     ROUTES.home,
       routeName: ROUTES.home.routeName,
+
       // store params directly on loc
       ...ROUTES.home.params,  // home route has NO params (currently)
 
@@ -436,8 +423,9 @@ export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home
       //  Leaving definition here, so it's easily available if decide to implement
       //    it is the "matched portion of the route" as determined by <Route> and <Switch>
       //    not necessarily the same as the route in the url
-      //  TODO: what "default value should match be set to: home, null,,
+      //  TODO: what its "default value should match be set to: home, null,,
     },
+
     // sort method: 'by votes' or 'by date'
     persistentSortBy:    DEFAULT_SORT_BY,
     persistentSortOrder: DEFAULT_SORT_ORDER,
@@ -475,12 +463,14 @@ export default viewData
 //    (except that this is a selector).
 //    Also it has been re-written using reduce instead of for-in
 //    (re-written just to compare the two algorithms)
+
 export const getDerivedRouteUrlFromLoc = createSelector(
-  //  creates a would-be router url using the routeName from the loc in store
-  //    to pull the "rule" defining that routeName from ROUTE definitions.
-  //    then it combines params from the url/loc in store to create the
-  //    would-be path for that route.  Note:
+  //  creates a would-be router url using the routeName from the loc (in store)
+  //    and routeName from ROUTE definitions.
+  //    Then it combines params from the url/loc in store, using the route definition
+  //    to create the would-be path for that route.  See NOTE below.
   (store) => store.loc,
+
   (loc) => {
     const thisRoute  = ROUTES[loc.routeName]
     const params     = ROUTES[loc.routeName].params;
@@ -495,7 +485,7 @@ export const getDerivedRouteUrlFromLoc = createSelector(
   }
 );
 
-      // NOTE for getLoc:
+    // NOTE for getLoc:
       //  url uses location.pathname instead of match.path
       //
       //  if component "matches" on a non-exact route,
