@@ -244,9 +244,12 @@ export class EditPost extends Component {
               className={canSubmit ? "on-save" : "has-invalid-field"}
               onClick={() => {this.onSave();}}
               disabled={!canSubmit}
+              type="button"
               >Save
             </button>
-            <button>Cancel</button>
+            <button type="button"
+              >Cancel
+            </button>
           </Link>
 
         </form>

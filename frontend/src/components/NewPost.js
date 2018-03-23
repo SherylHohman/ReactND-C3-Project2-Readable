@@ -131,6 +131,10 @@ export class NewPost extends Component {
     this.props.history.push(`${ROUTES.post.base}${categoryPath}/${postId}`);
   }
 
+  // onSubmit(e){
+  //     e.preventDefault();
+  //   }
+
   onCancel(){
     //  TODO: return to prev url, via history object, instead of the Home Page
     this.loadHomePage();
@@ -229,6 +233,7 @@ export class NewPost extends Component {
               </div>
 
               <button
+                type="button"
                 className={canSubmit ? "on-save" : "has-invalid-field"}
                 onClick={() => {this.onSave();}}
                 disabled={!canSubmit}
@@ -237,8 +242,9 @@ export class NewPost extends Component {
               </button>
               <button
                 className="on-cancel"
-                onClick={() => {this.onCancel();
-              }}>
+                onClick={() => {this.onCancel();}}
+                type="button"
+                >
                 Cancel
               </button>
             </form>
