@@ -52,7 +52,7 @@ export class NewPost extends Component {
          nextProps.categoryNames[0]
        ){
         // default: initialize "selected" category to the first in the list
-        // TODO: add a "Select Category" option, and set it as the default
+        // TODO: add a "Select Category" option, and set it as the default instead
         this.setState({
           categoryName: nextProps.categoryNames[0],
         })
@@ -67,6 +67,7 @@ export class NewPost extends Component {
     })
   }
   touchField(key){
+    // mark this field changed by user (only show "invalid" if field was touched)
     this.setState({
       touchedField: {
         ...this.state.touchedField,
@@ -161,6 +162,7 @@ export class NewPost extends Component {
 
   render(){
 
+    // TODO: refactor to use the FetchStatus component
     const renderCategoriesLoading = (
         <p> Hang on.. we're looking for the categories ! </p>
     )
@@ -239,7 +241,6 @@ export class NewPost extends Component {
               }}>
                 Cancel
               </button>
-
             </form>
 
         <hr />
