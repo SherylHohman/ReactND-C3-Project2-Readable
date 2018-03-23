@@ -37,7 +37,7 @@ export class NewPost extends Component {
   }
 
   componentDidMount(){
-    // console.log('in NewPost componentDidMount');
+    // console.log('NewPost.componentDidMount');
     if (this.props.categoryNames){
       this.setState( {categoryName: this.props.categoryNames[0] });
     }

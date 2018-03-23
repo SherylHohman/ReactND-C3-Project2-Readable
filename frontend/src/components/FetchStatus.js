@@ -1,11 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HOME } from '../store/viewData';
 import PageNotFound from '../components/PageNotFound';
+import { HOME } from '../store/viewData';
 
 function FetchStatus(props){
-  // console.log('FetchStatus props:', props);
-  // fetchStatus, label='item', retryCallback=null, item){
   const { isLoading, isFetchFailure }  = props.fetchStatus;
   const label         = props.label         || 'item';
   const id            = props.id            || '';
@@ -19,14 +17,11 @@ function FetchStatus(props){
           <p>Either it does not exist..</p>
           <p>..or there was a network error.</p>
           <hr />
-          {/**/}
           <Link to={HOME.url}>Home Page</Link>
           {
             retryCallback &&
-            // <button onClick={() => retryCallback}>Retry</button>
             <button onClick={retryCallback}>Retry</button>
           }
-          {/**/}
         </div>
       );
   }
@@ -41,7 +36,7 @@ function FetchStatus(props){
   };
 
   if (!id) {
-    console.log('FetchStatus: !id', label, id);
+    console.log('FetchStatus.(if !id), label, id:', label, id);
       return (
         <PageNotFound routerProps={ props.routerProps } />
       );
@@ -49,4 +44,3 @@ function FetchStatus(props){
 };
 
 export default FetchStatus
-

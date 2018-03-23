@@ -12,6 +12,7 @@ import FetchStatus from './FetchStatus';
 
 // Selectors
 import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories';
 import { getCategoryNames, getCategoriesObject } from '../store/categories';
 import { computeUrlFromParamsAndRouteName } from '../store/viewData';
 
@@ -60,7 +61,7 @@ export class EditPost extends Component {
       this.setState({
         title: nextProps.post.title,
         body: nextProps.post.body,
-        category: nextProps.post.category,
+        categoryName: nextProps.post.category,
         author: nextProps.post.author,
       })
     }
@@ -108,12 +109,12 @@ export class EditPost extends Component {
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
-      title: this.state.title.trim()   || '(untitled)',
-      category: this.state.categoryName,
-      body: this.state.body.trim()     || '(blank)',
+      title: this.state.title.trim()    || '(untitled)',
+      category: this.state.categoryName || this.props.categoryNames[0],
+      body: this.state.body.trim()      || '(blank)',
 
       // TODO: automatically populate author from logged in user
-      author: this.state.author.trim() || '(anonymous)',
+      author: this.state.author.trim()  || '(anonymous)',
     }
     this.props.onSave(this.props.postId, editedPostData);
   }
@@ -123,9 +124,8 @@ export class EditPost extends Component {
 
     const postId = this.props.postId;
 
-    // console.log('EditPost.render fetchStatus', this.props.fetchStatus);
+    // loading "spinner", fetch failure, or 404
     if (!this.props.post) {
-      // loading "spinner", fetch failure, or 404
       return (
         <FetchStatus routerProps={ this.props.routerProps }
           fetchStatus={this.props.fetchStatus}
@@ -136,8 +136,48 @@ export class EditPost extends Component {
       );
     }
 
+    // // TEMP to PREVENT CRASH while DEBUGGING
+    // if (!this.props.categories) {
+    //   return (
+    //     <FetchStatus routerProps={ this.props.routerProps }
+    //       fetchStatus={this.props.categoriesFetchStatus}
+    //       label={'category of the post to edit'}
+    //       item={this.props.post}
+    //       retryCallback={()=>this.props.fetchCategorie()}
+    //     />
+    //   );
+    // }
+
     // const postUrl = `${ROUTES.post.base}${postId}`;
-    const postUrl = computeUrlFromParamsAndRouteName({ postId } ,'post');
+    const makePostUrl = () => {
+      console.log('__EditPost.makePostUrl, \nprops:', this.props, '\nstate:', this.state);
+      // first render state will have invalid values - early return
+      // also need to wait for asynch fetching et al
+      if (!this.state.categoryName || !this.props.categoriesObject ||
+          !this.props.categoriesObject[this.state.categoryName] ||
+          !this.props.categoriesObject[this.state.categoryName].path
+          ){
+        console.log('__EditPost.makePostUrl Early Return');
+        return '';
+      }
+
+      console.log('__EditPost.makePostUrl,',)
+          console.log('    this.state.categoryName', this.state.categoryName,);
+          console.log('    this.props.categoriesObject', this.props.categoriesObject,);
+          console.log('    this.props.categoriesObject[this.state.categoryName]', this.props.categoriesObject[this.state.categoryName],);
+          console.log('    this.props.categoriesObject[this.state.categoryName].path', this.props.categoriesObject[this.state.categoryName].path,);
+                  // );
+      const params = {
+        postId: this.props.postId,
+        categoryPath: this.props.categoriesObject[this.state.categoryName].path
+      };
+      const routeName = 'post';
+      console.log('EditPost.makePostUrl, routeName:', routeName, 'params:', params);
+      const postUrl   = computeUrlFromParamsAndRouteName(params, routeName);
+      console.log('EditPost.makePostUrl, postUrl:', postUrl);
+      return postUrl
+    }
+
     const canSubmit = this.canSubmit();
 
     return  (
@@ -198,7 +238,7 @@ export class EditPost extends Component {
           </div>
 
           <Link
-            to={postUrl}
+            to={makePostUrl()}
             >
             <button
               className={canSubmit ? "on-save" : "has-invalid-field"}
@@ -261,17 +301,17 @@ function mapStoreToProps ( store, ownProps) {
 
   const postId = getLoc(ownProps.routerProps).postId || null;
   const post = getPostsAsObjects(store)[postId] || null;
-  const fetchStatus = getFetchStatus(store);
-  // console.log('Post.mSTP fetchStatus:', fetchStatus);
 
-
+  const categoriesObject = getCategoriesObject(store);
+  const categoryNames =    getCategoryNames(store);
+  console.log('EditPost.mSTP, categoryNames, categoriesObject', categoryNames, categoriesObject);
   return {
-    categoriesObject: getCategoriesObject(store),
-    categoryNames:    getCategoryNames(store),
+    categoriesObject, //:   getCategoriesObject(store),
+    categoryNames,    //:   getCategoryNames(store),
     postId,
     post,
-    // loc,
-    fetchStatus,  //: getFetchStatus(store),
+    fetchStatus: getFetchStatus(store),
+    categoriesFetchStatus: getCategoriesFetchStatus(store),
   }
 };
 

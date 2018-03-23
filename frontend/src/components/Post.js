@@ -14,7 +14,7 @@ import FetchStatus from './FetchStatus';
 import { getPostsAsObjects, getFetchStatus } from '../store/posts';
 
 // helpers and constants
-import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData';
 import { dateMonthYear, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
@@ -75,10 +75,151 @@ export class Post extends Component {
     // category is an {name, path} object on categories, yet
     // category on a post refers to a category.name
 
+    // const makePostUrl = () => {
+    //   if (!this.props || !this.props.postId || !this.props.categoryPath){
+    //     console.log('Post.render.makePostUrl Missing "postId" or "categoryPath", props:', this.props);
+    //     return null;
+    //   }
+    //   const routeName = 'post';
+    //   const params = {
+    //     postId: this.props.postId,
+    //     categoryPath: this.props.categoryPath,
+    //   };
+    //   console.log('Post.render.makePostUrl, "post", params:', params);
+    //   const url = computeUrlFromParamsAndRouteName(params, routeName);
+    //   console.log('Post.render.makePostUrl, url', url);
+    //   return url;
+    // }
+    // const makeCategoryUrl = () => {
+    //   if (!this.props || !this.props.categoryPath){
+    //     console.log('Post.render.makeCategoryUrl Missing "categoryPath", props:', this.props);
+    //     return null;
+    //   }
+    //   const routeName = 'category';
+    //   const params = {
+    //     categoryPath: this.props.categoryPath,
+    //   };
+    //   console.log('Post.render.makeCategoryUrl, "post", params:', params);
+    //   const url = computeUrlFromParamsAndRouteName(params, routeName);
+    //   console.log('Post.render.makeCategoryUrl, url', url);
+    //   return url;
+    // }
+    // const makeEditPostUrl = () => {
+    //   const routeName = 'editPost';
+    //   const params = {};
+    //   console.log('Post.render.makeEditPostUrl, "post", params:', params);
+    //   const url = computeUrlFromParamsAndRouteName(params, routeName);
+    //   console.log('Post.render.makeEditPostUrl, url', url);
+    //   return url;
+    // }
+
+    const makeUrl = (routeName) => {
+      console.log('Post.render.makeUrl, routeName:', routeName, ', props:', this.props);
+      let params = {};
+      let url = null;
+      switch (routeName){
+        case 'editPost':
+          if (!this.props || !this.props.postId){
+            console.log('Post.render.makePostUrl Missing "postId", props:', this.props);
+            return null;
+          }
+          params = {
+            postId: this.props.postId,
+          }
+          // return computeUrlFromParamsAndRouteName(params, routeName);
+          console.log('Post.render.makeUrl,', routeName, ', params:', params);
+          url = computeUrlFromParamsAndRouteName(params, routeName);
+          console.log('Post.render.makeUrl, url', url);
+          return url;
+
+        case 'category':
+          if (!this.props || !this.props.categoryPath){
+            console.log('Post.render.makeCategoryUrl Missing "categoryPath", props:', this.props);
+            return null;
+          }
+          params = {
+            categoryPath: this.props.categoryPath,
+          }
+          // return computeUrlFromParamsAndRouteName(params, routeName);
+          console.log('Post.render.makeUrl,', routeName, ', params:', params);
+          url = computeUrlFromParamsAndRouteName(params, routeName);
+          console.log('Post.render.makeUrl, url', url);
+          return url;
+
+        case 'post':
+          if (!this.props || !this.props.postId || !this.props.categoryPath){
+            console.log('Post.render.makePostUrl Missing "postId" or "categoryPath", props:', this.props);
+            return null;
+          }
+          params = {
+            postId: this.props.postId,
+            categoryPath: this.props.categoryPath,
+          }
+          // return computeUrlFromParamsAndRouteName(params, routeName);
+          console.log('Post.render.makeUrl,', routeName, ', params:', params);
+          url = computeUrlFromParamsAndRouteName(params, routeName);
+          console.log('Post.render.makeUrl, url', url);
+          return url;
+
+        default:
+          console.log('Post.render.makeUrl, defaulting. routeName:', routeName);
+          return null;
+      }
+    }
+
+// const makeUrl = (routeName) => {
+//       console.log('Post.render.makeUrl, routeName:', routeName, ', props:', this.props);
+//       let params = {};
+//       let url = null;
+//       switch (routeName){
+//         case 'post':
+//           if (!this.props || !this.props.postId || !this.props.categoryPath){
+//             console.log('Post.render.makePostUrl Missing "postId" or "categoryPath", props:', this.props);
+//             return null;
+//           }
+//           params = {
+//             postId: this.props.postId,
+//             categoryPath: this.props.categoryPath,
+//           }
+//           // return computeUrlFromParamsAndRouteName(params, routeName);
+//         case 'category':
+//           if (!this.props || !this.props.categoryPath){
+//             console.log('Post.render.makeCategoryUrl Missing "categoryPath", props:', this.props);
+//             return null;
+//           }
+//           params = {
+//             categoryPath: this.props.categoryPath,
+//           }
+//           // return computeUrlFromParamsAndRouteName(params, routeName);
+//         case 'editPost':
+//           // return computeUrlFromParamsAndRouteName(params, routeName);
+//           if (!this.props || !this.props.postId){
+//             console.log('Post.render.makePostUrl Missing "postId", props:', this.props);
+//             return null;
+//           }
+//           params = {
+//             postId: this.props.postId,
+//           }
+//           console.log('Post.render.makeUrl,', routeName, ', params:', params);
+//           url = computeUrlFromParamsAndRouteName(params, routeName);
+//           console.log('Post.render.makeUrl, url', url);
+//           return url;
+
+//         default:
+//           console.log('Post.render.makeUrl, defaulting. routeName:', routeName);
+//           return null;
+//       }
+//     }
+
+
+
+    console.log('Posts.render, props:', this.props);
     return (
       <div>
         <div>
-            <Link to={`${ROUTES.post.base}${categoryName}/${postId}`}
+            <Link /*to={`${ROUTES.post.base}${categoryName}/${postId}`}*/
+                  /*to={makePostUrl()}*/
+                  to={makeUrl('post')}
                   onClick={this.disableClick}
                   style={{cursor:"default"}}
               >
@@ -108,17 +249,18 @@ export class Post extends Component {
 
             <div>
               <Link
-                /*to={`${ROUTES.category.base}${this.props.categoryPath}`}*/
-                to={computeUrlFromParamsAndRouteName(
-                      {categoryPath: this.props.categoryPath},
-                      'category',
-                    )}
-                onClick={() => {this.props.deletePost(postId)}}
+                    /*to={`${ROUTES.category.base}${this.props.categoryPath}`}*/
+                    /*to={makeCategoryUrl()}*/
+                    to={makeUrl('category')}
+                    onClick={() => {this.props.deletePost(postId)}}
                 >
                 Delete Post
               </Link>
 
-              <Link to={`${ROUTES.editPost.base}${postId}`}>
+              <Link /*to={`${ROUTES.editPost.base}${postId}`}*/
+                    /*to={makeEditPostUrl()}*/
+                    to={makeUrl('editPost')}
+                >
                 Edit Post
               </Link>
             </div>
@@ -178,9 +320,10 @@ function mapStoreToProps (store, ownProps) {
   // get his post's categoryPath so can redirect to Post's (former) category
   //   when deleting the post. Here I have access to store.categories, which
   //   is only used as an intermediate step for this one-time calc.
-  const categoryName = (post && post.category) || null;
-  const category     = categoryName && store.categories[categoryName];
-  const categoryPath = (category    && store.categories[categoryName].path) || null;
+  const categoryPath = loc.categoryPath || null;
+  // const categoryName = (post && post.category) || null;
+  // const category     = categoryName && store.categories[categoryName];
+  // const categoryPath = (category    && store.categories[categoryName].path) || null;
 
   return {
     postId,

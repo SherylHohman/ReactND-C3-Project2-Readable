@@ -1,7 +1,9 @@
 import * as ReaderAPI from '../utils/api';
-import { HOME, getComputedUrlFromLocParamsAndRouteName } from './viewData';
-import { combineReducers } from 'redux';
+// constants
+import { HOME, computeUrlFromParamsAndRouteName } from './viewData';
+// libraries
 import { createSelector } from 'reselect';
+import { combineReducers } from 'redux';
 
 // ACTION TYPES
  const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
@@ -22,11 +24,6 @@ import { createSelector } from 'reselect';
               console.log('__response NOT OK, fetchCategories');
               throw Error(response.statusText);
             }
-            // TODO
-            // dispatch({
-            //   type: IS_LOADING_FALSE,
-            //   showLoadingSpinner: false,
-            // });
             return response;
 
           })
@@ -75,18 +72,11 @@ import { createSelector } from 'reselect';
         return ({
           ...state,
           ...action.categories
-          // TODO: turn loading spinner off
         });
       case FETCH_CATEGORIES:
-        return ({
-          ...state,
-          //  TODO: turn loading spinner on
-        });
       case FETCH_CATEGORIES_FAILURE:
         return ({
           ...state,
-          // TODO: turn loading spinner off
-          // TODO: could set an error message on some state to handle errors
         });
 
       default:
@@ -96,14 +86,14 @@ import { createSelector } from 'reselect';
 
 function fetchStatus(state=fetchStatusInitialState, action){
   switch (action.type){
-    case FETCH_CATEGORIES_SUCCESS:
+    case FETCH_CATEGORIES:
       return ({
         ...state,
         isLoading:      true,
         isFetchFailure: false,
         errorMessage:   '',
       });
-    case FETCH_CATEGORIES:
+    case FETCH_CATEGORIES_SUCCESS:
       return ({
         ...state,
         isLoading:      false,
@@ -131,59 +121,97 @@ export default categories
 // SELECTORS
 export const getFetchStatus      = (store) => store.categories.fetchStatus;
 export const getCategoriesObject = (store) => store.categories.fetched;
+// export const getCategoriesObject = (store) => {
+//       console.log('+++ categories.js, recomputing getCategories_OBJECT', store.categories.fetched);  // for monitoring how app/reselect works
+//   return store.categories.fetched;
+// };
 
 //  categories don't change during the life of the app (they are defined in server file),
-//  These *should* only need be computed once each (at most) !
+//  These *should* only need be computed once each (at most) ! (once the categories are fetched, that is)
+// call as getCategoriesArray(store)
 export const getCategoriesArray = createSelector(
-    (store) => store.categories.fetched,
-    (categories) => Object.keys(categories).reduce((acc, categoryKey) => {
-      console.log('+++ categories.js, recomputing getCategoriesArray');  // for monitoring how app/reselect works
-      return acc.concat([categories[categoryKey]]);
-     }, [])
-    // does NOT include an entry "All" or "" for All Categories
-  );
+    getCategoriesObject,    //(store)
+
+    (categoriesObj) => {
+      const catagoriesArray = Object.keys(categoriesObj).reduce((acc, categoryKey) => {
+        console.log('+++ categories.js, recomputing getCategories_ARRAY');  // for monitoring how app/reselect works
+        return acc.concat([categoriesObj[categoryKey]]);
+      }, [])
+     // does NOT include an entry "All" or "" for All Categories
+      console.log('  + categories.js, getCategories_ARRAY', catagoriesArray);  // for monitoring how app/reselect works
+
+      return catagoriesArray;
+    }
+);
+
+// call as getValidCategoryPaths(store)
 export const getValidCategoryPaths = createSelector(
-    (store) => store.categories.fetched,
-    (categories) => {
-      console.log('+++ categories.js, recomputing getValidCategoryPaths');  // for monitoring how app/reselect works
-      return Object.keys(categories)
-        .reduce((acc, categoryKey) => {
-          return acc.concat([categories[categoryKey].path]);
-         }, [])
+    getCategoriesArray,    //(store)
+
+    (categoriesArray) => {
+      console.log('+++ categories.js, recomputing getValidCategory_PATHS');  // for monitoring how app/reselect works
+        const validCategoryPaths = categoriesArray.map((category) => {
+          return category.path;
+        })
         // home path must be LAST in array, so indexOf searches will work as indended
         .concat(HOME.category.path)
-  });
+      console.log('  + categories.js, validCategory_PATHS:', validCategoryPaths);  // for monitoring how app/reselect works
+
+    return validCategoryPaths;
+    }
+);
+
+// call as getCategoryNames(store)
 export const getCategoryNames = createSelector(
-    (store) => store.categories.fetched,
-    (categories) => {
-      console.log('+++ categories.js, recomputing getCategoryNames');  // for monitoring how app/reselect works
-      return Object.keys(categories)
-        .reduce((acc, categoryKey) => {
-          return acc.concat([categories[categoryKey].name]);
-         }, [])
-        // does NOT include an entry "All" or "" for All Categories
-        // used for populating category drop down selector options in new/edit post
-  });
-// valid /:category routes - vs 404
-export const getValidCategoryUrls = createSelector(
-    (store) => store.categories.fetched,
-    (categories) => {
-      console.log('+++ categories.js, recomputing getValidCategoryUrls');  // for monitoring how app/reselect works
-      const categoryNames = Object.keys(categories);
-      let validUrls = categoryNames.map((categoryName) => {
-        return '/' + categories[categoryName].path;
+    // used for populating category drop down selector options in new/edit post
+    getCategoriesArray,    //(store)
+
+    (categoriesArray) => {
+      console.log('+++ categories.js, recomputing getCategory_NAMES');  // for monitoring how app/reselect works
+
+      return categoriesArray.map((category) => {
+          return category.name;
       });
-      // home url must be LAST in array, so indexOf searches will work as indended
-      validUrls.push(HOME.url);
+      // does NOT include an entry "All" or "" for All Categories
+    }
+);
+
+// valid /:category routes - vs 404
+// call as getCategoryNames(store)
+export const getValidCategoryUrls = createSelector(
+    getValidCategoryPaths,    //(store)
+    (categoryPaths) => {
+      console.log('+++ categories.js, recomputing getValidCategory_URLS');  // for monitoring how app/reselect works
+      let validUrls = categoryPaths.map((categoryPath) => {
+        // return'/' + path;
+        return computeUrlFromParamsAndRouteName({ categoryPath }, 'category');
+      });
+      // home path was added to getValidCategoryPaths, so no need to add it here.
+      console.log('  + categories.js, validCategory_URLS:', validUrls);  // for monitoring how app/reselect works
       return validUrls;
     }
 );
 
-// const computedCategoryUrl = (loc) => getComputedUrlFromLocParamsAndRouteName('category', loc);
+// TODO: why did I create a selector here ? could be a constant.
+// call as getCategoryUrlToPath(store);  // no paramaters
+export const createCategoryUrlToPathLookup = createSelector(
+  getValidCategoryPaths,    //(store)
+  (categoryPaths) => {
+    let urls = categoryPaths.reduce((acc, categoryPath) => {
+      const url = computeUrlFromParamsAndRouteName({ categoryPath }, 'category');
+      acc[url] = categoryPath;
+      return acc;
+      }, {});
+    return urls;
+  }
+);
 
+// // WIP - must recalculate each time loc changes
+// //  but, may not need to re-render if visit more than 1 non-category paths in a row :-/
 // export  const getSelectedCategoryPath = createSelector(
 //     store => store.viewData.loc,
-//     getValidCategoryPaths,
+//     gidCategoryPaths,
+
 //     (loc, validCategoryPaths) => {
 //       console.log('--++------------',loc);
 //       console.log('getSelectedCategoryPath',

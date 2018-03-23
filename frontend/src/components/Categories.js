@@ -4,18 +4,24 @@ import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
 import { fetchCategories} from '../store/categories';
-import { ROUTES } from '../store/viewData';
-import { changeView, HOME, DEFAULT_SORT_BY } from '../store/viewData';
-
-import { titleCase } from '../utils/helpers';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // selectors
 import { createSelector } from 'reselect';
-import { getCategoriesArray, getValidCategoryUrls, getValidCategoryPaths, getFetchStatus } from '../store/categories';  // category selectors
-import { getLoc } from '../store/viewData';
+import { getFetchStatus } from '../store/categories';  // category selectors
+
+// selectors, that should be refactored to regular constants
+import { getCategoriesArray, getValidCategoryUrls } from '../store/categories';
+// constants/helpers than maybe could be selectors instead
+import { getLocFrom } from '../store/viewData';
+
+// helpers and constants
+import { HOME, DEFAULT_SORT_BY } from '../store/viewData';
+import { titleCase } from '../utils/helpers';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { createCategoryUrlToPathLookup } from '../store/categories';
 
 
 export class Categories extends Component {
@@ -41,13 +47,29 @@ export class Categories extends Component {
     }
 
     const makeCategoryLink = (categoryPath) => {
-      return ROUTES.category.base + categoryPath;
+      // return ROUTES.category.base + categoryPath;
+      return computeUrlFromParamsAndRouteName(
+                      {categoryPath: categoryPath},
+                      'category',
+             );
     }
 
     const isExactPath = (thisCategoryPath) => {
       // return this.props.loc.url === makeCategoryLink(thisCategoryPath);
       // return this.props.loc.url === makeCategoryLink(thisCategoryPath);
-      return this.props.selectedCategoryPath === thisCategoryPath;
+      // if (this.props.selectedCategoryPath === thisCategoryPath) {
+        console.log('Categories.isExactPath',
+                    // '\nthis.props.selectedCategoryPath: ', this.props.selectedCategoryPath,
+                    '\nthis.props.selectedCategoryUrl: ', this.props.selectedCategoryUrl,
+                    '\nthisCategoryPath: ', thisCategoryPath,
+                    '\n isExact? ', (this.props.selectedCategoryPath === thisCategoryPath),
+    //                 '\n isExact? ', (this.props.selectedCategoryUrl ===
+    // computeUrlFromParamsAndRouteName({categoryPath: thisCategoryPath}, 'category')),
+                    );
+      // }
+      return (this.props.selectedCategoryPath === thisCategoryPath);
+      // return (this.props.selectedCategoryUrl ===
+      // computeUrlFromParamsAndRouteName({categoryPath: thisCategoryPath}, 'category'));
     }
 
     console.log('Categories.render, re-rendering..');
@@ -133,92 +155,140 @@ function mapStoreToProps (store, ownProps) {
   // console.log('store.categories:', store.categories)
   // console.log('Categories, ownProps:', ownProps)
 
-  const categoriesArray = getCategoriesArray(store);
 
-  const getSelectedCategoryPath1 = createSelector(
-    store => store.viewData.loc,
-    getValidCategoryPaths,
-    (loc, validCategoryPaths) => {
-      console.log('Categories.mSTP.getSelectedCategoryPath, loc:', loc);
-      // if currentUrl EXACTLY matches a valid Category Url
-      const categoryPath = (loc && loc.categoryPath)
-                            ? loc.categoryPath
-                            : null;
+  // const routerProps = { history:ownProps.history, location: ownProps.location, match: ownProps.match };
+  const routerProps = ownProps;
+  console.log('Categories.mSTP, routerProps', routerProps);
 
-      // or use categories.calculateRouteUrlFromLoc()
-      if (categoryPath &&
-         (validCategoryPaths.indexOf(categoryPath) !== -1) &&
-          // future proof validation
-          //   in case more ROUTES get added that incorporate :categoryPath (categoryPath)
-          (loc.url === ROUTES.category.base + categoryPath)
-          ){
-        console.log(categoryPath, 'Categories.mSTP.getSelectedCategoryPath, categoryPath', categoryPath);
-        return categoryPath;
+  // ---- WIP ------
+  const getUrl = createSelector(
+    getLocFrom,  // must call this selector with (null, routerProps) or (store, routerProps)
+    // (loc) => loc.url,
+    (loc) =>  ( loc ? loc.url : null ),
+  );
+  const url = getUrl(null, routerProps);
+
+  const categoryUrlToPathLookup  = createCategoryUrlToPathLookup(store);
+  const getSelectedCategoryPath4 = createSelector(
+    getUrl,                 // ( ,routerProps)
+    getValidCategoryUrls,   // ()
+
+    (currentUrl, validCategoryUrls) => {
+      console.log('Categories.mSTP.getSelectedCategoryPath4, currentUrl:', currentUrl,
+                  '\nvalidCategoryUrls:', validCategoryUrls);
+
+      // does currentUrl EXACTLY match a valid Category Url ?
+      let selectedCategoryPath;
+      if (currentUrl && (validCategoryUrls.indexOf(currentUrl) !== -1)){
+          console.log(currentUrl, 'Categories.mSTP.getSelectedCategoryPath, currentUrl', currentUrl);
+          const matchedUrl = currentUrl;
+          selectedCategoryPath = categoryUrlToPathLookup[matchedUrl]
       }
       else {
-        // memoize all other routes, and invalid urls to null
-        //  to prevent Categories from re-rendering on a non /:categoryPath route
-        //  (b/c Categories UI displays/matches on ALL pages, not just '/:categoryPath')
-        console.log('NULL Categories.mSTP.getSelectedCategoryPath, memoised as NULL');
-        return null;
+          // not on a category path,
+          console.log('NULL Categories.mSTP.getSelectedCategoryPath, not on a categoryPath (memoize NULL');
+           selectedCategoryPath = null;
       }
+      return selectedCategoryPath;
     }
   );
-  // const selectedCategoryPath = getSelectedCategoryPath1(store);
+  const selectedCategoryPath = getSelectedCategoryPath4(store, routerProps);
 
-  const getSelectedCategoryPath2 = createSelector(
-    store => store.viewData.loc.categoryPath || null,
-    getValidCategoryPaths,
+  // const getSelectedCategoryPath = createSelector(
+  //   // store => store.viewData.loc,
+  //   // getLocFrom,
+  //   getValidCategoryPaths,
+  //   (loc, validCategoryPaths) => {
+  //     console.log('Categories.mSTP.getSelectedCategoryPath1, loc:', loc);
+  //     // if currentUrl EXACTLY matches a valid Category Url
+  //     const categoryPath = (loc && loc.categoryPath)
+  //                           ? loc.categoryPath
+  //                           : null;
 
-    (categoryPath, validCategoryPaths) => {
-      console.log('Categories.mSTP.getSelectedCategoryPath, categoryPath:', categoryPath);
+  //     let matchedPath;
+  //     // or use categories.calculateRouteUrlFromLoc()
+  //     if (categoryPath &&
+  //        (validCategoryPaths.indexOf(categoryPath) !== -1) &&
+  //         // future proof validation
+  //         //   in case more ROUTES get added that incorporate :categoryPath (categoryPath)
+  //         (loc.url === ROUTES.category.base + categoryPath)
+  //         ){
+  //       console.log(categoryPath, 'Categories.mSTP.getSelectedCategoryPath, categoryPath', categoryPath);
+  //        matchedPath = categoryPath;
+  //     }
+  //     else {
+  //         // not on a category path,
+  //         console.log('NULL Categories.mSTP.getSelectedCategoryPath, not on a categoryPath (memoize NULL');
+  //       matchedPath = null;
+  //     }
+  //     return matchedPath;
+  //   }
+  // );
 
-      // if currentUrl EXACTLY matches a valid Category Url
-      if (categoryPath && (validCategoryPaths.indexOf(categoryPath) !== -1)){
-         console.log(categoryPath, 'Categories.mSTP.getSelectedCategoryPath, categoryPath', categoryPath);
-        return categoryPath;
-      }
-      else {
-        // memoize all other routes, and invalid urls to null
-        //  to prevent Categories from re-rendering on a non /:categoryPath route
-        //  (b/c Categories UI displays/matches on ALL pages, not just '/:categoryPath')
-        console.log('NULL Categories.mSTP.getSelectedCategoryPath, memoised as NULL');
-        return null;
-      }
-    }
-  );
-  let selectedCategoryPath2 = getSelectedCategoryPath2(store);
-  if (selectedCategoryPath2 &&
-     (store.viewData.loc.url !== (ROUTES.category.base + selectedCategoryPath2))
-     ){
-      // or use categories.calculateRouteUrlFromLoc()
-      //   future proof validation
-      //   in case more ROUTES get added that incorporate :categoryPath (categoryPath),
-      //   invalidate the selectedCategoryPath2, return null instead
-    selectedCategoryPath2 = null;
-  }
-  const selectedCategoryPath = selectedCategoryPath2;
-  // const selectedCategoryPath = selectedCategoryPath1;
 
-  // const selectedCategoryPath = store.viewData.loc.categoryPath || null;
-  // console.log('__Categories.selectedCategoryPath:', selectedCategoryPath);
+// I Do NOT want to use the categoryPath stored in loc, because it is one page refresh behind,
+//  INITIALLY, and thus requires an extra page render, AFTER the PAGE cDM calls changeView.
+// Cannot use routerProps to read the categoryPath, because this component matches on '/'
+//  thus categoryPath will always be non-existant when called from this component.
+// HENCE, I'm getting the current URL from routerProps.
+//    Then checking to see if the PAGE url is a category URL.
+//    IF so, then must reverse lookup the url to matched category
+//    in order to highlight the selected category.
+//    Actually, *can* call get... from inside isExact function.
+//    But that seems too low level a call to make from inside render.
+//    It's technically fine.  But render should not need to know details on how
+//    routes are created.  Seems better to give this component the item it actually
+//    needs/consumes.  In this case that would be categoryPath, NOT categoryUrl.
 
-  const routerProps = { history:ownProps.history, location: ownProps.location, match: ownProps.match };
-  console.log('__Categories.mSTP viewData',
-              // '\nrouterProps:', routerProps,
-              // '\ngetLoc loc  :', getLoc(routerProps),
-              '\nviewData loc:', store.viewData.loc,
-              // '\nloc         :', loc,
+
+  // Do NOT pass reouterProps as 2nd parameter!, or anything else as 2nd param!
+  // const selectedCategoryPath = getSelectedCategoryPath4(store, routerProps);
+
+
+  console.log('__Categories.mSTP',
+              // '\nviewData loc:', store.viewData.loc,
+              '\nrouter url:', url,
               '\nselectedCategoryPath:', selectedCategoryPath,
-              );
+              // '\nselectedCategoryUrl:', selectedCategoryUrl,
+              '\nisExact routerProps:', routerProps);
   const fetchStatus = getFetchStatus(store);
+  const categoriesArray  = getCategoriesArray(store);
+
+  // NOTE: unlike other components, do NOT use routerProps for the loc.
+  //    this component renders on Every Route, and will always "Match" at route '/'.
+  //    thus the routeName in this component would always be 'home', No Matter
+  //    what the browser URL sais.
+  //    Instead, use viewDate.loc,
+  //    This way Categories renders correctly, with correct "selectedCategory"
+  //      highlighted.
 
   return {
       fetchStatus,  //: getFetchStatus(store),
       categories: categoriesArray   || null,
       sortBy: store.viewData.sortBy || DEFAULT_SORT_BY,
       selectedCategoryPath,  // null if not on a valid category URL (ROUTE.category.path)
+      // selectedCategoryUrl,  // null if not on a valid category URL (ROUTE.category.path)
+      // url,
   }
 };
 
 export default withRouter(connect(mapStoreToProps, mapDispatchToProps)(Categories));
+
+
+// NOTE for USING GETLOC getLoc in CATEGORIES component:
+    //  url uses location.pathname instead of match.path
+    //
+    //  if component "matches" on a non-exact route,
+    //  match.path and match.params may NOT reflect the full path
+    //  For example, Categories Component is rendered on every path
+    //  So (inside Categories) ALWAYS: match.path === '/' match.params === ''
+    //    even when browser route is
+    //    '/:categories', path '/react', and params is 'categoryPath: react'
+    //  SO.. use location.pathname for actual url
+    //    BUT.. NOTE params would still be incorrect when inside Categories
+    //    - would need to self-parse the url to get the params of the actual url.
+    //    Fortunately, params are not CURRENTLY needed in components that
+    //    display/match on multiple/non-exact routes
+    //    (Categories is the only such component currently)
+    //    This Note is for FYI TroubleShooting in case this ever changes.
+

@@ -83,16 +83,18 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
   };
 
   export function fetchPost(postId){
+    console.log('posts.fetchPost ENTER, postId', postId);
     return (dispatch) => {
 
       dispatch({
         type: REQUEST_POST
       });
 
+      console.log('posts.fetchPost call FETCHPOST, postId', postId);
       ReaderAPI.fetchPost(postId)
         .then((response) => {
           if (!response.ok) {
-            console.log('__response NOT OK, fetchPosts');
+            console.log('posts.fetchPost __response NOT OK, fetchPosts', response.ok, response.statusText);
             throw Error(response.statusText);
           }
           return response;
@@ -100,21 +102,24 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
         .then((response) => response.json())
         .then((post) => {
+          console.log('posts.fetchPost .then, POST:', post);
           return (
             dispatch({
               type: FETCH_POST_SUCCESS,
               post,
-          }));
-        })
+            })
+          )}
+        )
 
         .catch(err => {
+          console.log('posts.fetchPost .catch, ERR:', err);
           console.error(err);  //  in case of render error
           dispatch({
             type: FETCH_POST_FAILURE,
             err,
             error: true,
           })
-        });
+        })
 
     };  // anon function(dispatch) wrapper
   };
@@ -319,8 +324,8 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
 
   // state is an object of (multiple) post objects
   function fetchedPosts(state=postsInitialState, action) {
-    // console.log('posts reducer, state', state)
-    // console.log('posts reducer, action', action)
+    // console.log('posts.fetchedPosts reducer, state', state)
+    // console.log('posts.fetchedPosts reducer, action', action)
 
     // TODO: refactor. combine cases.
     switch (action.type){
@@ -375,6 +380,14 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
           }
         });
 
+      case FETCH_POST_FAILURE:
+      case FETCH_POSTS_FAILURE:
+      case ADD_POST_FAILURE:
+      case EDIT_POST_FAILURE:
+      case DELETE_POST_FAILURE:
+      case VOTE_ON_POST_FAILURE:
+        return state;
+
       // update commentCount on Posts
       case ADD_COMMENT_SUCCESS:
         return ({
@@ -392,14 +405,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
             commentCount: state[action.postId].commentCount - 1,
           }
         });
-
-      case FETCH_POST_FAILURE:
-      case FETCH_POSTS_FAILURE:
-      case ADD_POST_FAILURE:
-      case EDIT_POST_FAILURE:
-      case DELETE_POST_FAILURE:
-      case VOTE_ON_POST_FAILURE:
-        return state;
 
       default:
         return state;
@@ -447,8 +452,6 @@ import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from './comments';
       case EDIT_POST_FAILURE:
       case DELETE_POST_FAILURE:
       case VOTE_ON_POST_FAILURE:
-        // TODO: UI error message
-        // TODO: set loading spinner off
         return ({
           ...state,
           isLoading: false,

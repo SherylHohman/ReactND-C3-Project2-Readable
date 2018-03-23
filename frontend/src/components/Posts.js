@@ -5,18 +5,17 @@ import { Link } from 'react-router-dom';
 // dispatch Action Creators
 import { fetchPosts } from '../store/posts';
 import { changeView, getLoc, changeSort } from '../store/viewData';
-import { upVotePost, downVotePost, deletePost } from '../store/posts'; // post action creators
+import { upVotePost, downVotePost, deletePost } from '../store/posts';
 
 // Components
 import FetchStatus from './FetchStatus';
-import PageNotFound from './PageNotFound';
 
 // Selectors
-import { getPosts, getPostsCurrentCategory, getFetchStatus } from '../store/posts';  // post Selectors
-import { getValidCategoryUrls } from '../store/categories';  // category selectors
+import { getPostsCurrentCategory, getFetchStatus } from '../store/posts';
+import { getValidCategoryUrls } from '../store/categories';
 
 // Actions and Constants, and helpers
-import { ROUTES } from '../store/viewData';
+import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 import { dateMonthYear, titleCase } from '../utils/helpers';
 
@@ -34,10 +33,8 @@ export class Posts extends Component {
     // console.log('Posts.cDM rPs  IS calling changeView, this.props.routerProps.location.pathname', this.props.routerProps.location.pathname);
     // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
 
-    // loc already reflects the value from routerProps as per mapStoreToProps
+    // loc and categoryPath already reflect the value from routerProps as per mapStoreToProps
     this.props.changeView(this.props.routerProps);
-
-    // categoryPath already reflects the value from routerProps as per mapStoreToProps
     this.props.fetchPosts(this.props.categoryPath);
 
     this.setState({ sortBy: this.props.sortBy });
@@ -49,17 +46,15 @@ export class Posts extends Component {
 
     if (nextProps.sortBy !== this.props.sortBy) {
       // console.log('Posts.cWRP nextProps: ', nextProps);
-      const sortedPosts = sortPosts(nextProps.posts,
-                                    nextProps.sortBy || this.state.sortBy);
+      const posts = nextProps.posts || this.props.posts;
+      const sortedPosts = sortPosts(posts, nextProps.sortBy);
       this.setState({
         posts:  sortedPosts,
         sortBy: nextProps.sortBy,
       });
     }
-
-    if (nextProps.posts !== this.props.posts) {
-      const sortedPosts = sortPosts(nextProps.posts,
-                                    nextProps.sortBy || this.state.sortBy);
+    else if (nextProps.posts !== this.props.posts) {
+      const sortedPosts = sortPosts(nextProps.posts, this.state.sortBy);
       this.setState({ posts: sortedPosts });
     }
 
@@ -91,7 +86,6 @@ export class Posts extends Component {
     }
     else { isInValidUrl = false; }
 
-    // console.log('Posts.render props:', this.props);
     if (isInValidUrl){
       return (
         <FetchStatus routerProps={ this.props.routerProps }
@@ -108,19 +102,18 @@ export class Posts extends Component {
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
                     ? true : false;
 
-    // set status message to display TODO: state.statusMessage
+    // TODO: state.statusMessage
+    // set status message to display
     let statusMessage = ''
-    // if (this.props) {
-    //   taken care of by FetchStatus component
-    //   statusMessage = 'I could not retrieve posts for category: ', this.props.categoryPath;
-      if (this.props.posts) {
-        statusMessage = 'Be the first to write a post for category: '
-                         + titleCase(this.props.categoryPath);
-          if (!Array.isArray(this.props.posts)) {
-            statusMessage = 'Posts are not in an array format - they canot be mapped over !';
-          }
+    if (this.props.posts) {
+      if (!Array.isArray(this.props.posts)) {
+        console.log('Posts.render Error: Posts are not in an array format - they canot be mapped over !');
       }
-    // }
+      else {
+        statusMessage = 'Be the first to write a post for category: '
+                       + titleCase(this.props.categoryPath);
+      }
+    }
 
     // console.log('___Posts.render fetchStatus2:', this.props.fetchStatus);
     // if (!havePosts) {
@@ -138,20 +131,24 @@ export class Posts extends Component {
     const getPostUrl = (post) => {
       // technically post.category is a categoryName, not a categoryPath.
       // currently in my DB, a categoryPath === categoryName
-      // so this shortcut wroks - BEWARE for BUGS if change defined categories,
+      // so this shortcut works - BEWARE for BUGS if change defined categories,
       //   and this is not longer the case.
       // console.log('____Posts.render.getPostUrl',
       //             '\npost.id:', post.id,
       //             '\ntpost.category', post.category,
       //             );
-      // TODO: replace this function with a function from viewData,
-      //       near ROUTES definitions. Keep route calcs near Routes Defs, as
-      //       the calculation is dependant on ROUTE definitions.
-      //       locally, I should no need to keep track of defs, or even know
-      //       how to calculate them.  Just consume them after providing necessary params
       const categoryPath = post.category;
-      const postLink = `${ROUTES.post.base}${categoryPath}/${post.id}`;
+      const postParams = {
+          categoryPath,
+          postId: post.id,
+      };
+      // const postLink = `${ROUTES.post.base}${categoryPath}/${post.id}`;
       // console.log('____Posts.render.getPostUrl, post url:', postLink);
+      console.log('____Posts.render.getPostUrl, calling computeUrlFromParamsAndRouteName',
+                  'as "post" with postParams:', postParams
+                  );
+      const postLink = computeUrlFromParamsAndRouteName( postParams,'post' );
+      console.log('____Posts.render.getPostUrl, post url:', postLink, 'postParams:', postParams);
       return postLink;
     }
 
@@ -161,7 +158,8 @@ export class Posts extends Component {
 
           {/*New Post*/}
           {/*<Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}*/}
-          <Link to={ROUTES.newPost.route}
+          {/*<Link to={ROUTES.newPost.route}*/}
+          <Link to={computeUrlFromParamsAndRouteName( {},'newPost' )}
                 style={{"height":"100%",
                         "width" :"100%"
                       }}
@@ -345,7 +343,6 @@ function mapStoreToProps (store, ownProps) {
   }
 
   const posts = getPostsCurrentCategory(store, ownProps);
-  // console.log('___Posts.mSTP fetchStatus:', fetchStatus);
 
   return {
     posts,

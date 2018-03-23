@@ -19,49 +19,38 @@ export const SORT_BY = 'SORT_BY';
 
   // TODO: change to an Array, then map over it to populate App.js Routes
 export const ROUTES= {
-  // Special Case: when params list is {}, set its value to '' instead
   home:     {
     name :    'home',
     route:    '/',
-    params:   [],  //[''],  //'',  // {},
+    params:   [],
     base:     '/',
-    // param:    '' ,
   },
   category: {
     name :    'category',
     route:    '/:categoryPath',
     params :  ["categoryPath"],
     base:     '/',
-    // param:    ':categoryPath',
   },
   post:     {
     name :    'post',
     route:    '/:categoryPath/:postId',
     params :  ["categoryPath", "postId"],
-    base:     '/',  // TODO: not sure what makes sense for this value
-    // param:    ':postId',
+    base:     '/',
   },
   editPost: {
     name :    'editPost',
     route:    '/post/edit/:postId',
     params :  ["postId"],
     base:     '/post/edit/',
-    // param:    ':postId',
   },
   newPost:  {
     name :    'newPost',
-    route:    '/post/new/',
-    params:   [],  //[''],  //'',  // {},
+    route:    '/post/new',
+    params:   [],
     base:     '/post/new/',
-    // param:    '',
   },
-  // undefinedRoute: {
-  //   name :    'undefinedRoute',
-  //   route:    '',
-  //   params:   [],  //[''],  //'',  // {},
-  //   base:     '',
-  // }
 };
+
 // See also related Selector Function at end of file
 export function calculateRouteUrlFromLoc(loc){
   const routeDef =ROUTES[loc.routeName];
@@ -75,6 +64,7 @@ export function calculateRouteUrlFromLoc(loc){
   }
   return routeUrl;
 }
+
 // used to calculate a url to navigate to, based on routeName supplied by component
 export function computeUrlFromLocParamsAndRouteName(loc, routeName){
   if (!routeName) {routeName = loc.route || 'home';}
@@ -87,18 +77,44 @@ export function computeUrlFromLocParamsAndRouteName(loc, routeName){
 }
 // used to calculate a url to navigate to, based on routeName supplied by component
 // paramValues eg: {postId: '6ni6ok3ym7mf1p33lnez'} or {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
-export function computeUrlFromParamsAndRouteName(paramValues, routeName='home'){
-  let computedUrl = ROUTES[routeName].base;
-  for (let param in ROUTES[routeName].params) {
-    if (!paramValues[param]) {
-      console.log('ERROR: viewData.computeUrlFromParamsAndRouteName, missing param:', param)
-      computedUrl += ''
-    }
-    else {
-      computedUrl += paramValues[param];
-    }
+export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home'){
+  // console.log('viewData.computeUrlFromParamsAndRouteName',
+  //             '\nrouteName:', routeName,
+  //             '\nparamValues:', paramValues,
+  //             );
+  // let computedUrl = ROUTES[routeName].base;
+  const requiredParams = ROUTES[routeName].params;
+  // console.log('viewData.computeUrlFromParamsAndRouteName',
+  //             routeName, '\nrequiredParams:', requiredParams,
+  //             );
+
+  let computedUrl = requiredParams.reduce((acc, paramName) => {
+    // console.log('viewData.computeUrlFromParamsAndRouteName,',
+    //             '\nparamName', paramName,
+    //             '\nacc:', acc
+    //             );
+      acc += paramValues[paramName] + '/';
+    return acc;
+  }, ROUTES[routeName].base);
+  // console.log('viewData.computeUrlFromParamsAndRouteName \ncomputedUrl:', computedUrl);
+  // console.log('      requiredParams.length:', requiredParams.length,
+  //             'requiredParams:', requiredParams
+  //             );
+
+  //  remove extra trailing '/' IF added by param loop
+  if (requiredParams.length > 0) {
+    // console.log('YES trimming final slash, before:', computedUrl);
+    computedUrl = computedUrl.slice(0, -1);
+    // console.log('    trimming final slash, after :', computedUrl);
   }
-  // console.log('viewData, computeUrlFromLocParamsAndRouteName, computedUrl:', computedUrl);
+  else {
+    // console.log('NOT trimming final slash',
+    //               '\n  computedUrl :', computedUrl,
+    //               '\n  requiredParams:', requiredParams,
+    //               '\n  numParams:', requiredParams.length,
+    //             );
+  }
+  // console.log('viewData.computeUrlFromParamsAndRouteName, \nRETURNING computedUrl:', computedUrl);
   return computedUrl;
 }
 
@@ -112,29 +128,35 @@ export function computeUrlFromParamsAndRouteName(paramValues, routeName='home'){
   // ALL_POSTS_CATEGORY compliments the "categories" defined on server,
   //  adds a "category" definition for the home page: posts for "All" Categories
   const ALL_POSTS_CATEGORY= {name: '', path: ''};
-  const ALL_POSTS_ID  = '' ;
   const ALL_POSTS_URL = '/';
   export const DEFAULT_SORT_BY = 'date';
   export const DEFAULT_SORT_ORDER = 'high_to_low';
 
   export const HOME  = {
-    // id: ALL_POSTS_ID,
-    // replaced id with categoryPath
-    categoryPath: ALL_POSTS_CATEGORY.path,
     url: ALL_POSTS_URL,
     category: ALL_POSTS_CATEGORY,
+    categoryPath: ALL_POSTS_CATEGORY.path,
   }
 
-  // 'store' or 'router'
-  function getLocFrom(store, routerProps=null){
+  // if provided, uses routerProps to calculate,
+  // else returns value saved in store
+  // (if using routerProps, can pass in "null" instead of "store" as first argument)
+  export function getLocFrom(store, routerProps=null){
     let loc;
     if (routerProps){
       loc = getLoc(routerProps);
-      // console.log('loc from routerProps', loc);
+      console.log('loc from routerProps', loc);
     }
     else {
+      if (!store) {
+        console.log('ERROR: viewData.getLocFrom, ',
+                    'REQUIRES: "(store)" argument, or "(null, routerProps)" as arguments'
+                    );
+        return null
+      };
+
       loc = store.viewData.loc;
-      // console.log('loc from viewData', loc);
+      console.log('loc from viewData', loc);
     }
     return loc;
   }
@@ -151,7 +173,7 @@ export function computeUrlFromParamsAndRouteName(paramValues, routeName='home'){
     const location = (routerProps && routerProps.location) || null;
     // console.log('viewData.getLoc, routerProps.location:', location);
     if (!match) {
-      console.log('getLoc, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
+      console.log('ERROR: getLoc, no "match" object - possibly a child component that routeProps was not passed as props'); //return null;  //exit early
       // return null;
     }
     const params = !match ? {} : match.params
@@ -183,9 +205,11 @@ export function computeUrlFromParamsAndRouteName(paramValues, routeName='home'){
       // ...match.params,
       ...params,
 
-      // note, this is the "matched" route - not necessarily the full route
-      //  (for example: if accessed from within Categories component,
-      //   route will ALWAYS be '/' because Categories renders/matches ALL routes)
+      // note, this is the "matched" route of the calling component
+      //   - not necessarily the route for the PAGE in the BROWSER BAR
+      //   (for example: if called from within Categories component,
+      //     route will ALWAYS be '/' because Categories
+      //     "matches" on and renders on ALL routes)
       route,
       routeName,
 
@@ -193,9 +217,200 @@ export function computeUrlFromParamsAndRouteName(paramValues, routeName='home'){
       // match: match.url,
 
     };
-    console.log('viewData.getLoc, loc:', loc);
+    // console.log('viewData.getLoc, loc:', loc);
     return(loc);
   }
+
+
+  const getRouteFromRouter = createSelector(
+    (routerProps=null) => (routerProps.match && routerProps.match.path) || ROUTES.home.route
+  );
+  const getUrlFromRouter = createSelector(
+    (routerProps=null) => (routerProps && routerProps.location.pathname) || null
+  );
+  const getParamsFromRouter = createSelector(
+    (routerProps=null) => !routerProps.match ? {} : routerProps.match.params,
+  );
+  const getMatchFromRouter = createSelector(
+    (routerProps=null) => !routerProps.match ? null : routerProps.match,
+  );
+
+  const getRouteFromStore = createSelector(
+    (store) => store.viewData.loc.route,
+  );
+  const getUrlFromStore = createSelector(
+    (store) => store.viewData.loc.url,
+  );
+  const getParamsFromStore = createSelector(
+    // params are stored directly in loc, not in a params object
+        // THIS MUST BE UPDATED IF loc changes!
+    (store) => {
+      const loc = store.viewData.loc;
+      const locKeys = Object.keys(loc);
+      const params = locKeys.reduce((acc, key, ) => {
+        // 'match' is currently NOT used, or saved to store,
+        //    but it is set up to do so, so include it in the list.
+        if (['url', 'route', 'routeName', 'match'].find(key) === -1) {
+          acc[key] = loc[key];
+        }
+        return acc;
+      }, {});
+      // console.log('viewData.getParamsFromStore, params', params);
+      return params;
+    }
+  );
+  const getMatchFromStore = createSelector(
+    // I do NOT store "match" in store.
+    // (could return url instead, but that might be confusing or contradict router Match)
+    // routerProps not used, but must match this format
+    (store) => {
+        console.log('ERROR: viewData.getMatchFromStore store.viewData.loc does not have a "match" Property');
+        return null;
+    }
+  );
+
+
+  // if passed in with routerProps, uses routerProps, else uses store
+  // params: (store, routerProps=null)
+  const getRoute = createSelector(
+    (store, routerProps) => {
+      if (!store && !routerProps) {
+        console.log('ERROR: viewData.getRoute is missing parameters: (store, routerProps)');
+        return null
+      }
+      if (routerProps) {
+        return getRouteFromRouter(routerProps)
+      }
+      return getRouteFromStore(store);
+    }
+  );
+
+  const getUrl = createSelector(
+    (store, routerProps) => {
+      if (!store && !routerProps) {
+        console.log('ERROR: viewData.getUrl is missing parameters: (store, routerProps)');
+        return null
+      }
+      if (routerProps) {
+        return getUrlFromRouter(routerProps)
+      }
+      else {
+        return getUrlFromStore(store);
+      }
+    }
+  );
+
+  const getParams = createSelector(
+    (store, routerProps) => {
+      if (!store && !routerProps) {
+        console.log('ERROR: viewData.getParams is missing parameters: (store, routerProps)');
+        return null
+      }
+      if (routerProps) {
+        return getParamsFromRouter(routerProps)
+      }
+      else {
+        return getParamsFromStore(store);
+      }
+    }
+  );
+
+  const getMatch = createSelector(
+    (store, routerProps) => {
+      if (!store && !routerProps) {
+        console.log('ERROR: viewData.getMatch is missing parameters: (store, routerProps)');
+        return null
+      }
+      if (routerProps) {
+        return getMatchFromRouter(routerProps)
+      }
+      else {
+        return getMatchFromStore(store);
+      }
+    }
+  );
+
+
+//--------------------- WIP -------------------
+
+  const validRouteNames = Object.keys(ROUTES);
+    // routeName is the SAME as its key (by definition),
+    //  thus using key as a shortcut
+
+ // WIP -------
+  const getSelectedRouteName = createSelector(
+        //  Takes 2 params: store and routerProps.
+        //  IF called as (null, routerProps), or (store, routerProps) - it **ignores** store
+        //    it will use routerProps to get
+        //    the currently MATCHED route (for *that component* - see below)
+        //  If called as (store, null), or (store), it will use
+        //    store.viewData.loc to get the matched route of the PAGE that was
+        //    last saved to the store. (categories route does NOT save to the store)
+
+        //  note: if called with routerProps, it will return
+        //    the MATCHED Route for the COMPONENT which called it!
+        //    ie, Categories, which renders on every page,
+        //    MATCHES on '/', so this function will always return the "home"
+        //    route when called FROM Categories.
+        //    If want the BROWSER route - call it with routerProps=null
+        //    This way, it'll return the value previous saved to store.
+        //    Navigating to a new page requires cDM to call changeView,
+        //    before the store will be asynch updated.
+        //    Thus Categories (for example, since it *should* be calling this
+        //      func with "store", *NOT* "routrProps")
+        //    will call this function twice, once at page load,
+        //    and once after store.viewData.loc updates to store the current Browser url.
+        //    (reason this works is b/c Categories does NOT call changeView / update loc)
+
+        //  If need this value on a "Page" component, call it with routerProps
+        //    so the most current value can be returned immediately.
+
+        getRoute,
+
+        (route) => {
+          const matchedRouteKey = validRouteNames.find((validRouteName) => {
+            return ROUTES[validRouteName].route === route;  //url
+          });
+          const selectedRouteName = ROUTES[matchedRouteKey].name || 'home' //null;
+          // (routeKey === routeName by definition) - so could use that as a shortcut
+          console.log('viewData.getLoc, routeName: ', selectedRouteName);
+        return selectedRouteName;
+      }
+  );
+
+  // must be called as (store, routerParams), (null, routerParams)
+  export const  getLocFromRouter = createSelector(
+    getUrlFromRouter,
+    getParamsFromRouter,
+    getRouteFromRouter,
+    getMatchFromRouter,
+
+    getSelectedRouteName,
+
+    (url, params, route, match, selectedRouteName) => {
+      const loc = {
+        // actual location, not just the "match"ed part
+        url: url,
+
+        // got rid of params key, instead storing params directly on loc
+        ...params,
+
+        // note, this is the "matched" route - not necessarily the full route
+        //  (for example: if accessed from within Categories component,
+        //   route will ALWAYS be '/' because Categories renders/matches ALL routes)
+        route,
+        routeName: selectedRouteName,
+
+        // I don't use match.url currently, it's ready if I decide it's needed
+        // match: match.url,
+
+      };
+      console.log('viewData.getLoc, loc:', loc);
+      return(loc);
+    }
+  );
+//---------------------
+
 
 // ACTION CREATORS
 
@@ -244,12 +459,12 @@ export function computeUrlFromParamsAndRouteName(paramValues, routeName='home'){
       // store params directly on loc
       ...ROUTES.home.params,  // home route has NO params (currently)
 
-      // not currently used..
+      // match: HOME.url,
+      //  not currently used..
       //  Leaving definition here, so it's easily available if decide to implement
       //    it is the "matched portion of the route" as determined by <Route> and <Switch>
       //    not necessarily the same as the route in the url
-      //  TODO: not what "default value for match should be set to: home, null,,
-      // match: HOME.url,
+      //  TODO: what "default value should match be set to: home, null,,
     },
     // sort method: 'by votes' or 'by date'
     persistentSortBy:    DEFAULT_SORT_BY,
@@ -300,8 +515,8 @@ export const getDerivedRouteUrlFromLoc = createSelector(
     let routeUrl = params.reduce((acc, param) => {
         return acc += loc[param] + '/';
       }, thisRoute.base);
-    //  remove extra trailing '/' ONLY IF added b/c have params
-    if (params != []) {
+    //  remove final trailing '/' (IF) added by params loop
+    if (params !== []) {
       routeUrl = routeUrl.slice(0, -1);
     }
     return routeUrl;
@@ -320,7 +535,7 @@ export const getDerivedRouteUrlFromLoc = createSelector(
       //  SO.. use location.pathname for actual url
       //    BUT.. NOTE params would still be incorrect when inside Categories
       //    - would need to self-parse the url to get the params of the actual url.
-      //    fortunately, params are not CURRENTLY needed in components that
+      //    Fortunately, params are not CURRENTLY needed in components that
       //    display/match on multiple/non-exact routes
       //    (Categories is the only such component currently)
       //    This Note is for FYI TroubleShooting in case this ever changes.
