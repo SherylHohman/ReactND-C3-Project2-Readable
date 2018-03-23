@@ -64,7 +64,7 @@ export class Post extends Component {
     const categoryName = this.props.post.category;
 
     const makeUrl = (routeName) => {
-      console.log('Post.render.makeUrl, routeName:', routeName, ', props:', this.props);
+      // console.log('Post.render.makeUrl, routeName:', routeName, ', props:', this.props);
       let params = {};
       switch (routeName){
         case 'editPost':
