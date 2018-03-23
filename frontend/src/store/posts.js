@@ -487,30 +487,34 @@ export const getPosts = createSelector(
   }
 );
 export const getPost = (store, postId) => store.posts[postId];
-// TODO: ..
-//    getPost selector will be useful if create a wrapper container around Post and EditPost
-//      then selector doesn't change between viewing and editing the post
-//     Also, the wrapper container could reuse the code for showing fetching status vs 404
-// const havePostId = (store, postId) => postId;
-//    even better: compute postId from routerProps
+  // TODO:
+  //    getPost selector:
+  //    will be useful to create a wrapper container around Post and EditPost
+  //      then selector would not change between viewing and editing the post
+  //    Also, the wrapper container could reuse the code for showing fetching status vs 404
+
+  // const havePostId = (store, postId) => postId;
+  //    even better: compute postId from routerProps
+
   // const postId = getLoc(ownProps.routerProps).postId || null;
-// export const getPost = createSelector(
-//   getPosts,
-//   // havePostId,
-//   (store, routerProps) => getLoc(routerProps).postId || null,
-//   (posts, postId) => store.fetchedPosts[postId];
-// );
+
+  // export const getPost = createSelector(
+  //   getPosts,
+  //   // havePostId,
+  //   (store, routerProps) => getLoc(routerProps).postId || null,
+  //   (posts, postId) => store.fetchedPosts[postId];
+  // );
 
 
-// B  -- requires less rendering and fewer function calls than A)
+// B  -- requires less rendering and fewer function calls than A) (see Notes below)
 const getRouterCategoryPath = (store, ownProps) =>
   (getLoc(ownProps.routerProps).categoryPath);
+
 // (only valid Category Routes make it to this function)
 export const getPostsCurrentCategory = createSelector(
   getPosts,
   getRouterCategoryPath,
   (allPosts, categoryPath) => {
-    // console.log('posts.getPostsCurrentCategory, categoryPath, allPosts', categoryPath, allPosts);
     // home route (all posts) has no categoryPath
     if (!categoryPath) {return allPosts}
     const postsCurrentCategory = allPosts.filter( (post) => {
@@ -523,39 +527,39 @@ export const getPostsCurrentCategory = createSelector(
 // TODO: save categorized posts filtered by category
 // const getPostIdsByCategory = createSelector(
 // );
-// const postIdsByCategory = getPostIdsByCategory(store);
-// const postIdsCurrentCategory = postIdsByCategory[loc.currentId] || null;
 
 
 
+  // KEEP THIS AS A NOTE ON SELECTOR DESIGN
+    // // A  -- less efficient than B)
+    // // A - requires more function calls, more rendering passes, (maybe fewer fetches?)
+    // // Swap them out, with comments in place Here and in Posts to see the diff !
+    // // A Doesn't memoise well!
+    // // Difference is:
+    // //  - this uses LOC as an input selector;
+    // //  - that uses CATEGORYPATH as an input selector
 
-// KEEP THIS AS A NOTE ON SELECTOR DESIGN
-  // // A  -- less efficient than B)
-  // // A - requires more function calls, more rendering passes, (maybe fewer fetches?)
-  // // Swap them out, with comments in place Here and in Posts to see the diff !
-  // // A Doesn't memoise well!
-  // // Difference is:
-  // //  - this uses LOC as an input selector;
-  // //  - that uses CATEGORYPATH as an input selector
+    // // A
+    // const getRouterLoc = (store, ownProps) =>
+    //   (getLoc(ownProps.routerProps));
 
-  // // A
-  // const getRouterLoc = (store, ownProps) =>
-  //   (getLoc(ownProps.routerProps));
-  // export const getPostsCurrentCategory = createSelector(
-  //   getPosts,
-  //   getRouterLoc,
-  //   (allPosts, loc) => {
-  //     console.log('posts.getPostsCurrentCategory, loc.categoryPath, allPosts', loc.categoryPath, allPosts);
-  //     // if (loc.route === ROUTES.home.route){
-  //     //   return allPosts;
-  //     // }
-  //     // (only valid Category Routes make it to this function)
-  //     // home route has "falsey" categoryPath
-  //     if (!loc.categoryPath) {return allPosts}
-  //     const postsCurrentCategory = allPosts.filter( (post) => {
-  //       return post.category === loc.categoryPath;
-  //     });
-  //     return postsCurrentCategory;
-  //   }
-  // );
+    // export const getPostsCurrentCategory = createSelector(
+    //   getPosts,
+    //   getRouterLoc,
+    //   (allPosts, loc) => {
+    //     console.log('posts.getPostsCurrentCategory, loc.categoryPath, allPosts', loc.categoryPath, allPosts);
+    //     // if (loc.route === ROUTES.home.route){
+    //     //   return allPosts;
+    //     // }
+    //     // (only valid Category Routes make it to this function)
+    //     // home route has "falsey" categoryPath
+    //     if (!loc.categoryPath) {return allPosts}
+    //     const postsCurrentCategory = allPosts.filter( (post) => {
+    //       return post.category === loc.categoryPath;
+    //     });
+    //     return postsCurrentCategory;
+    //   }
+    // );
 
+    // const postIdsByCategory      = getPostIdsByCategory(store);
+    // const postIdsCurrentCategory = postIdsByCategory[loc.currentId] || null;
