@@ -117,7 +117,7 @@ export class Posts extends Component {
 
     const getPostUrl = (post) => {
       const categoryName = post.category;  // categoryName === key for categoriesObject
-      const categoryPath = this.props.categoriesObject[categoryName];
+      const categoryPath = this.props.categoriesObject[categoryName].path;
       const postParams = {
           categoryPath,
           postId: post.id,
