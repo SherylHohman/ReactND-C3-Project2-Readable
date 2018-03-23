@@ -92,10 +92,10 @@ export class Comments extends Component {
   onSave(){
     if (this.canSubmit()) {
       this.props.updateComment({
-        id:this.state.id, //id, //: this.props.id,
+        id:this.state.id,
         body: this.state.body.trim(),
         author: this.state.author,
-        timestamp: Date.now(),   // supposed to update timestamp ?
+        timestamp: Date.now(),
       });
       this.closeModal();
     }
@@ -171,7 +171,6 @@ export class Comments extends Component {
                 <small> {dateMonthYear(comment.timestamp)} at {timeIn12HourFormat(comment.timestamp)}</small>
                 </p>
 
-                {/*TODO: link styling, change cursor to hand on hover*/}
                 <p className="link">
                   <span onClick={() => {this.props.onDeleteComment(comment.id)}}> delete </span>
                    <span className="no-link"> | </span>
@@ -260,12 +259,13 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  const loc = getLoc(ownProps.routerProps) || null;
   // const loc = store.viewData.loc;
+  // using routerProps rather than store for the "loc"
+  //   prevents re-render
+  //   (affects first/second render at initial PageLoad, does Not need a 3rd)
+  const loc = getLoc(ownProps.routerProps) || null;
 
-  // const postId = store.viewData.loc.postId  || null;
-  const postId = loc && loc.postId;  // or loc.params.postId // or loc.postId
-  // console.log('Comments, mSTP, loc', loc);
+  const postId = loc && loc.postId;
 
   const getSortedComments = createSelector(
     state => store.comments,
