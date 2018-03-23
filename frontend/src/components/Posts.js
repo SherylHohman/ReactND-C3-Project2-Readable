@@ -115,19 +115,6 @@ export class Posts extends Component {
       }
     }
 
-    // console.log('___Posts.render fetchStatus2:', this.props.fetchStatus);
-    // if (!havePosts) {
-    //   // loading "spinner", fetch failure, or 404
-    //   return (
-    //     <FetchStatus routerProps={ this.props.routerProps }
-    //       fetchStatus={this.props.fetchStatus}
-    //       label={'posts'}
-    //       item={this.props.posts}
-    //       retryCallback={()=>this.props.fetchPosts(this.props.categoryPath)}
-    //     />
-    //   );
-    // }
-
     const getPostUrl = (post) => {
       // technically post.category is a categoryName, not a categoryPath.
       // currently in my DB, a categoryPath === categoryName
@@ -157,8 +144,6 @@ export class Posts extends Component {
       <div>
 
           {/*New Post*/}
-          {/*<Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}*/}
-          {/*<Link to={ROUTES.newPost.route}*/}
           <Link to={computeUrlFromParamsAndRouteName( {},'newPost' )}
                 style={{"height":"100%",
                         "width" :"100%"
@@ -316,19 +301,18 @@ function mapStoreToProps (store, ownProps) {
   //    rather than pulling from store (store.viewData.loc)
   //    The latter requires an extra render - 1st using OLD url, 2nd using correct URL
   //    reason being is that cDM calls changeView, so render happens before
-  //      changeView can update loc.
+  //      changeView (asynch) can update loc to the store.
   // const loc = store.viewData.loc || null;
   const loc = getLoc(ownProps.routerProps) || null;
   const categoryPath = loc.categoryPath    || null
 
   const validCategoryUrls = getValidCategoryUrls(store);
-  const fetchStatus = getFetchStatus(store);// ? getFetchStatus(store) : null;
+  const fetchStatus = getFetchStatus(store);
 
   //  early exit to render a 404
   if (!loc || (validCategoryUrls.indexOf(loc.url) === -1)) {
-    // TODO: exit ASAP - before compute below selectors and constants !
+    // Exit ASAP - without calling selectors / constants constants !
     //    - just want component to render a 404 mssg
-    //    to computations minimal:
     //    I set as many values to NULL or CONSTANTS as possible..
     //    whilst not breaking the component before it renders the 404 error message
     return ({
@@ -337,7 +321,7 @@ function mapStoreToProps (store, ownProps) {
           sortOrder: DEFAULT_SORT_ORDER,
           validUrls: null,  //validCategoryUrls,
           loc,
-          categoryPath, //: loc.categoryPath,
+          categoryPath,     // null if not on a validCategoryPath
           fetchStatus,
         })
   }
