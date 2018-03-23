@@ -78,43 +78,15 @@ export function computeUrlFromLocParamsAndRouteName(loc, routeName){
 // used to calculate a url to navigate to, based on routeName supplied by component
 // paramValues eg: {postId: '6ni6ok3ym7mf1p33lnez'} or {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
 export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home'){
-  // console.log('viewData.computeUrlFromParamsAndRouteName',
-  //             '\nrouteName:', routeName,
-  //             '\nparamValues:', paramValues,
-  //             );
-  // let computedUrl = ROUTES[routeName].base;
   const requiredParams = ROUTES[routeName].params;
-  // console.log('viewData.computeUrlFromParamsAndRouteName',
-  //             routeName, '\nrequiredParams:', requiredParams,
-  //             );
-
   let computedUrl = requiredParams.reduce((acc, paramName) => {
-    // console.log('viewData.computeUrlFromParamsAndRouteName,',
-    //             '\nparamName', paramName,
-    //             '\nacc:', acc
-    //             );
       acc += paramValues[paramName] + '/';
     return acc;
   }, ROUTES[routeName].base);
-  // console.log('viewData.computeUrlFromParamsAndRouteName \ncomputedUrl:', computedUrl);
-  // console.log('      requiredParams.length:', requiredParams.length,
-  //             'requiredParams:', requiredParams
-  //             );
-
   //  remove extra trailing '/' IF added by param loop
   if (requiredParams.length > 0) {
-    // console.log('YES trimming final slash, before:', computedUrl);
     computedUrl = computedUrl.slice(0, -1);
-    // console.log('    trimming final slash, after :', computedUrl);
   }
-  else {
-    // console.log('NOT trimming final slash',
-    //               '\n  computedUrl :', computedUrl,
-    //               '\n  requiredParams:', requiredParams,
-    //               '\n  numParams:', requiredParams.length,
-    //             );
-  }
-  // console.log('viewData.computeUrlFromParamsAndRouteName, \nRETURNING computedUrl:', computedUrl);
   return computedUrl;
 }
 
