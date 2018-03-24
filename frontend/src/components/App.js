@@ -14,7 +14,6 @@ import { fetchCategories } from '../store/categories';
 class App extends Component{
 
   componentDidMount() {
-    // console.log('Categories componentDidMount ..fetching, categories');
     // Almost every page needs categories, so it's easier to fetch them at App load,
     //   than for every component to see if they exist, AND fetch if they do not
     //   This is necessary, because any page may be loaded from a (saved URL).
@@ -23,7 +22,6 @@ class App extends Component{
   }
 
   render() {
-    // console.log('____App render, this.props', this.props);
 
     return (
       <BrowserRouter>

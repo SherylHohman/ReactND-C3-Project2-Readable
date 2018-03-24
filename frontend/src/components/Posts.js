@@ -29,10 +29,6 @@ export class Posts extends Component {
   }
 
   componentDidMount() {
-    // console.log('Posts componentDidMount');
-    // console.log('Posts.cDM rPs  IS calling changeView, this.props.routerProps.location.pathname', this.props.routerProps.location.pathname);
-    // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
-
     // loc and categoryPath already reflect the value from routerProps as per mapStoreToProps
     this.props.changeView(this.props.routerProps);
     this.props.fetchPosts(this.props.categoryPath);
@@ -41,11 +37,7 @@ export class Posts extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('Posts.cWRP nextProps: ', nextProps);
-    // console.log('Posts.cWRP this.Props:', this.props);
-
     if (nextProps.sortBy !== this.props.sortBy) {
-      // console.log('Posts.cWRP nextProps: ', nextProps);
       const posts = nextProps.posts || this.props.posts;
       const sortedPosts = sortPosts(posts, nextProps.sortBy);
       this.setState({
@@ -60,7 +52,6 @@ export class Posts extends Component {
 
     if ((nextProps.routerProps  && this.props.routerProps) &&
         (nextProps.routerProps !== this.props.routerProps)){
-      // console.log('__Posts.cWRP rPs, calling changeView/fetch, nextProps.routerProps.location.pathname', nextProps.routerProps.location.pathname);
       this.props.changeView(nextProps.routerProps, this.props.routerProps);
       this.props.fetchPosts(nextProps.categoryPath);
     }
@@ -75,8 +66,6 @@ export class Posts extends Component {
   }
 
   render() {
-    // console.log('___Posts.render props:', this.props);
-    // console.log('___Posts.render fetchStatus1:', this.props.fetchStatus);
 
     let isInValidUrl;
     if (!this.props || !this.props.validUrls || !this.props.loc ||
@@ -102,8 +91,6 @@ export class Posts extends Component {
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
                     ? true : false;
 
-    // TODO: state.statusMessage
-    // set status message to display
     let statusMessage = ''
     if (this.props.posts) {
       if (!Array.isArray(this.props.posts)) {
@@ -131,7 +118,6 @@ export class Posts extends Component {
       return postLink;
     }
 
-    // console.log('Posts.render re-rendering');
     return (
       <div>
 
@@ -286,15 +272,9 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('store:', store);
-  // console.log('Posts ownProps:', ownProps);
 
-  //  performance boost by setting loc via (getLoc(routerProps)),
-  //    rather than pulling from store (store.viewData.loc)
-  //    The latter requires an extra render - 1st using OLD url, 2nd using correct URL
-  //    reason being is that cDM calls changeView, so render happens before
-  //      changeView (asynch) can update loc to the store.
-  // const loc = store.viewData.loc || null;
+  //  Fewer re-renders by setting loc from routerProps,,
+  //  rather than pulling from store (store.viewData.loc)
   const loc = getLoc(ownProps.routerProps) || null;
   const categoryPath = loc.categoryPath    || null
 
@@ -303,15 +283,14 @@ function mapStoreToProps (store, ownProps) {
 
   //  early exit to render a 404
   if (!loc || (validCategoryUrls.indexOf(loc.url) === -1)) {
-    // Exit ASAP - without calling selectors / constants constants !
-    //    - just want component to render a 404 mssg
-    //    I set as many values to NULL or CONSTANTS as possible..
+    // Exit - before calling selectors / constants constants !
+    //    Set as many values to NULL or CONSTANTS as possible..
     //    whilst not breaking the component before it renders the 404 error message
     return ({
           posts:     null,
           sortBy:    DEFAULT_SORT_BY,
           sortOrder: DEFAULT_SORT_ORDER,
-          validUrls: null,  //validCategoryUrls,
+          validUrls: null,  // validCategoryUrls,
           loc,
           categoryPath,     // null if not on a validCategoryPath
           fetchStatus,

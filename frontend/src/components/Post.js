@@ -22,15 +22,12 @@ import PropTypes from 'prop-types';
 export class Post extends Component {
 
   componentDidMount() {
-    // console.log('Post.cDM, props:', this.props);
 
     if (this.props.routerProps){
-      // console.log('Post.cDM calling changeView, post with routerProps:', this.props.routerProps);
       this.props.changeView(this.props.routerProps)
     }
 
     if (this.props.postId && !this.props.post){
-    //   console.log('Post.cDM ..fetching, post for postId:', this.props.postId);
       this.props.fetchPost(this.props.postId);
     }
   }
@@ -40,7 +37,6 @@ export class Post extends Component {
   }
 
   render(){
-    // console.log('Post.render fetchStatus', this.props.fetchStatus);
     const postId = this.props.postId;
 
     if (!this.props.post) {
@@ -64,7 +60,6 @@ export class Post extends Component {
     const categoryName = this.props.post.category;
 
     const makeUrl = (routeName) => {
-      // console.log('Post.render.makeUrl, routeName:', routeName, ', props:', this.props);
       let params = {};
       switch (routeName){
         case 'editPost':
@@ -104,7 +99,6 @@ export class Post extends Component {
       }
     }
 
-    // console.log('Posts.render, props:', this.props);
     return (
       <div>
         <div>
@@ -177,8 +171,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('Post store:', store);
-  // console.log('Post ownProps:', ownProps);
 
   //  call getLoc from routerProps RATHER THAN store.viewData.loc
   //    to get most up-to-date postId here
@@ -197,7 +189,7 @@ function mapStoreToProps (store, ownProps) {
   //  Instead, set component props using router's url, so loc doesn't change
   //    after store's url is updated, cuz it *already* had the new value.
 
-  // const loc = store.viewData.loc;
+
   const loc = getLoc(ownProps.routerProps) || null;
   const postId = loc.postId;   // *always* Exists on *this* page/component/route
 

@@ -96,12 +96,9 @@ export const SORT_BY = 'SORT_BY';
     }
     return computedUrl;
   }
-  // used to calculate a url to navigate to,
-  //  based on ROUTES definitions, where
-  //  routeName, and params, values are both supplied by the component
-  // paramValues eg:
-  //  {postId: '6ni6ok3ym7mf1p33lnez'} or
-  //  {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
+
+  // calculates a url to navigate to, based on ROUTES definitions
+  // routeName, and params values are both supplied by the component
   export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home'){
     const requiredParams = ROUTES[routeName].params;
     let computedUrl = requiredParams.reduce((acc, paramName) => {
@@ -118,8 +115,6 @@ export const SORT_BY = 'SORT_BY';
 // SELECTORS
 
 //  (routerProps is not store, but is like store in that it is the source of truth for Urls.)
-//  viewData.loc simply saves (essential info from) routerProps to store
-//  * after-the-fact *
 //  routerProps is very related to viewData.loc, and a precursor to its store
 
   export function getLoc(routerProps=null){
@@ -141,10 +136,6 @@ export const SORT_BY = 'SORT_BY';
       const matchedRouteKey = routeKeys.find((key) => {
         return ROUTES[key].route === route;
       });
-      // TODO: default value for unmatched route: null, '', 'home' ??
-      //  (unless there is another '/' in the (bad) url), usually
-      //  the matched (bad) route will be a /:category, (category route) or
-      //  the url of a deleted post, /:categoryPath/:postId
       return ROUTES[matchedRouteKey].name || 'home';
     };
     const routeName = getRouteName(route);
@@ -153,24 +144,12 @@ export const SORT_BY = 'SORT_BY';
       // actual location, not just the "match"ed part
       url: location.pathname,
 
-      // got rid of params key, instead storing params directly on loc
-      // ...match.params,
+      // match: match.url,
       ...params,
 
       // note, this is the "matched" route of the calling component
-      //   - not necessarily the route for the PAGE in the BROWSER BAR
-      //   (for example: if called from within Categories component,
-      //   route will ALWAYS be '/' because Categories
-      //   renders ("matches" on) on ALL routes
       route,
       routeName,
-
-      // not used currently.  This is the part of the url that the calling
-      //  component uses to decide it should render.  It is NOT necessarily
-      //  the full url.  For example, Categories renders on all pages, so it
-      //  will always have '/', even when the actual url is another page.
-
-      // match: match.url,
 
     };
     return(loc);
@@ -183,7 +162,6 @@ export const SORT_BY = 'SORT_BY';
     let loc;
     if (routerProps){
       loc = getLoc(routerProps);
-      // console.log('loc from routerProps', loc);
     }
     else {
       if (!store) {
@@ -194,7 +172,6 @@ export const SORT_BY = 'SORT_BY';
       };
 
       loc = store.viewData.loc;
-      // console.log('loc from viewData', loc);
     }
     return loc;
   }
@@ -308,10 +285,6 @@ export const SORT_BY = 'SORT_BY';
 
 
   export const getDerivedRouteUrlFromLoc = createSelector(
-    //  creates a would-be router url using the routeName from the loc in store
-    //    to pull the "rule" defining that routeName from ROUTE definitions.
-    //    then it combines params from the url/loc in store to create the
-    //    would-be path for that route.  Note:
     (store) => store.loc,
     (loc) => {
       const thisRoute  = ROUTES[loc.routeName]
@@ -325,15 +298,6 @@ export const SORT_BY = 'SORT_BY';
       }
       return routeUrl;
     }
-    // See also related calculatedRouteUrlFromLoc Function near ROUTES definitions
-    //    and getComputedUrlFromLocParamsAndRouteName also near ROUTES definitions
-    // Essentially the same function as calculatedRouteUrlFromLoc.
-    //    (except that this is a selector).
-    //    Also it has been re-written using reduce instead of for-in
-    //    (re-written just to compare the two algorithms)
-
-    // if passed in with routerProps, uses routerProps, else uses store
-    // params: (store, routerProps=null)
   );
 
   const getSelectedRouteName = createSelector(
@@ -346,31 +310,6 @@ export const SORT_BY = 'SORT_BY';
           const selectedRouteName = ROUTES[matchedRouteKey].name || 'home' //null;
         return selectedRouteName;
       }
-      //  Takes 2 params: store and routerProps.
-        //  IF called as (null, routerProps), or (store, routerProps) - it **ignores** store
-        //    it will use routerProps to get
-        //    the currently MATCHED route (for *that component* - see below)
-        //  If called as (store, null), or (store), it will use
-        //    store.viewData.loc to get the matched route of the PAGE that was
-        //    last saved to the store. (categories route does NOT save to the store)
-
-        //  note: if called with routerProps, it will return
-        //    the MATCHED Route for the COMPONENT which called it!
-        //    ie, Categories, which renders on every page,
-        //    MATCHES on '/', so this function will always return the "home"
-        //    route when called FROM Categories.
-        //    If want the BROWSER route - call it with routerProps=null
-        //    This way, it'll return the value previous saved to store.
-        //    Navigating to a new page requires cDM to call changeView,
-        //    before the store will be asynch updated.
-        //    Thus Categories (for example, since it *should* be calling this
-        //      func with "store", *NOT* "routrProps")
-        //    will call this function twice, once at page load,
-        //    and once after store.viewData.loc updates to store the current Browser url.
-        //    (reason this works is b/c Categories does NOT call changeView / update loc)
-
-        //  If need this value on a "Page" component, call it with routerProps
-        //    so the most current value can be returned immediately.
   );
 
   // must be called as (store, routerParams), (null, routerParams)
@@ -387,12 +326,10 @@ export const SORT_BY = 'SORT_BY';
         // actual location, not just the "match"ed part
         url: url,
 
-        // got rid of params key, instead storing params directly on loc
+        // got rid of (matched) params key, instead storing params directly on loc
         ...params,
 
         // note, this is the "matched" route - not necessarily the full route
-        //  (for example: if accessed from within Categories component,
-        //  route will ALWAYS be '/' because Categories renders/matches ALL routes)
         route,
         routeName: selectedRouteName,
 
@@ -415,10 +352,6 @@ export const SORT_BY = 'SORT_BY';
       const prevLoc = prevRouterProps ? getLoc(prevRouterProps) : null;
       if (loc.url === (prevLoc && prevLoc.url)) {
         // url hasn't changed: don't update store
-        console.log('viewData.changeView, not updating store.loc..',
-                    'prev url:', prevLoc.url,
-                    'curr url:', loc.url
-                   );
         return;
       }
       dispatch ({
@@ -457,14 +390,10 @@ export const SORT_BY = 'SORT_BY';
       route:     ROUTES.home,
       routeName: ROUTES.home.routeName,
       // store params directly on loc
-      ...ROUTES.home.params,  // home route has NO params (currently)
+      ...ROUTES.home.params,    // home route has NO params (currently)
 
       // match: HOME.url,
       //  not currently used..
-      //  Leaving definition here, so it's easily available if decide to implement
-      //    it is the "matched portion of the route" as determined by <Route> and <Switch>
-      //    not necessarily the same as the route in the url
-      //  TODO: what "default value should match be set to: home, null,,
     },
     // sort method: 'by votes' or 'by date'
     persistentSortBy:    DEFAULT_SORT_BY,
@@ -474,12 +403,8 @@ export const SORT_BY = 'SORT_BY';
 // REDUCERS
 
 function viewData(state=initialState_ViewData, action){
-  // console.log('entering reducer viewData, prevState', state);
-  // console.log('entering reducer viewData, action:'  , action);
   switch (action.type) {
     case CHANGE_VIEW:
-      // console.log('viewData state: ', state);
-      // console.log("viewData-actionType _CHANGE_VIEW, action:", action);
       return  ({
                 ...state,
                 loc: action.loc,

@@ -36,8 +36,6 @@ export class Comments extends Component {
 
   componentDidMount(){
     const postId = this.props.postId;
-    // console.log('...in Comments ComponentDidMount, props', this.props);
-    // console.log('Comments componentDidMount ..fetching, comments');
     this.props.fetchComments(postId);
   }
 
@@ -131,13 +129,11 @@ export class Comments extends Component {
     const { comments, postId } = this.props;
 
     if (postId === null) {
-      // console.log('Comments, are null.');
       return (
         <div>Unable to get comments for this post</div>
       )
     }
     if (comments === []) {
-      // console.log('There are no comments for this post.');
       return (
         <div>Be the first to comment on this post</div>
       )
@@ -259,10 +255,8 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  // const loc = store.viewData.loc;
   // using routerProps rather than store for the "loc"
-  //   prevents re-render
-  //   (affects first/second render at initial PageLoad, does Not need a 3rd)
+  //   prevents re-render due to incorrect loc values at page initia load
   const loc = getLoc(ownProps.routerProps) || null;
 
   const postId = loc && loc.postId;

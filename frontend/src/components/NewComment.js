@@ -54,7 +54,6 @@ export class NewComment extends Component {
       body: this.state.body.trim() || '(no comment)',
       author: this.state.author.trim() || '(anonymous)',
     }
-    // console.log(newCommentData);
     this.props.onSave(newCommentData);
     this.resetFormFields();
   }
@@ -91,7 +90,6 @@ export class NewComment extends Component {
         <form onSubmit={(e)=> {this.onSubmit(e)}}>
 
           <textarea
-            /* className="comment-body" */
             style={{width:"87%"}}
             type="text"
             placeholder="Your insightful comment.."
@@ -101,7 +99,6 @@ export class NewComment extends Component {
             />
 
           <input
-            /* className="comment-author" */
             type="text"
             placeholder="Your Name.."
             value={this.state.author}

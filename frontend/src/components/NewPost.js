@@ -37,15 +37,12 @@ export class NewPost extends Component {
   }
 
   componentDidMount(){
-    // console.log('NewPost.componentDidMount');
     if (this.props.categoryNames){
       this.setState( {categoryName: this.props.categoryNames[0] });
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
-
     // categories never change in life of app, they are fetched at App load
     if ( nextProps.categoryNames &&
          Array.isArray(nextProps.categoryNames) &&
@@ -130,10 +127,6 @@ export class NewPost extends Component {
   loadPostPage(categoryPath, postId){
     this.props.history.push(`${ROUTES.post.base}${categoryPath}/${postId}`);
   }
-
-  // onSubmit(e){
-  //     e.preventDefault();
-  //   }
 
   onCancel(){
     //  TODO: return to prev url, via history object, instead of the Home Page
