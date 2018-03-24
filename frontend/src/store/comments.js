@@ -329,8 +329,8 @@ import * as ReaderAPI from '../utils/api';
           }
         });
 
-      case FETCH_COMMENTS_FAILURE:
       case ADD_COMMENT_FAILURE:
+      case FETCH_COMMENTS_FAILURE:
       case EDIT_COMMENT_FAILURE:
       case DELETE_COMMENT_FAILURE:
       case VOTE_ON_COMMENT_FAILURE:

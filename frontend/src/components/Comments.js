@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getUri } from '../store/viewData';
+import { getLoc } from '../store/viewData';
 import { fetchComments } from '../store/comments';
 import { upVoteComment, downVoteComment } from '../store/comments';
 import { editComment, deleteComment } from '../store/comments';
@@ -8,6 +8,7 @@ import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 import NewComment from './NewComment';
 import Modal from 'react-responsive-modal';
 import PropTypes from 'prop-types';
+import { createSelector } from'reselect';
 
 
 export class Comments extends Component {
@@ -73,6 +74,9 @@ export class Comments extends Component {
     this.updateFieldStatus('author', currentText)
   }
 
+  clickDisabled(e){
+    e.preventDefault();
+  }
   canSubmit(){
     const keys = Object.keys(this.state.validField);
     const allFieldsValid = keys.every((key) => {
@@ -86,10 +90,10 @@ export class Comments extends Component {
   onSave(){
     if (this.canSubmit()) {
       this.props.updateComment({
-        id:this.state.id, //id, //: this.props.id,
+        id:this.state.id,
         body: this.state.body.trim(),
         author: this.state.author,
-        timestamp: Date.now(),   // supposed to update timestamp ?
+        timestamp: Date.now(),
       });
       this.closeModal();
     }
@@ -140,13 +144,7 @@ export class Comments extends Component {
     return  (
       <div>
         <hr />
-        {comments.filter((comment) => !comment.deleted && !comment.parentDeleted)
-          .sort((commentA, commentB) => {
-            if (commentA === commentB) return 0;
-            if (commentA.timestamp < commentB.timestamp) return 1;
-            return -1;
-          })
-          .map((comment) => {
+        {comments.map((comment) => {
             return (
               <li key={comment.id}>
                 <p>{comment.body}</p>
@@ -220,7 +218,10 @@ export class Comments extends Component {
 
                 <button
                   className={canSubmit ? "on-save" : "has-invalid-field"}
-                  onClick={() => {this.onSave()}}
+                    onClick={canSubmit
+                              ? ()  => {this.onSave()}
+                              : (e) => {this.clickDisabled}
+                            }
                   >
                   Save
                 </button>
@@ -253,19 +254,36 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  const uri = getUri(ownProps.routerProps) || null;
 
-  // const postId = store.viewData.currentId  || null;
-  const postId = uri && uri.currentId;  // or uri.params.postId // or uri.postId
+  // using routerProps rather than store for the "loc"
+  //   prevents re-render due to incorrect loc values at page initia load
+  const loc = getLoc(ownProps.routerProps) || null;
 
-  const commentIds = Object.keys(store.comments);
-  const comments = commentIds.reduce((acc, commentId) => {
-    return acc.concat([store.comments[commentId]]);
-  }, []);
+  const postId = loc && loc.postId;
+
+  const getSortedComments = createSelector(
+    state => store.comments,
+    (comments) => {
+      return (
+        Object.keys(comments)
+        .reduce((acc, commentId) => {
+          return acc.concat([store.comments[commentId]]);
+         }, [])
+        .filter((comment) => !comment.deleted && !comment.parentDeleted)
+          // most recently edited/added to the top/start of the list
+        .sort((commentA, commentB) => {
+          if (commentA === commentB) return 0;
+          if (commentA.timestamp < commentB.timestamp) return 1;
+          return -1;
+        })
+      );
+    }
+  );
+  const sortedComments = getSortedComments(store);
 
   return {
     postId,
-    comments,
+    comments : sortedComments,
   }
 };
 

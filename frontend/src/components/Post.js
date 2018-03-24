@@ -1,62 +1,57 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import Comments from './Comments';
-import { ROUTES, HOME } from '../store/viewData';
-import { changeView, getUri } from '../store/viewData';
+
+// dispatch functions
+import { changeView, getLoc } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
+
+// Components
+import Comments from './Comments';
+import FetchStatus from './FetchStatus';
+
+// Selectors
+import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+
+// helpers and constants
+import { computeUrlFromParamsAndRouteName } from '../store/viewData';
 import { dateMonthYear, titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
+
 
 export class Post extends Component {
 
   componentDidMount() {
+
+    if (this.props.routerProps){
+      this.props.changeView(this.props.routerProps)
+    }
+
     if (this.props.postId && !this.props.post){
       this.props.fetchPost(this.props.postId);
     }
+  }
 
-    if (this.props.uri){
-      this.props.changeView(this.props.uri)
-    }
+  disableClick(e){
+    e.preventDefault();
   }
 
   render(){
-    const { isLoading, isFetchFailure } = this.props.fetchStatus;
     const postId = this.props.postId;
 
-    if (isFetchFailure) {
-      return (
-        <div>
-          <p>I could not retrieve that post.</p>
-          <p>Either that post does not exist..</p>
-          <p>..or there was a network error.</p>
-          <hr />
-          <Link to={HOME.url}>Home Page</Link>
-          <button onClick={() => {this.props.fetchPost(postId)}}>Retry</button>
-        </div>
-      )
-    }
-
-    if (isLoading) {
-      return (
-        <div>
-          <p>looking for your Post..</p>
-        </div>
-      )
-    }
-
     if (!this.props.post) {
+      // loading "spinner", fetch failure, or 404
       return (
-        <div>
-          <p>First render should have initiated a fetch..</p>
-          <p>..but then either "isLoading" or "isFetchFailure" should kick in</p>
-          <p><i>Should not get this far.. (why was there no early return??)</i></p>
-          <p>Post: post wasn\'t present in props, do I have the postID?: {postId}</p>
-        </div>
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'post'}
+          item={this.props.post}
+          retryCallback={()=>this.props.fetchPost(postId)}
+        />
       );
     }
 
-    // only set these constants After early return for non-existant this.props.post (isLoading, or isFetchFailure)
+    // Set these constants After early return for non-existant post
     const {title, body, voteScore, commentCount, author, timestamp } = this.props.post;
 
     // disambiguate category --> categoryName:
@@ -64,11 +59,54 @@ export class Post extends Component {
     // category on a post refers to a category.name
     const categoryName = this.props.post.category;
 
+    const makeUrl = (routeName) => {
+      let params = {};
+      switch (routeName){
+        case 'editPost':
+          if (!this.props || !this.props.postId){
+            console.log('ERROR: Post.render.makePostUrl Missing "postId", props:', this.props);
+            return null;
+          }
+          params = {
+            postId: this.props.postId,
+          }
+          return computeUrlFromParamsAndRouteName(params, routeName);
+
+        case 'category':
+          if (!this.props || !this.props.categoryPath){
+            console.log('ERROR: Post.render.makeCategoryUrl Missing "categoryPath", props:', this.props);
+            return null;
+          }
+          params = {
+            categoryPath: this.props.categoryPath,
+          }
+          return computeUrlFromParamsAndRouteName(params, routeName);
+
+        case 'post':
+          if (!this.props || !this.props.postId || !this.props.categoryPath){
+            console.log('ERROR: Post.render.makePostUrl Missing "postId" or "categoryPath", props:', this.props);
+            return null;
+          }
+          params = {
+            postId: this.props.postId,
+            categoryPath: this.props.categoryPath,
+          }
+          return computeUrlFromParamsAndRouteName(params, routeName);
+
+        default:
+          console.log('ERROR: Post.render.makeUrl, defaulting. Unknown routeName:', routeName);
+          return null;
+      }
+    }
+
     return (
       <div>
         <div>
-            <Link to={`${ROUTES.post.base}${postId}`}>
-              <h2>{title}</h2>
+            <Link to={makeUrl('post')}
+                  onClick={this.disableClick}
+                  style={{cursor:"default"}}
+              >
+              <h2 className="selected">{title}</h2>
             </Link>
 
             <div>
@@ -93,14 +131,14 @@ export class Post extends Component {
             <p>category: {titleCase(categoryName)} | by: {author}, {dateMonthYear(timestamp)}</p>
 
             <div>
-              <Link
-                to={`${ROUTES.category.base}${this.props.categoryPath}`}
-                onClick={() => {this.props.deletePost(postId)}}
+              <Link to={makeUrl('category')}
+                    onClick={() => {this.props.deletePost(postId)}}
                 >
                 Delete Post
               </Link>
 
-              <Link to={`${ROUTES.editPost.base}${postId}`}>
+              <Link to={makeUrl('editPost')}
+                >
                 Edit Post
               </Link>
             </div>
@@ -126,35 +164,46 @@ function mapDispatchToProps(dispatch){
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
 
     deletePost: (postId) => dispatch(deletePost(postId)),
-    changeView: (uri) => dispatch(changeView({ uri })),
+    changeView: (routerProps) => dispatch(changeView(routerProps)),
 
     fetchPost:  (id) => dispatch(fetchPost(id)),
   })
 }
 
 function mapStoreToProps (store, ownProps) {
-  const uri = getUri(ownProps.routerProps) || null;
-  const postId = uri.postId  || null;
-  const post = store.posts[postId] || null;
 
-  const fetchStatus = {
-    isLoading:      store.posts.isLoading,
-    isFetchFailure: store.posts.isFetchFailure,
-    errorMessage:   store.posts.errorMessage,
-  }
+  //  call getLoc from routerProps RATHER THAN store.viewData.loc
+  //    to get most up-to-date postId here
+  //    rather than wait for cDM to call updateView and store to asynch update
+  //    store.viewData.loc (url,postId,categoryPath,..) to the current Page
+  //    based on routerProps info.
+  //  Optimization:
+  //    uses routerProps to get infor for CURRENT browser Url
+  //    rather than the one saved to store
+  //    This is because routerProps is the source of truth for this component
+  //    (since component ONLY renders on EXACT match)
+  //  This is because at componentDidMount, store has the url of the PREVIOUS
+  //    page.  cDM THEN calls changeView to UPDATE store to make it in synch
+  //    with the current browser url..
+  //  Which would then re-trigger a re-render with the updated (correct) url.
+  //  Instead, set component props using router's url, so loc doesn't change
+  //    after store's url is updated, cuz it *already* had the new value.
 
-  // so can redirect to Post's (former) category when deleting the post
-  const categoryName = (post && post.category) || null;
-  const category  = categoryName && store.categories[categoryName];
-  const categoryPath = (category && store.categories[categoryName].path) || null
-        //HOME.category.path || null;
+
+  const loc = getLoc(ownProps.routerProps) || null;
+  const postId = loc.postId;   // *always* Exists on *this* page/component/route
+
+  const post = getPostsAsObjects(store)[postId] || null;
+  const fetchStatus = getFetchStatus(store);
+
+  // So can easily redirect to Post's (former) category when deleting the post.
+  const categoryPath = loc.categoryPath || null;
 
   return {
-    fetchStatus,
-    postId,
     post,
-    categoryPath,  // ref to the url of this post's category
-    uri,           // keep data in synch w/ browser url
+    postId,
+    categoryPath,
+    fetchStatus,
   }
 };
 

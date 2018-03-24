@@ -13,10 +13,28 @@
   - From the [`api-server`](../api-server) folder in a new terminal window, type `node server` to start the backend API server which serves up app data.
   - From this `frontend` folder in a new terminal window, type `npm start` or `yarn start` to serve the app in your OS's default browser.  After a brief pause, a new browser window will automatically open to the running app.
 
-### What this app does..
-...
+### What this app does..  
+Users may create New Posts, Edit and Delete Existing Posts.  
+Users May Comment on existing posts.  
+Users may Edit and Delete existing comments.  
+Users my upVote or downVote Posts and Comments.  
+
+There is no user authentication.  
+Any user may edit/delete any comment or post.  
+Any user may vote an endless number of times on any post or comment.  
 
 
+### Additional Info..
+
+[Github Repo](https://github.com/SherylHohman/ReactND-C3-Project2-Readable)  
+
+Github Issues [Waffle board](https://waffle.io/SherylHohman/ReactND-C3-Project2-Readable)  
+
+[Issues](https://github.com/SherylHohman/ReactND-C3-Project2-Readable/issues)  
+
+[Sheryl Hohman's Github](https://github.com/SherylHohman)  
+
+ This project is [licensed](./LICENSE.TXT) under the terms of the BSD license.  
 ## 
 
 ----------------

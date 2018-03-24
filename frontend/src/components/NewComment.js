@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import { addComment } from '../store/comments';
+import React, { Component } from 'react';import { addComment } from '../store/comments';
 import { connect } from 'react-redux';
 import { createId, titleCase } from '../utils/helpers';
 
@@ -41,6 +40,9 @@ export class NewComment extends Component {
     this.validateField('author', currentText)
   }
 
+  disableClick(e){
+    e.preventDefault();
+  }
   onSave(){
     //  sending only changed values, rather than the whole post, hence the name
     const newCommentData = {
@@ -86,7 +88,6 @@ export class NewComment extends Component {
         <form onSubmit={(e)=> {this.onSubmit(e)}}>
 
           <textarea
-            /* className="comment-body" */
             style={{width:"87%"}}
             type="text"
             placeholder="Your insightful comment.."
@@ -96,7 +97,6 @@ export class NewComment extends Component {
             />
 
           <input
-            /* className="comment-author" */
             type="text"
             placeholder="Your Name.."
             value={this.state.author}
@@ -106,7 +106,10 @@ export class NewComment extends Component {
 
           <button
             className={canSubmit ? "on-save" : "has-invalid-field"}
-            onClick={() => {this.onSave();}}
+              onClick={canSubmit
+                        ? ()  => {this.onSave()}
+                        : (e) => {this.disableClick}
+                      }
             >
             Save
           </button>
@@ -132,7 +135,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps ( store, ...ownProps ) {
   return {
-    postId : store.viewData.currentId,
+    postId : store.viewData.loc.postId,
   }
 };
 

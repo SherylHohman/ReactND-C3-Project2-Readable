@@ -2,45 +2,60 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { fetchCategories } from '../store/categories';
-import { ROUTES } from '../store/viewData';
-import { changeView, HOME, DEFAULT_SORT_BY, getUri } from '../store/viewData';
-import { titleCase } from '../utils/helpers';
+
+import { fetchCategories} from '../store/categories';
+
+// Components
+import FetchStatus from './FetchStatus';
+
+// selectors
 import { createSelector } from 'reselect';
+import { getFetchStatus } from '../store/categories';  // category selectors
+
+// selectors, that should be refactored to regular constants
+import { getCategoriesArray, getValidCategoryUrls } from '../store/categories';
+// constants/helpers than maybe could be selectors instead
+import { getLocFrom } from '../store/viewData';
+
+// helpers and constants
+import { HOME, DEFAULT_SORT_BY } from '../store/viewData';
+import { titleCase } from '../utils/helpers';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { createCategoryUrlToPathLookup } from '../store/categories';
+
 
 export class Categories extends Component {
+// TODO refactor to functional component
 
-  componentDidMount() {
-    this.props.fetchCategories();
-
-    if (this.props.uri){
-      this.props.changeView(this.props.uri)
-    }
+  clickDisabled(e){
+    e.preventDefault();
   }
 
   render() {
+
+    // categories fetch was initiated from App.js
+    if (!this.props.categories) {
+      // loading "spinner", fetch failure, or 404
+      return (
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'categories'}
+          item={this.props.categories}
+          retryCallback={()=>this.props.fetchCategories()}
+        />
+      );
+    }
+
     const makeCategoryLink = (categoryPath) => {
-      return ROUTES.category.base + categoryPath;
+      return computeUrlFromParamsAndRouteName(
+                      {categoryPath: categoryPath},
+                      'category',
+             );
     }
 
     const isExactPath = (thisCategoryPath) => {
-      return this.props.selectedCategoryPath === thisCategoryPath;
+      return (this.props.selectedCategoryPath === thisCategoryPath);
     }
-
-    // Note: NavLink can apply a different class when the current URL matches
-      //  the NavLink item (so the link LOOKS different - eg: cursor and highlighting)
-      //  BUT it will NOT DISABLE the link
-      //  AND css isDisabled NOT LET me set the cursor (thus it still LOOKS like a link)
-      //  THAT'S WHY I'm hand writing <li> "Links" for the selected Category
-      //  ..Unfortunately, this is adding an extra space in front of every LINK
-      //    that PRECEEDS the Selected "Link" causing the text to shift
-      //    depending on which "Link: is selected.
-      //    Observe: as select Links one-by-one from L to R,
-      //    text accumulates an additional shifted space,
-      //    shifting Links from Current to EndOfList a bit further to the right
-      //    TODO: how to fix ??
-      //      - Already tried wrapping in div..
-      //      - And CSS Computed Properties LOOK the SAME No Matter Which Link is Selected !!
 
     return (
       <div>
@@ -52,17 +67,18 @@ export class Categories extends Component {
                         className="no-link"> Category: </li>
 
                 { isExactPath(HOME.category.path) ?
-                  ( <li key="disabled-all-categories-makeSureThisKeyIsUnique"
-                        className = "selected"
-                        aria-current="true" /* to mimic what NavLink does */
+                  (  <NavLink key="disabled-all-categories-makeSureThisKeyIsUnique"
+                        to={(HOME.category.path)}
+                        className={"selected"}
+                        onClick={this.clickDisabled}
                         >
+                      <li key="all-categories-makeSureThisKeyIsUnique">
                         All
-                    </li>
+                      </li>
+                    </NavLink>
                   ) : (
                     <NavLink key="navlink-all-categories-makeSureThisKeyIsUnique"
                         to={(HOME.category.path)}
-                        activeClassName={"selected"}
-                        isActive={isExactPath}
                         >
                       <li key="all-categories-makeSureThisKeyIsUnique">
                         All
@@ -74,21 +90,21 @@ export class Categories extends Component {
                 {this.props.categories.map(category => {
                   if (isExactPath(category.path)) {
                     return (
-                      <div key={'div-disabled-'+category.name}
-                        className = "selected"
-                        aria-current="true" /* to mimic what NavLink does */
+                      <NavLink key={"disabled-"+category.name}
+                        to={makeCategoryLink(category.path)}
+                        className="selected"
+                        onClick={this.clickDisabled}
                         >
-                        <li key={'disabled-'+category.name}>
+                        <li key={category.name}>
                         {titleCase(category.name)}
                         </li>
-                      </div>
+                       </NavLink>
                     )
                   }
                   else {
                     return (
                       <NavLink key={"navlink-"+category.name}
                         to={makeCategoryLink(category.path)}
-                        activeClassName="selected"
                         >
                         <li key={category.name}>
                         {titleCase(category.name)}
@@ -113,58 +129,50 @@ export class Categories extends Component {
 function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
-    changeView: (uri) => dispatch(changeView({ uri })),
   })
 }
 
 function mapStoreToProps (store, ownProps) {
-  const { match, location, history } = ownProps;
-  const routerProps = { match, location, history };
-  const uri = getUri(routerProps) || null;
 
-  const getCategoriesArray = createSelector(
-    store => store.categories,
-    (categories) => Object.keys(categories).reduce((acc, categoryKey) => {
-      return acc.concat([categories[categoryKey]]);
-     }, [])
+  // this could change..
+  const routerProps = ownProps;
+
+  // so can use as an input to getSelectedCategoryPath
+  const getUrl = createSelector(
+    getLocFrom,  // must call with (null, routerProps) or (store, routerProps)
+    (loc) => loc.url,
   );
-  const categoriesArray = getCategoriesArray(store);
 
-  const getSelectedCategoryPath = createSelector(
-    store => store.viewData.currentId,
-    store => store.categories,
-    store => store.viewData.currentUrl,
-    (currentId, categories, url) => {
-      // currentUrl exactly matches a valid Category Url
-      const getCategoriesPaths = createSelector(
-        store => store.categories,
-        (categories) => Object.keys(categories).reduce((acc, categoryKey) => {
-          return acc.concat([categories[categoryKey].path]);
-         }, []).concat(HOME.category.path)
-      );
-      const categoriesPaths = getCategoriesPaths(store);
+  const categoryUrlToPathLookup  = createCategoryUrlToPathLookup(store);
+  const getSelectedCategoryPath  = createSelector(
+    getUrl,                     // ( ,routerProps)
+    getValidCategoryUrls,       // ()
 
-      if ((categoriesPaths.indexOf(currentId) !== -1) &&
-          // in case more ROUTES get added that incorporate categoryPath (currentId)
-          (url === ROUTES.category.base + currentId)
-          ){
-        return currentId;
+    (currentUrl, validCategoryUrls) => {
+      // verify currentUrl EXACTLY matches a valid Category Url
+      let selectedCategoryPath;
+      if (currentUrl && (validCategoryUrls.indexOf(currentUrl) !== -1)){
+          const matchedUrl = currentUrl;
+          selectedCategoryPath = categoryUrlToPathLookup[matchedUrl]
       }
       else {
-        // any other url memoizes as null, so
-        //  categories won't re-render on non Categories route
-        //  (Categories shows on all pages, not just '/:categoryPath')
-        return null;
+          // browser is not on a category path, memoise as null
+          selectedCategoryPath = null;
       }
+      return selectedCategoryPath;
     }
   );
-  const selectedCategoryPath = getSelectedCategoryPath(store);
+  const selectedCategoryPath = getSelectedCategoryPath(store, routerProps);
+
+  // Do NOT pass routerProps as 2nd parameter!, or anything else as 2nd param!
+  const fetchStatus      = getFetchStatus(store);
+  const categoriesArray  = getCategoriesArray(store);
 
   return {
+      fetchStatus,
       categories: categoriesArray   || null,
       sortBy: store.viewData.sortBy || DEFAULT_SORT_BY,
-      uri,
-      selectedCategoryPath,  // null if not on a valid category URL (ROUTE.category.path)
+      selectedCategoryPath,  // null if not on a valid category URL
   }
 };
 

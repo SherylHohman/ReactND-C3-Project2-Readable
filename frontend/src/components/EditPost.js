@@ -1,10 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { editPost } from '../store/posts';
-import { HOME, ROUTES } from '../store/viewData';
-import { changeView, getUri } from '../store/viewData';
+
+// dispatch functions
+import { changeView, getLoc } from '../store/viewData';
+import { editPost }  from '../store/posts';
 import { fetchPost } from '../store/posts';
+
+// Components
+import FetchStatus from './FetchStatus';
+
+// Selectors
+import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories';
+import { getCategoryNames, getCategoriesObject } from '../store/categories';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+
+// helpers and constants
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
@@ -25,17 +37,13 @@ export class EditPost extends Component {
   }
 
   componentDidMount(){
-    // synch store with current URL
-    if (this.props.uri){
-      this.props.changeViewByUri(this.props.uri);
-    }
+    this.props.changeView(this.props.routerProps);
 
     if (!this.props.post) {
       // needed when page is loaded from a saved url
       this.props.fetchPost(this.props.postId);
     }
     else {
-      // init controlled input fields
       this.setState({
         title: this.props.post.title,
         body : this.props.post.body,
@@ -50,15 +58,10 @@ export class EditPost extends Component {
       this.setState({
         title: nextProps.post.title,
         body: nextProps.post.body,
-        category: nextProps.post.category,
+        categoryName: nextProps.post.category,
         author: nextProps.post.author,
       })
     }
-
-    // if (nextProps.uri && nextProps.uri !== this.props.uri){
-    //   this.props.changeViewByUri(this.props.uri);
-    // }
-
   }
 
   canSubmit(){
@@ -95,54 +98,52 @@ export class EditPost extends Component {
     this.validateField('author', currentText)
   }
 
-  // onSubmit(e){
-  //   e.preventDefault();
-  // }
-
-
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
-      title: this.state.title.trim()   || '(untitled)',
-      category: this.state.categoryName,
-      body: this.state.body.trim()     || '(blank)',
+      title: this.state.title.trim()    || '(untitled)',
+      category: this.state.categoryName || this.props.categoryNames[0],
+      body: this.state.body.trim()      || '(blank)',
 
       // TODO: automatically populate author from logged in user
-      author: this.state.author.trim() || '(anonymous)',
+      author: this.state.author.trim()  || '(anonymous)',
     }
     this.props.onSave(this.props.postId, editedPostData);
   }
 
   render(){
 
-    // TODO:
-    // if (FETCH ERROR){
-    //   // bad postId/deleted-post (likely form saved Url, or browser Back Button)
-    //   // redirect/link to home or last viewed category page (persistentCategoryPath)
-    //   return (
-    //     <div>
-    //       <p>I do not know that post.. Can you find it for me ?</p>
-    //       <Link to={HOME.url}>
-    //         <p>Take me to the home page ;-D </p>
-    //       </Link>
-    //     </div>
-    //   )
-    // }
-
     const postId = this.props.postId;
-    const postUrl = `${ROUTES.post.base}${postId}`;
 
-    if (this.props && this.props.postId && !this.props.post){
+    // loading "spinner", fetch failure, or 404
+    if (!this.props.post) {
       return (
-        <div>
-        <h2> Hold On.. I'm getting your Post </h2>
-          {/* below is until get fetch error handling implemented (then use above section) */}
-          <Link to={HOME.url}>
-            <h3 style={{color: "red"}}> (..unless it doesn't exist..) </h3>
-            <h3>Take me to the home page ;-D </h3>
-          </Link>
-        </div>
-      )
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'post to edit'}
+          item={this.props.post}
+          retryCallback={()=>this.props.fetchPost(postId)}
+        />
+      );
+    }
+
+    const makePostUrl = () => {
+      // first render state will have invalid values - early return
+      // also need to wait for asynch fetching et al
+      if (!this.state.categoryName || !this.props.categoriesObject ||
+          !this.props.categoriesObject[this.state.categoryName] ||
+          !this.props.categoriesObject[this.state.categoryName].path
+          ){
+        return '';
+      }
+
+      const params = {
+        postId: this.props.postId,
+        categoryPath: this.props.categoriesObject[this.state.categoryName].path
+      };
+      const routeName = 'post';
+      const postUrl   = computeUrlFromParamsAndRouteName(params, routeName);
+      return postUrl
     }
 
     const canSubmit = this.canSubmit();
@@ -205,15 +206,18 @@ export class EditPost extends Component {
           </div>
 
           <Link
-            to={postUrl}
+            to={makePostUrl()}
             >
             <button
               className={canSubmit ? "on-save" : "has-invalid-field"}
               onClick={() => {this.onSave();}}
               disabled={!canSubmit}
+              type="button"
               >Save
             </button>
-            <button>Cancel</button>
+            <button type="button"
+              >Cancel
+            </button>
           </Link>
 
         </form>
@@ -257,27 +261,24 @@ EditPost.propTypes = {
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (postId, editedPostData) => dispatch(editPost(postId, editedPostData)),
-    changeViewByUri: (uri) => dispatch(changeView({ uri })),
+    changeView: (routerProps) => dispatch(changeView(routerProps)),
     fetchPost:  (postId) => dispatch(fetchPost(postId)),
   })
 }
 
 function mapStoreToProps ( store, ownProps) {
-  // const postId = store.viewData.currentId;
-  const postId = getUri(ownProps.routerProps).postId || null;//currentId;
+  const postId = getLoc(ownProps.routerProps).postId || null;
+  const post = getPostsAsObjects(store)[postId] || null;
 
-  const categoryNames = Object.keys(store.categories).reduce((acc, categoryKey) => {
-    return acc.concat([store.categories[categoryKey].name]);
-  }, []);
-
-  const uri = getUri(ownProps.routerProps) || null;
-
+  const categoriesObject = getCategoriesObject(store);
+  const categoryNames =    getCategoryNames(store);
   return {
-    categoriesObject: store.categories,
-    categoryNames,
+    categoriesObject, //:   getCategoriesObject(store),
+    categoryNames,    //:   getCategoryNames(store),
     postId,
-    post: store.posts[postId],
-    uri,
+    post,
+    fetchStatus: getFetchStatus(store),
+    categoriesFetchStatus: getCategoriesFetchStatus(store),
   }
 };
 

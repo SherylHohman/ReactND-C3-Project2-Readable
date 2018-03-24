@@ -1,16 +1,19 @@
 import * as ReaderAPI from '../utils/api';
+// constants
+import { HOME, computeUrlFromParamsAndRouteName } from './viewData';
+// libraries
+import { createSelector } from 'reselect';
+import { combineReducers } from 'redux';
 
 // ACTION TYPES
-  export const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
-  export const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
-  export const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
-  export const SET_CURRENT_CATEGORY = 'SET_CURRENT_CATEGORY';
+ const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
+ const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
+ const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
 
   export function fetchCategories(){
     return (dispatch) => {
 
       dispatch({ type: FETCH_CATEGORIES });
-        // TODO: show loading spinner
 
         ReaderAPI.fetchCategories()
           .then((response) => {
@@ -19,11 +22,6 @@ import * as ReaderAPI from '../utils/api';
               console.log('__response NOT OK, fetchCategories');
               throw Error(response.statusText);
             }
-            // TODO
-            // dispatch({
-            //   type: IS_LOADING_FALSE,
-            //   showLoadingSpinner: false,
-            // });
             return response;
           })
 
@@ -59,26 +57,24 @@ import * as ReaderAPI from '../utils/api';
 // INITIAL STATES
   const categoriesInitialState = {};
 
+  const fetchStatusInitialState = {
+    isLoading: false,
+    isFetchFailure: false,
+    errorMessage: '',
+  }
 
 // REDUCER(s)
-  function categories(state=categoriesInitialState, action){
+  function fetched(state=categoriesInitialState, action){
     switch (action.type){
       case FETCH_CATEGORIES_SUCCESS:
         return ({
           ...state,
           ...action.categories
-          // TODO: turn loading spinner off
         });
       case FETCH_CATEGORIES:
-        return ({
-          ...state,
-          //  TODO: turn loading spinner on
-        });
       case FETCH_CATEGORIES_FAILURE:
         return ({
           ...state,
-          // TODO: turn loading spinner off
-          // TODO: could set an error message on some state to handle errors
         });
 
       default:
@@ -86,4 +82,112 @@ import * as ReaderAPI from '../utils/api';
     }
   }
 
-export default categories;
+function fetchStatus(state=fetchStatusInitialState, action){
+  switch (action.type){
+    case FETCH_CATEGORIES:
+      return ({
+        ...state,
+        isLoading:      true,
+        isFetchFailure: false,
+        errorMessage:   '',
+      });
+    case FETCH_CATEGORIES_SUCCESS:
+      return ({
+        ...state,
+        isLoading:      false,
+        isFetchFailure: false,
+        errorMessage:   '',
+      });
+    case FETCH_CATEGORIES_FAILURE:
+      return ({
+        ...state,
+        isLoading:      false,
+        isFetchFailure: true,
+        errorMessage:   action.err,
+      });
+    default:
+      return state;
+  }
+}
+const categories = combineReducers({
+  fetched,
+  fetchStatus,
+});
+export default categories
+
+
+// SELECTORS
+export const getFetchStatus      = (store) => store.categories.fetchStatus;
+export const getCategoriesObject = (store) => store.categories.fetched;
+
+//  categories don't change during the life of the app (they are defined in server file),
+export const getCategoriesArray = createSelector(
+    getCategoriesObject,    //(store)
+
+    (categoriesObj) => {
+      const catagoriesArray = Object.keys(categoriesObj).reduce((acc, categoryKey) => {
+        return acc.concat([categoriesObj[categoryKey]]);
+      }, [])
+     // does NOT include an entry "All" or "" for All Categories
+
+      return catagoriesArray;
+    }
+);
+
+// call as getValidCategoryPaths(store)
+export const getValidCategoryPaths = createSelector(
+    getCategoriesArray,    //(store)
+
+    (categoriesArray) => {
+        const validCategoryPaths = categoriesArray.map((category) => {
+          return category.path;
+        })
+        // home path must be LAST in array, so indexOf searches will work as indended
+        .concat(HOME.category.path)
+
+    return validCategoryPaths;
+    }
+);
+
+// call as getCategoryNames(store)
+export const getCategoryNames = createSelector(
+    // used for populating category drop down selector options in new/edit post
+    getCategoriesArray,    //(store)
+
+    (categoriesArray) => {
+      return categoriesArray.map((category) => {
+          return category.name;
+      });
+      // does NOT include an entry "All" or "" for All Categories
+    }
+);
+
+// valid /:category routes - vs 404
+// call as getCategoryNames(store)
+export const getValidCategoryUrls = createSelector(
+    getValidCategoryPaths,    //(store)
+    (categoryPaths) => {
+      let validUrls = categoryPaths.map((categoryPath) => {
+        return computeUrlFromParamsAndRouteName({ categoryPath }, 'category');
+      });
+      // home path was added to getValidCategoryPaths, so no need to add it here.
+      return validUrls;
+    }
+);
+
+// TODO: why did I create a selector here ? could be a constant.
+// call as getCategoryUrlToPath(store)
+export const createCategoryUrlToPathLookup = createSelector(
+  getValidCategoryPaths,    //(store)
+
+  (categoryPaths) => {
+    let urls = categoryPaths.reduce((acc, categoryPath) => {
+      const url = computeUrlFromParamsAndRouteName({ categoryPath }, 'category');
+      acc[url] = categoryPath;
+      return acc;
+      }, {});
+
+    return urls;
+  }
+);
+

@@ -1,13 +1,24 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+
+// dispatch Action Creators
 import { fetchPosts } from '../store/posts';
-import { ROUTES, HOME } from '../store/viewData';
-import PageNotFound from './PageNotFound';
-import { changeView, getUri, changeSort, DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
+import { changeView, getLoc, changeSort } from '../store/viewData';
 import { upVotePost, downVotePost, deletePost } from '../store/posts';
+
+// Components
+import FetchStatus from './FetchStatus';
+
+// Selectors
+import { getPostsCurrentCategory, getFetchStatus } from '../store/posts';
+import { getValidCategoryUrls, getCategoriesObject } from '../store/categories';
+
+// Actions and Constants, and helpers
+import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
 import { dateMonthYear, titleCase } from '../utils/helpers';
-import { createSelector } from 'reselect';
+
 
 export class Posts extends Component {
 
@@ -17,39 +28,38 @@ export class Posts extends Component {
     sortOrder: DEFAULT_SORT_ORDER,
   }
 
-  isInValidUrl(){
-    if (!this.props || !this.props.validUrls || !this.props.uri ||
-        this.props.validUrls.indexOf(this.props.uri.url) === -1){
-      return true;
-    }
-    return false;
-  }
-
   componentDidMount() {
+    // loc and categoryPath already reflect the value from routerProps as per mapStoreToProps
+    this.props.changeView(this.props.routerProps);
     this.props.fetchPosts(this.props.categoryPath);
-    if (this.props.uri){
-      this.props.changeViewByUri(this.props.uri)
-    }
+
+    this.setState({ sortBy: this.props.sortBy });
   }
 
   componentWillReceiveProps(nextProps){
-
     if (nextProps.sortBy !== this.props.sortBy) {
-      this.setState({ sortBy: nextProps.sortBy });
+      const posts = nextProps.posts || this.props.posts;
+      const sortedPosts = sortPosts(posts, nextProps.sortBy);
+      this.setState({
+        posts:  sortedPosts,
+        sortBy: nextProps.sortBy,
+      });
     }
-    if (nextProps.posts !== this.props.posts) {
-      const sortedPosts = sortPosts(nextProps.posts,
-                                    nextProps.sortBy || this.state.sortBy);
+    else if (nextProps.posts !== this.props.posts) {
+      const sortedPosts = sortPosts(nextProps.posts, this.state.sortBy);
       this.setState({ posts: sortedPosts });
     }
 
-    if (nextProps.uri && this.props.uri &&
-        nextProps.uri.url !== this.props.uri.url){
-      this.props.changeViewByUri(nextProps.uri)
+    if ((nextProps.routerProps  && this.props.routerProps) &&
+        (nextProps.routerProps !== this.props.routerProps)){
+      this.props.changeView(nextProps.routerProps, this.props.routerProps);
       this.props.fetchPosts(nextProps.categoryPath);
     }
   }
 
+  disableClick(e){
+    e.preventDefault();
+  }
   onChangeSort(e, sortBy){
     e.preventDefault();
     this.props.onChangeSort(sortBy);
@@ -57,35 +67,62 @@ export class Posts extends Component {
 
   render() {
 
-    if (this.isInValidUrl()){
+    let isInValidUrl;
+    if (!this.props || !this.props.validUrls || !this.props.loc ||
+        this.props.validUrls.indexOf(this.props.loc.url) === -1){
+      // console.log('Posts, isInValidUrl, url:', this.props && this.props.loc && this.props.loc.url)
+      isInValidUrl = true;
+    }
+    else { isInValidUrl = false; }
+
+    if (isInValidUrl){
       return (
-        <div>
-          <PageNotFound routerProps={ this.props.routerProps } />
-        </div>
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'posts'}
+          item={this.props.posts}
+          retryCallback={()=>this.props.fetchPosts(this.props.categoryPath)}
+        />
       );
     }
 
+    // valid categoryPath can have empty posts array: []
     const havePosts = (this.props && this.props.posts &&
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
                     ? true : false;
 
-    // set status message to display TODO: state.statusMessage
     let statusMessage = ''
-    if (this.props) {
-      statusMessage = 'No Posts Data';
-      if (this.props.posts) {
-        statusMessage = 'Be the first to write a post..';
-          if (!Array.isArray(this.props.posts)) {
-            statusMessage = 'Posts are not in an array - they canot be mapped over !';
-          }
+    if (this.props.posts) {
+      if (!Array.isArray(this.props.posts)) {
+        console.log('Posts.render Error: Posts are not in an array format - they canot be mapped over !');
       }
+      else {
+        statusMessage = 'Be the first to write a post for category: '
+                       + titleCase(this.props.categoryPath);
+      }
+    }
+
+   const getPostUrl = (post) => {
+      if (Object.keys(this.props.categoriesObject).length === 0){
+        // categoriesObject is {}
+        // categories must be read from file on server at app initial load (asynch)
+        return '';  //  dummy link value until categoriesObject gets saved to store
+      }
+      const categoryName = post.category;  // categoryName === key for categoriesObject
+      const categoryPath = this.props.categoriesObject[categoryName].path;
+      const postParams = {
+          categoryPath,
+          postId: post.id,
+      };
+      const postLink = computeUrlFromParamsAndRouteName( postParams,'post' );
+      return postLink;
     }
 
     return (
       <div>
 
           {/*New Post*/}
-          <Link to={`${ROUTES.newPost.base}${ROUTES.newPost.param}`}
+          <Link to={computeUrlFromParamsAndRouteName( {},'newPost' )}
                 style={{"height":"100%",
                         "width" :"100%"
                       }}
@@ -95,19 +132,25 @@ export class Posts extends Component {
 
           <hr />
 
-          {/* sortBy  TODO map over constants in viewData instead */}
+          {/* sortBy  TODO refactor to map over SoryBy constants in viewData instead */}
           <div>
             <ul className="nav sort">
               <li className="no-link"> Sort By : </li>
               <li
                 className={`${this.state.sortBy==='date' ? "selected" : ""}`}
-                onClick={(e) => {this.onChangeSort(e, 'date')}}
+                  onClick={this.state.sortBy==='date'
+                            ? (()  => {this.disableClick})
+                            : ((e) => {this.onChangeSort(e, 'date')})
+                          }
                 >
                 Most Recent
               </li>
               <li
                 className={(this.state.sortBy==='voteScore' ? "selected" : "")}
-                onClick={(e) => {this.onChangeSort(e, 'voteScore')}}
+                  onClick={this.state.sortBy==='voteScore'
+                          ? ()  => {this.disableClick}
+                          : (e) => {this.onChangeSort(e, 'voteScore')}
+                        }
               >
                 Most Votes
               </li>
@@ -123,16 +166,16 @@ export class Posts extends Component {
              <div>
               <ol>
                 { this.state.posts.map(post => {
-                    // EVERY element AND div has a unique key, yet the warning persists
-                    // What am I missing here ?? What more can it want
-                    //  And, can I REMOVE some of these keys ??
+                    // EVERY element AND div has a unique key,
+                    //  TODO:, can I REMOVE some of these keys ??
                     const id=post.id;
                     return (
                       <li key={post.id}>
                         <div key={`key-post-wrapper-div-${id}`}>
 
                           <Link key={`key-linkto-post-${id}`}
-                                 to={`${ROUTES.post.base}${post.id}`}>
+                                 to={getPostUrl(post)}
+                                 >
                             <h1 key={`key-${post.title}-${id}`}>
                                 {post.title}
                                 </h1>
@@ -155,7 +198,7 @@ export class Posts extends Component {
                           <div key={`key-edit-delete-div-${id}`}>
                             <Link key={`key-linkTo-deletePost-${id}`}
                                   to={`${ROUTES.category.base}${this.props.categoryPath}`}
-                                  onClick={() => {this.props.deletePost(post.id)}}
+                                  onClick={() => {this.props.onDeletePost(post.id)}}
                                   >
                               Delete Post
                             </Link>
@@ -195,7 +238,7 @@ export class Posts extends Component {
 }
 
 function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER) {
-  if (!posts) return posts;  // invalid categoryRoute sets posts to null
+  if (!posts) return posts;  // an invalid categoryRoute sets posts to null
   const isHIGH_TO_LOW = (orderBy === DEFAULT_SORT_ORDER) ? 1 : -1;
 
   const sorted = posts.sort((postA, postB) => {
@@ -209,7 +252,7 @@ function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER
       if (postA.voteScore  <  postB.voteScore) return 1 * isHIGH_TO_LOW
       else return -1 * isHIGH_TO_LOW
     }
-    return 0;  // no change
+    return 0;  // invalid sortMethod, do not change order of incoming elements
   });
   return sorted;
 };
@@ -221,96 +264,52 @@ function mapDispatchToProps(dispatch){
 
     onUpVotePost:   (postId) => dispatch(upVotePost(postId)),
     onDownVotePost: (postId) => dispatch(downVotePost(postId)),
-    deletePost: (postId) => dispatch(deletePost(postId)),
+    onDeletePost:     (postId) => dispatch(deletePost(postId)),
 
-    changeViewByUri: (uri) => dispatch(changeView({ uri })),
+    changeView: (routerProps) => dispatch(changeView(routerProps)),
     onChangeSort: (sortBy) => dispatch(changeSort(sortBy)),
   })
 }
 
 function mapStoreToProps (store, ownProps) {
 
-  const uri = getUri(ownProps.routerProps) || null;
+  //  Fewer re-renders by setting loc from routerProps,,
+  //  rather than pulling from store (store.viewData.loc)
+  const loc = getLoc(ownProps.routerProps) || null;
+  const categoryPath = loc.categoryPath    || null
 
-  // const for the life of the app, as categories don't change
-  // valid /:category routes - vs 404
-  const getValidCategoryUrls = createSelector(
-    store => store.categories,
-    (categories) => {
-      const categoryNames = Object.keys(store.categories);
-      let validUrls = categoryNames.map((categoryName) => {
-        return '/' + store.categories[categoryName].path;
-      });
-      // HOME.url must be LAST in array for indexOf searches to work as expected
-      validUrls.push(HOME.url);
-      return validUrls;
-    }
-  );
-  const validCategoryUrls = getValidCategoryUrls(store)
+  const validCategoryUrls = getValidCategoryUrls(store);
+  const fetchStatus = getFetchStatus(store);
 
-  if (!uri || (validCategoryUrls.indexOf(uri.url) === -1)) {
-    // TODO: exit ASAP - before compute below constants ! - just want to render 404 mssg
-    //    keep computations minimal:
-    //    set as many values to NULL or CONSTANTS as possible..
-    //    while not breaking the component
+  //  early exit to render a 404
+  if (!loc || (validCategoryUrls.indexOf(loc.url) === -1)) {
+    // Exit - before calling selectors / constants constants !
+    //    Set as many values to NULL or CONSTANTS as possible..
+    //    whilst not breaking the component before it renders the 404 error message
     return ({
           posts:     null,
           sortBy:    DEFAULT_SORT_BY,
           sortOrder: DEFAULT_SORT_ORDER,
-          validUrls: null,  //validCategoryUrls,
-          uri,
-          categoryPath: uri.currentId,
+          validUrls: null,  // validCategoryUrls,
+          loc,
+          categoryPath,     // null if not on a validCategoryPath
+          fetchStatus,
         })
   }
 
-  // TODO: move these selectors to ?? reducers files ??
-  const getAllPosts = createSelector(
-    store => store.posts,
-    store => store.viewData.persistentSortBy,
-    (postsObj, persistentSortBy) => {
-      // object to array
-      const allPosts = Object.keys(postsObj).reduce((acc, postId) => {
-        return acc.concat([postsObj[postId]]);
-      }, []);
-      return allPosts;
-    }
-  );
-  const allPosts = getAllPosts(store);
-
-  // TODO: save categorized posts filtered by category
-  // const getPostIdsByCategory = createSelector(
-  // );
-  // const postIdsByCategory = getPostIdsByCategory(store);
-  // const postIdsCurrentCategory = postIdsByCategory[uri.currentId] || null;
-
-  const getPostsCurrentCategory = createSelector(
-    store => store.viewData.currentId,
-    store => store.viewData.url,
-    store => store.persistentSortBy,
-    (currentCategoryPath, url, persistentSortBy) => {
-      // uses memoized selectors allPosts, and validCategoryUrls (defined above)
-      const postsCurrentCategory = allPosts.filter( (post) => {
-        return post.category === uri.currentId;
-      });
-      const currentPosts = (uri.currentId === HOME.category.path)
-                   ? allPosts
-                   : postsCurrentCategory
-      return currentPosts;
-    }
-  );
-  const postsCurrentCategory = getPostsCurrentCategory(store);
-
-  // const sortedPosts = sortPosts(allPosts, uri.persistentSortBy);
-  // const sortedPosts = sortPosts(postsCurrentCategory, uri.persistentSortBy);
+  const posts = getPostsCurrentCategory(store, ownProps);
 
   return {
-    posts:     postsCurrentCategory, //sortedPosts,
-    sortBy:    store.viewData.persistentSortBy    || DEFAULT_SORT_BY,
-    sortOrder: store.viewData.persistentSortOrder || DEFAULT_SORT_ORDER,
+    categoriesObject: getCategoriesObject(store),
+
+    posts,
+    sortBy:    store.viewData.persistentSortBy,
+    sortOrder: store.viewData.persistentSortOrder,
 
     validUrls: validCategoryUrls,
-    uri,
-    categoryPath: uri.currentId,
+    loc,
+    categoryPath,
+    fetchStatus,
   }
 };
 
