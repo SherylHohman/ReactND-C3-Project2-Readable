@@ -115,7 +115,12 @@ export class Posts extends Component {
       }
     }
 
-    const getPostUrl = (post) => {
+   const getPostUrl = (post) => {
+      if (Object.keys(this.props.categoriesObject).length === 0){
+        // categoriesObject is {}
+        // categories must be read from file on server at app initial load (asynch)
+        return '';  //  dummy link value until categoriesObject gets saved to store
+      }
       const categoryName = post.category;  // categoryName === key for categoriesObject
       const categoryPath = this.props.categoriesObject[categoryName].path;
       const postParams = {
