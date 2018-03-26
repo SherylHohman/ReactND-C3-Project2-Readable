@@ -16,12 +16,13 @@ import { getFetchStatus } from '../store/categories/selectors';  // category sel
 // selectors, that should be refactored to regular constants
 import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
 // constants/helpers than maybe could be selectors instead
-import { getLocFrom, getUrl } from '../store/viewData/selectors';
+import { getLocFrom, getLocFromRouter } from '../store/viewData/selectors';
+// import { getLocFrom, getUrl } from '../store/viewData/selectors';
 
 // helpers and constants
 import { HOME, DEFAULT_SORT_BY } from '../store/viewData/constants';
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/routes';
-import { createCategoryUrlToPathLookup } from '../store/categories/selectors';
+import { getCategoryUrlToPathLookup } from '../store/categories/selectors';
 import { titleCase } from '../utils/helpers';
 
 
@@ -143,31 +144,28 @@ function mapStoreToProps (store, ownProps) {
   const routerProps = ownProps;
 
   // so can use as an input to getSelectedCategoryPath
-  // const getUrl = createSelector(
-  //   getLocFrom,  // must call with (null, routerProps) or (store, routerProps)
-  //   (loc) => loc.url,
-  // );
-  // // const url = getUrl(null, routerProps);
+  const currentUrl = getLocFromRouter(routerProps).url;
+  // const url = getUrl(null, routerProps);
 
-  const categoryUrlToPathLookup  = createCategoryUrlToPathLookup(store);
-  const getSelectedCategoryPath  = createSelector(
-    // getUrl,                     // ( ,routerProps)
-    getValidCategoryUrls,       // ()
+  const categoryUrlToPathLookup  = getCategoryUrlToPathLookup(store);
+  const validCategoryUrls        = getValidCategoryUrls(store);
 
-    (currentUrl, validCategoryUrls) => {
+  const getSelectedCategoryPath  = () => {
+      console.log('\ncurrentUrl:', currentUrl, '\nvalidCategoryUrls:', validCategoryUrls);
       // verify currentUrl EXACTLY matches a valid Category Url
       let selectedCategoryPath;
       if (currentUrl && (validCategoryUrls.indexOf(currentUrl) !== -1)){
           const matchedUrl = currentUrl;
-          selectedCategoryPath = categoryUrlToPathLookup[matchedUrl]
+          selectedCategoryPath = categoryUrlToPathLookup[matchedUrl];
       }
       else {
-          // browser is not on a category path, memoise as null
+          // browser is not on a category path
           selectedCategoryPath = null;
       }
       return selectedCategoryPath;
     }
-  );
+
+  console.log('Categories.mSTP, \nstore:', store, '\nrouterProps:', routerProps);
   const selectedCategoryPath = getSelectedCategoryPath(store, routerProps);
 
   // Do NOT pass routerProps as 2nd parameter!, or anything else as 2nd param!

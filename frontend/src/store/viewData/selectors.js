@@ -74,10 +74,11 @@ import { ROUTES, validRouteNames } from './routes';  // './constants';
   );
 
   // params: (store, routerProps=null)
-  const getUrl = createSelector(
+  export const getUrl = createSelector(
     (store, routerProps) => {
       if (!store && !routerProps) {
-        console.log('ERROR: viewData.getUrl is missing parameters: (store, routerProps)');
+        console.log('ERROR: viewData.getUrl is missing parameters. \nstore:', store,
+                    '\nrouterProps:', routerProps);
         return null
       }
       if (routerProps) {
@@ -370,7 +371,7 @@ export const getLocFromStore = createSelector(
   //  But this depends on proper programming, so it *can* break
   (store) => {
     if (!store)  {
-      console.log('Error: viewData/selectors.getLocFromStore, was passed an invalid store');
+      console.log('Error: viewData/selectors.getLocFromStore, was passed an invalid store:\n', store);
       return null;
     }
     return store.viewData.loc;
@@ -378,39 +379,56 @@ export const getLocFromStore = createSelector(
 );
 
 // NOTE: BREAKING CHANGES TO THS FUNCTION
-//  THIS version of getLoc takes 2 params: (store=null, routerProps=null)
 //  Prior version is now called getLocFromRouter (routerProps)
-export const getLoc = createSelector(
-  // only interested in location info for PAGES (EXACT Router matches
-  // if component calling this function renders on EXACT path, then use routerProps
-  //   (so can get most up to date info, without waiting for CHANGE_VIEW to update the store
-  //    with the new PAGE url)
-  // otherwise, return location info from store.
-  // STORE *SHOULD* only be updated when a component matching an EXACT Route mounts.
-  // But this depends on proper programming, so it *can* break
 
-  // On the otherhand, if *do* want location info from a MATCHED but NOT EXACT path,
-  //    then call getLocFromRouter directly !
-  // This is a convenience function that always accepts store and routerProps
-  //   then returns the latest known PAGE loc info, without the user having to
-  //   think about whether the component matches on a partial or full route.
-  (store, routerProps=null) => {
-    console.log('viewData.getLoc', store, routerProps)
-    console.log('getLoc, routerProps, routerPropsIsExactMatch', routerProps, routerPropsIsExactMatch(routerProps));
-    return  (!routerProps || !routerPropsIsExactMatch(routerProps))
-              ? null
-              : routerProps  // routerProps
-            },
-  // (store=null, routerProps=null) => (!store ? null : store),
+// //  THIS version of getLoc takes 2 params: (store=null, routerProps=null)
+// export const getLoc = createSelector(
+//   // only interested in location info for PAGES (EXACT Router matches
+//   // if component calling this function renders on EXACT path, then use routerProps
+//   //   (so can get most up to date info, without waiting for CHANGE_VIEW to update the store
+//   //    with the new PAGE url)
+//   // otherwise, return location info from store.
+//   // STORE *SHOULD* only be updated when a component matching an EXACT Route mounts.
+//   // But this depends on proper programming, so it *can* break
 
-  (routerProps, store) => {
-    if (!routerProps) {console.log('no routerProps', routerProps); return null;}
-    if (routerProps) return getLocFromRouter(routerProps);
-    if (store)   return getLocFromStore (store);
+//   // On the otherhand, if *do* want location info from a MATCHED but NOT EXACT path,
+//   //    then call getLocFromRouter directly !
+//   // This is a convenience function that always accepts store and routerProps
+//   //   then returns the latest known PAGE loc info, without the user having to
+//   //   think about whether the component matches on a partial or full route.
+
+//   // (store, null) => store,
+//   (store, routerProps=null) => {
+//     console.log('viewData.getLoc \nstore:', store, '\nrouterProps:', routerProps)
+//     console.log('getLoc, routerProps, routerPropsIsExactMatch', routerProps, routerPropsIsExactMatch(routerProps));
+//     return  (!routerProps || !routerPropsIsExactMatch(routerProps))
+//               ? null
+//               : routerProps  // routerProps
+//             },
+//   // (store=null, routerProps=null) => (!store ? null : store),
+
+//   (store, routerProps) => {
+//     // if (!routerProps) {console.log('no routerProps', routerProps); return null;}
+//     if (routerProps) return getLocFromRouter(routerProps);
+//     if (store)   return getLocFromStore (store);
+//     console.log('Error: viewData/selectors.xxx, missing store, and routerProps for this component is NOT and Exact Match');
+//     return null;
+//   }
+// );
+
+ // THIS version of getLoc takes 2 params:
+ // call as(store=null, routerProps=null)
+export function getLoc(store, routerProps){
+    console.log('viewData.getLoc \nstore:', store, '\nrouterProps:', routerProps)
+    if (routerProps && routerPropsIsExactMatch(routerProps)) {
+      return getLocFromRouter(routerProps);
+    }
+    if (store) {
+      return getLocFromStore (store);
+    }
     console.log('Error: viewData/selectors.xxx, missing store, and routerProps for this component is NOT and Exact Match');
     return null;
-  }
-);
+};
 
 
 // -----------------------------------------

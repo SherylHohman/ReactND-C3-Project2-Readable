@@ -1,121 +1,121 @@
-import * as ReaderAPI from '../../utils/api';
+// import * as ReaderAPI from '../../utils/api';
 // constants
 import { HOME, computeUrlFromParamsAndRouteName } from '../viewData/constants';
 // libraries
 import { createSelector } from 'reselect';
-import { combineReducers } from 'redux';
+// import { combineReducers } from 'redux';
 
-// ACTION TYPES
- const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
- const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
- const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
+// // ACTION TYPES
+//  const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
+//  const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
+//  const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
 
-  export function fetchCategories(){
-    return (dispatch) => {
+//   export function fetchCategories(){
+//     return (dispatch) => {
 
-      dispatch({ type: FETCH_CATEGORIES });
-        // TODO: show loading spinner
+//       dispatch({ type: FETCH_CATEGORIES });
+//         // TODO: show loading spinner
 
-        ReaderAPI.fetchCategories()
-        // fetchCategoriesAPI()
-          .then((response) => {
+//         ReaderAPI.fetchCategories()
+//         // fetchCategoriesAPI()
+//           .then((response) => {
 
-            if (!response.ok) {
-              console.log('__response NOT OK, fetchCategories');
-              throw Error(response.statusText);
-            }
-            return response;
+//             if (!response.ok) {
+//               console.log('__response NOT OK, fetchCategories');
+//               throw Error(response.statusText);
+//             }
+//             return response;
 
-          })
-          .then((response) => response.json())
-          .then((data) => {
-            // data.categories is array of category objects {name, url}
-            const categoriesObject = data.categories.reduce((acc, category)=>{
-              return {
-                ...acc,
-                // index categories on the path !!!, not the name
-                [category.path]: category,
-              }
-            }, {})
+//           })
+//           .then((response) => response.json())
+//           .then((data) => {
+//             // data.categories is array of category objects {name, url}
+//             const categoriesObject = data.categories.reduce((acc, category)=>{
+//               return {
+//                 ...acc,
+//                 // index categories on the path !!!, not the name
+//                 [category.path]: category,
+//               }
+//             }, {})
 
-            return dispatch({
-              type: FETCH_CATEGORIES_SUCCESS,
-              categories: categoriesObject,
-            })}
-          )
-          .catch(err => {
-            console.error(err);  //  in case of render error
-            dispatch({
-              type: FETCH_CATEGORIES_FAILURE,
-              err,
-              error: true,
-            })
-          });
+//             return dispatch({
+//               type: FETCH_CATEGORIES_SUCCESS,
+//               categories: categoriesObject,
+//             })}
+//           )
+//           .catch(err => {
+//             console.error(err);  //  in case of render error
+//             dispatch({
+//               type: FETCH_CATEGORIES_FAILURE,
+//               err,
+//               error: true,
+//             })
+//           });
 
-    }; // dispatch wrapper
-};
+//     }; // dispatch wrapper
+// };
 
 
-// INITIAL STATES
-  const categoriesInitialState = {};
+// // INITIAL STATES
+//   const categoriesInitialState = {};
 
-  const fetchStatusInitialState = {
-    isLoading: false,
-    isFetchFailure: false,
-    errorMessage: '',
-  }
+//   const fetchStatusInitialState = {
+//     isLoading: false,
+//     isFetchFailure: false,
+//     errorMessage: '',
+//   }
 
-// REDUCER(s)
-  function fetched(state=categoriesInitialState, action){
-    switch (action.type){
-      case FETCH_CATEGORIES_SUCCESS:
-        return ({
-          ...state,
-          ...action.categories
-        });
-      case FETCH_CATEGORIES:
-      case FETCH_CATEGORIES_FAILURE:
-        return ({
-          ...state,
-        });
+// // REDUCER(s)
+//   function fetched(state=categoriesInitialState, action){
+//     switch (action.type){
+//       case FETCH_CATEGORIES_SUCCESS:
+//         return ({
+//           ...state,
+//           ...action.categories
+//         });
+//       case FETCH_CATEGORIES:
+//       case FETCH_CATEGORIES_FAILURE:
+//         return ({
+//           ...state,
+//         });
 
-      default:
-        return state;
-    }
-  }
+//       default:
+//         return state;
+//     }
+//   }
 
-function fetchStatus(state=fetchStatusInitialState, action){
-  switch (action.type){
-    case FETCH_CATEGORIES:
-      return ({
-        ...state,
-        isLoading:      true,
-        isFetchFailure: false,
-        errorMessage:   '',
-      });
-    case FETCH_CATEGORIES_SUCCESS:
-      return ({
-        ...state,
-        isLoading:      false,
-        isFetchFailure: false,
-        errorMessage:   '',
-      });
-    case FETCH_CATEGORIES_FAILURE:
-      return ({
-        ...state,
-        isLoading:      false,
-        isFetchFailure: true,
-        errorMessage:   action.err,
-      });
-    default:
-      return state;
-  }
-}
-const categories = combineReducers({
-  fetched,
-  fetchStatus,
-});
-export default categories
+// function fetchStatus(state=fetchStatusInitialState, action){
+//   switch (action.type){
+//     case FETCH_CATEGORIES:
+//       return ({
+//         ...state,
+//         isLoading:      true,
+//         isFetchFailure: false,
+//         errorMessage:   '',
+//       });
+//     case FETCH_CATEGORIES_SUCCESS:
+//       return ({
+//         ...state,
+//         isLoading:      false,
+//         isFetchFailure: false,
+//         errorMessage:   '',
+//       });
+//     case FETCH_CATEGORIES_FAILURE:
+//       return ({
+//         ...state,
+//         isLoading:      false,
+//         isFetchFailure: true,
+//         errorMessage:   action.err,
+//       });
+//     default:
+//       return state;
+//   }
+// }
+// const categories = combineReducers({
+//   fetched,
+//   fetchStatus,
+// });
+// export default categories
 
 
 // SELECTORS
@@ -130,11 +130,11 @@ export const getCategoriesArray = createSelector(
 
     (categoriesObj) => {
       const catagoriesArray = Object.keys(categoriesObj).reduce((acc, categoryKey) => {
-        // console.log('+++ categories.js, recomputing getCategories_ARRAY');  // for monitoring how app/reselect works
+        console.log('+++ categories.js, recomputing getCategories_ARRAY');  // for monitoring how app/reselect works
         return acc.concat([categoriesObj[categoryKey]]);
       }, [])
      // does NOT include an entry "All" or "" for All Categories
-      // console.log('  + categories.js, getCategories_ARRAY', catagoriesArray);  // for monitoring how app/reselect works
+      console.log('  + categories.js, getCategories_ARRAY', catagoriesArray);  // for monitoring how app/reselect works
 
       return catagoriesArray;
     }
@@ -145,13 +145,13 @@ export const getValidCategoryPaths = createSelector(
     getCategoriesArray,    //(store)
 
     (categoriesArray) => {
-      // console.log('+++ categories.js, recomputing getValidCategory_PATHS');  // for monitoring how app/reselect works
+      console.log('+++ categories.js, recomputing getValidCategory_PATHS');  // for monitoring how app/reselect works
         const validCategoryPaths = categoriesArray.map((category) => {
           return category.path;
         })
         // home path must be LAST in array, so indexOf searches will work as indended
         .concat(HOME.category.path)
-      // console.log('  + categories.js, validCategory_PATHS:', validCategoryPaths);  // for monitoring how app/reselect works
+      console.log('  + categories.js, validCategory_PATHS:', validCategoryPaths);  // for monitoring how app/reselect works
 
     return validCategoryPaths;
     }
@@ -173,24 +173,24 @@ export const getCategoryNames = createSelector(
 );
 
 // valid /:category routes - vs 404
-// call as getCategoryNames(store)
+// call as getValidCategoryUrls(store)
 export const getValidCategoryUrls = createSelector(
     getValidCategoryPaths,    //(store)
     (categoryPaths) => {
-      // console.log('+++ categories.js, recomputing getValidCategory_URLS');  // for monitoring how app/reselect works
+      console.log('+++ categories.js, recomputing getValidCategory_URLS');  // for monitoring how app/reselect works
       let validUrls = categoryPaths.map((categoryPath) => {
         // return'/' + path;
         return computeUrlFromParamsAndRouteName({ categoryPath }, 'category');
       });
       // home path was added to getValidCategoryPaths, so no need to add it here.
-      // console.log('  + categories.js, validCategory_URLS:', validUrls);  // for monitoring how app/reselect works
+      console.log('  + categories.js, validCategory_URLS:', validUrls);  // for monitoring how app/reselect works
       return validUrls;
     }
 );
 
 // TODO: why did I create a selector here ? could be a constant.
-// call as getCategoryUrlToPath(store)
-export const createCategoryUrlToPathLookup = createSelector(
+// call as getCategoryUrlToPathLookup(store)
+export const getCategoryUrlToPathLookup = createSelector(
   getValidCategoryPaths,    //(store)
 
   (categoryPaths) => {

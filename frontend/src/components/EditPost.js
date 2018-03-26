@@ -281,7 +281,7 @@ function mapStoreToProps ( store, ownProps) {
   // console.log('EditPost.mSTP  store:', store)
   // console.log('EditPost.mSTP  ownProps', ownProps);
 
-  const postId = getLoc(ownProps.routerProps).postId || null;
+  const postId = getLoc(store, ownProps.routerProps).postId || null;
   const post = getPostsAsObjects(store)[postId] || null;
 
   const categoriesObject = getCategoriesObject(store);

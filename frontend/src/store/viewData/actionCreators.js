@@ -3,7 +3,7 @@ import { CHANGE_VIEW, SORT_BY } from './constants';
 // CONSTANTS
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from './constants';
 // SELECTORS
-import { getLoc, routerPropsIsExactMatch } from './selectors';
+import { getLocFromRouter, routerPropsIsExactMatch } from './selectors';
 
 // ACTION CREATORS
 
@@ -19,8 +19,8 @@ import { getLoc, routerPropsIsExactMatch } from './selectors';
     //   return;
     // }
 
-    const loc = getLoc(routerProps);
-    const prevLoc = prevRouterProps ? getLoc(prevRouterProps) : null;
+    const loc = getLocFromRouter(routerProps);
+    const prevLoc = prevRouterProps ? getLocFromRouter(prevRouterProps) : null;
 
     if (loc.url === (prevLoc && prevLoc.url)) {
       // url hasn't changed: don't update store

@@ -1,120 +1,128 @@
-import { combineReducers } from 'redux';
+// import * as ReaderAPI from '../utils/api';
+// // constants
+// import { HOME, computeUrlFromParamsAndRouteName } from './viewData';
+// // libraries
+// import { createSelector } from 'reselect';
+// import { combineReducers } from 'redux';
 
-import * as ReaderAPI from '../../utils/api';
-import * as actionTypes from './constants';
-import { HOME, computeUrlFromParamsAndRouteName } from '../viewData/constants';
+// CONSTANTS
+  // For consistancy,
+  // Add a "category" definition for the home page: posts for "All" Categories
+  // ALL_POSTS_CATEGORY compliments the "categories" defined on server,
+  // could be: {name: 'All', path:''} // name is the display name for the category
+  export const ALL_POSTS_CATEGORY= {name: '', path: ''};
 
 // ACTION TYPES
-  const { FETCH_CATEGORIES,
-          FETCH_CATEGORIES_SUCCESS,
-          FETCH_CATEGORIES_FAILURE } = actionTypes;
+  export const FETCH_CATEGORIES = 'FETCH_CATEGORIES';
+  export const FETCH_CATEGORIES_SUCCESS = 'FETCH_CATEGORIES_SUCCESS';
+  export const FETCH_CATEGORIES_FAILURE = 'FETCH_CATEGORIES_FAILURE';
 
-  export function fetchCategories(){
-    return (dispatch) => {
+//   export function fetchCategories(){
+//     return (dispatch) => {
 
-      dispatch({ type: FETCH_CATEGORIES });
-        // TODO: show loading spinner
+//       dispatch({ type: FETCH_CATEGORIES });
+//         // TODO: show loading spinner
 
-        ReaderAPI.fetchCategories()
-        // fetchCategoriesAPI()
-          .then((response) => {
+//         ReaderAPI.fetchCategories()
+//         // fetchCategoriesAPI()
+//           .then((response) => {
 
-            if (!response.ok) {
-              console.log('__response NOT OK, fetchCategories');
-              throw Error(response.statusText);
-            }
-            return response;
+//             if (!response.ok) {
+//               console.log('__response NOT OK, fetchCategories');
+//               throw Error(response.statusText);
+//             }
+//             return response;
 
-          })
-          .then((response) => response.json())
-          .then((data) => {
-            // data.categories is array of category objects {name, url}
-            const categoriesObject = data.categories.reduce((acc, category)=>{
-              return {
-                ...acc,
-                // index categories on the path !!!, not the name
-                [category.path]: category,
-              }
-            }, {})
+//           })
+//           .then((response) => response.json())
+//           .then((data) => {
+//             // data.categories is array of category objects {name, url}
+//             const categoriesObject = data.categories.reduce((acc, category)=>{
+//               return {
+//                 ...acc,
+//                 // index categories on the path !!!, not the name
+//                 [category.path]: category,
+//               }
+//             }, {})
 
-            return dispatch({
-              type: FETCH_CATEGORIES_SUCCESS,
-              categories: categoriesObject,
-            })}
-          )
-          .catch(err => {
-            console.error(err);  //  in case of render error
-            dispatch({
-              type: FETCH_CATEGORIES_FAILURE,
-              err,
-              error: true,
-            })
-          });
+//             return dispatch({
+//               type: FETCH_CATEGORIES_SUCCESS,
+//               categories: categoriesObject,
+//             })}
+//           )
+//           .catch(err => {
+//             console.error(err);  //  in case of render error
+//             dispatch({
+//               type: FETCH_CATEGORIES_FAILURE,
+//               err,
+//               error: true,
+//             })
+//           });
 
-    }; // dispatch wrapper
-};
+//     }; // dispatch wrapper
+// };
 
 
-// INITIAL STATES
-  const categoriesInitialState = {};
+// // INITIAL STATES
+//   const categoriesInitialState = {};
 
-  const fetchStatusInitialState = {
-    isLoading: false,
-    isFetchFailure: false,
-    errorMessage: '',
-  }
+//   const fetchStatusInitialState = {
+//     isLoading: false,
+//     isFetchFailure: false,
+//     errorMessage: '',
+//   }
 
-// REDUCER(s)
-  function fetched(state=categoriesInitialState, action){
-    switch (action.type){
-      case FETCH_CATEGORIES_SUCCESS:
-        return ({
-          ...state,
-          ...action.categories
-        });
-      case FETCH_CATEGORIES:
-      case FETCH_CATEGORIES_FAILURE:
-        return ({
-          ...state,
-        });
+// // REDUCER(s)
+//   function fetched(state=categoriesInitialState, action){
+//     switch (action.type){
+//       case FETCH_CATEGORIES_SUCCESS:
+//         return ({
+//           ...state,
+//           ...action.categories
+//         });
+//       case FETCH_CATEGORIES:
+//       case FETCH_CATEGORIES_FAILURE:
+//         return ({
+//           ...state,
+//         });
 
-      default:
-        return state;
-    }
-  }
+//       default:
+//         return state;
+//     }
+//   }
 
-function fetchStatus(state=fetchStatusInitialState, action){
-  switch (action.type){
-    case FETCH_CATEGORIES:
-      return ({
-        ...state,
-        isLoading:      true,
-        isFetchFailure: false,
-        errorMessage:   '',
-      });
-    case FETCH_CATEGORIES_SUCCESS:
-      return ({
-        ...state,
-        isLoading:      false,
-        isFetchFailure: false,
-        errorMessage:   '',
-      });
-    case FETCH_CATEGORIES_FAILURE:
-      return ({
-        ...state,
-        isLoading:      false,
-        isFetchFailure: true,
-        errorMessage:   action.err,
-      });
-    default:
-      return state;
-  }
-}
-const categories = combineReducers({
-  fetched,
-  fetchStatus,
-});
-export default categories
+// function fetchStatus(state=fetchStatusInitialState, action){
+//   switch (action.type){
+//     case FETCH_CATEGORIES:
+//       return ({
+//         ...state,
+//         isLoading:      true,
+//         isFetchFailure: false,
+//         errorMessage:   '',
+//       });
+//     case FETCH_CATEGORIES_SUCCESS:
+//       return ({
+//         ...state,
+//         isLoading:      false,
+//         isFetchFailure: false,
+//         errorMessage:   '',
+//       });
+//     case FETCH_CATEGORIES_FAILURE:
+//       return ({
+//         ...state,
+//         isLoading:      false,
+//         isFetchFailure: true,
+//         errorMessage:   action.err,
+//       });
+//     default:
+//       return state;
+//   }
+// }
+// const categories = combineReducers({
+//   fetched,
+//   fetchStatus,
+// });
+// export default categories
 
 
 // // SELECTORS

@@ -296,7 +296,8 @@ function mapStoreToProps (store, ownProps) {
   //    reason being is that cDM calls changeView, so render happens before
   //      changeView (asynch) can update loc to the store.
   // const loc = store.viewData.loc || null;
-  const loc = getLoc(ownProps.routerProps) || null;
+  // const loc = getLoc(ownProps.routerProps) || null; // changed footprint
+  const loc = getLoc(store, ownProps.routerProps) || null;
   const categoryPath = loc.categoryPath    || null
 
   const validCategoryUrls = getValidCategoryUrls(store);
