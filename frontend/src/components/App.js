@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { Link, Switch } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+// Components
 import Categories from './Categories';
 import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
 import PageNotFound from './PageNotFound';
-import { fetchCategories } from '../store/categories';
+
+// Action Creators
+import { fetchCategories } from '../store/categories/actionCreators';
+
 
 class App extends Component{
 

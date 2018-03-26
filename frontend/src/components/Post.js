@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 // dispatch functions
-import { changeView, getLoc } from '../store/viewData';
-import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
+import { changeView } from '../store/viewData/actionCreators';
+import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts/actionCreators';
 
 // Components
 import Comments from './Comments';
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+import { getLoc } from '../store/viewData/selectors';
+import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 
 // helpers and constants
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/routes';
 import { dateMonthYear, titleCase } from '../utils/helpers';
-import PropTypes from 'prop-types';
 
 
 export class Post extends Component {
@@ -178,7 +179,17 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
   // console.log('Post store:', store);
-  // console.log('Post ownProps:', ownProps);
+  console.log('Post ownProps:', ownProps);
+  // TODO: should I create a selector for routerProps ?
+  //    if each component creates its own (ownProps) object
+  //    then the object reference could change, even when the url does not.
+  //    Keep in mind though, that routerProps will reflect the MATCHED
+  //    value for the component.
+  //    Since I'm intereste ONLY in ABSOLUTE Browser URLs
+  //    Perhapss the selector can compare ABSOLUTE urls
+  //    and always return MY routerProps corresponding to the last seen
+  //    FULL isExact url.. Similar to what I do for storing viewData.loc
+
 
   //  call getLoc from routerProps RATHER THAN store.viewData.loc
   //    to get most up-to-date postId here
@@ -198,9 +209,12 @@ function mapStoreToProps (store, ownProps) {
   //    after store's url is updated, cuz it *already* had the new value.
 
   // const loc = store.viewData.loc;
-  const loc = getLoc(ownProps.routerProps) || null;
+  // const loc = getLoc(ownProps.routerProps) || null;  // changed footprint for this function
+  const loc = getLoc(store, ownProps.routerProps) || null;
   const postId = loc.postId;   // *always* Exists on *this* page/component/route
 
+  // create selector for this - more than one component that is called back to back
+  //  ma be interested in the same post.
   const post = getPostsAsObjects(store)[postId] || null;
   const fetchStatus = getFetchStatus(store);
 

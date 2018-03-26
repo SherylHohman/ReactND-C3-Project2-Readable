@@ -3,20 +3,21 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 // dispatch Action Creators
-import { fetchPosts } from '../store/posts';
-import { changeView, getLoc, changeSort } from '../store/viewData';
-import { upVotePost, downVotePost, deletePost } from '../store/posts';
+import { fetchPosts } from '../store/posts/actionCreators';
+import { changeView, changeSort } from '../store/viewData/actionCreators';
+import { upVotePost, downVotePost, deletePost } from '../store/posts/actionCreators';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getPostsCurrentCategory, getFetchStatus } from '../store/posts';
-import { getValidCategoryUrls, getCategoriesObject } from '../store/categories';
+import { getLoc } from '../store/viewData/selectors';
+import { getPostsCurrentCategory, getFetchStatus } from '../store/posts/selectors';
+import { getValidCategoryUrls, getCategoriesObject } from '../store/categories/selectors';
 
 // Actions and Constants, and helpers
-import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData';
-import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
+import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData/routes';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData/constants';
 import { dateMonthYear, titleCase } from '../utils/helpers';
 
 

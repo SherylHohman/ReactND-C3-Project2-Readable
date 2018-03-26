@@ -1,6 +1,7 @@
-import { HOME } from '../store/viewData';
+import { HOME } from '../store/viewData/constants';
 
-export const upVote = "upVote";
+// server expects one of these two values when calling "vote"
+export const upVote   = "upVote";
 export const downVote = "downVote";
 
 const api = "http://localhost:3001";

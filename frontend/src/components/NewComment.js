@@ -1,5 +1,7 @@
-import React, { Component } from 'react';import { addComment } from '../store/comments';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+// import { addComment } from '../store/comments';
+import { addComment } from '../store/comments/actionCreators';
 import { createId, titleCase } from '../utils/helpers';
 // import PropTypes from 'prop-types';
 

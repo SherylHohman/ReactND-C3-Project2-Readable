@@ -1,27 +1,28 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-
-import { fetchCategories} from '../store/categories';
+import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 
 // Components
 import FetchStatus from './FetchStatus';
 
+// action creators
+import { fetchCategories} from '../store/categories/actionCreators';
+
 // selectors
-import { createSelector } from 'reselect';
-import { getFetchStatus } from '../store/categories';  // category selectors
+import { getFetchStatus } from '../store/categories/selectors';  // category selectors
 
 // selectors, that should be refactored to regular constants
-import { getCategoriesArray, getValidCategoryUrls } from '../store/categories';
+import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
 // constants/helpers than maybe could be selectors instead
-import { getLocFrom } from '../store/viewData';
+import { getLocFrom, getUrl } from '../store/viewData/selectors';
 
 // helpers and constants
-import { HOME, DEFAULT_SORT_BY } from '../store/viewData';
+import { HOME, DEFAULT_SORT_BY } from '../store/viewData/constants';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/routes';
+import { createCategoryUrlToPathLookup } from '../store/categories/selectors';
 import { titleCase } from '../utils/helpers';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
-import { createCategoryUrlToPathLookup } from '../store/categories';
 
 
 export class Categories extends Component {
@@ -142,15 +143,15 @@ function mapStoreToProps (store, ownProps) {
   const routerProps = ownProps;
 
   // so can use as an input to getSelectedCategoryPath
-  const getUrl = createSelector(
-    getLocFrom,  // must call with (null, routerProps) or (store, routerProps)
-    (loc) => loc.url,
-  );
-  // const url = getUrl(null, routerProps);
+  // const getUrl = createSelector(
+  //   getLocFrom,  // must call with (null, routerProps) or (store, routerProps)
+  //   (loc) => loc.url,
+  // );
+  // // const url = getUrl(null, routerProps);
 
   const categoryUrlToPathLookup  = createCategoryUrlToPathLookup(store);
   const getSelectedCategoryPath  = createSelector(
-    getUrl,                     // ( ,routerProps)
+    // getUrl,                     // ( ,routerProps)
     getValidCategoryUrls,       // ()
 
     (currentUrl, validCategoryUrls) => {

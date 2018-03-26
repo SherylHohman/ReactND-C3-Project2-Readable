@@ -1,14 +1,28 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getLoc } from '../store/viewData';
-import { fetchComments } from '../store/comments';
-import { upVoteComment, downVoteComment } from '../store/comments';
-import { editComment, deleteComment } from '../store/comments';
-import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
+// import { createSelector } from'reselect';
+import PropTypes from 'prop-types';
+
+// Components
 import NewComment from './NewComment';
 import Modal from 'react-responsive-modal';
-import PropTypes from 'prop-types';
-import { createSelector } from'reselect';
+
+// Selectors
+import { getSortedComments, getFetchStatus } from '../store/comments/selectors';
+// import { getComments, getSortedComments, getFetchStatus } from '../store/comments/selectors';
+import { getLoc, getLocFromRouter } from '../store/viewData/selectors';
+// import { getLoc } from '../store/viewData';
+
+// Action Creators
+import { fetchComments } from '../store/comments/actionCreators';
+import { upVoteComment, downVoteComment } from '../store/comments/actionCreators';
+import { editComment,   deleteComment }   from '../store/comments/actionCreators';
+// import { fetchComments } from '../store/comments';
+// import { upVoteComment, downVoteComment } from '../store/comments';
+// import { editComment, deleteComment } from '../store/comments';
+
+// Constants and Helpers
+import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 
 
 export class Comments extends Component {
@@ -39,6 +53,16 @@ export class Comments extends Component {
     // console.log('...in Comments ComponentDidMount, props', this.props);
     // console.log('Comments componentDidMount ..fetching, comments');
     this.props.fetchComments(postId);
+  }
+
+  componentWillReceiveProps(nextProps){
+    // NOTE life cycle this wasn't needed before RESTRUCTURE, so revisit this code
+    //  and determine if/why it's needed now.
+    console.log('nextProps', nextProps);
+    if ( nextProps.postId != this.state.postId){
+      console.log('Comments.cWRP, fetching comments for postId:', this.state.postId);
+      this.props.fetchComments(nextProps.postId);
+    }
   }
 
   touchField(key){
@@ -130,14 +154,15 @@ export class Comments extends Component {
   render() {
     const { comments, postId } = this.props;
 
+    // TODO: replace with PageNotFound component
     if (postId === null) {
-      // console.log('Comments, are null.');
+      console.log('Comments, are null.');
       return (
         <div>Unable to get comments for this post</div>
       )
     }
     if (comments === []) {
-      // console.log('There are no comments for this post.');
+      console.log('There are no comments for this post.');
       return (
         <div>Be the first to comment on this post</div>
       )
@@ -258,38 +283,21 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
+  console.log('store', store);
+  const routerProps = ownProps;
+  console.log('routerProps', routerProps);
 
-  // const loc = store.viewData.loc;
-  // using routerProps rather than store for the "loc"
-  //   prevents re-render
-  //   (affects first/second render at initial PageLoad, does Not need a 3rd)
-  const loc = getLoc(ownProps.routerProps) || null;
+  // const loc = getLoc(store, routerProps)// || null;
+  const loc = getLocFromRouter(routerProps)// || null;
+  console.log('loc', loc);
 
-  const postId = loc && loc.postId;
-
-  const getSortedComments = createSelector(
-    state => store.comments,
-    (comments) => {
-      return (
-        Object.keys(comments)
-        .reduce((acc, commentId) => {
-          return acc.concat([store.comments[commentId]]);
-         }, [])
-        .filter((comment) => !comment.deleted && !comment.parentDeleted)
-          // most recently edited/added to the top/start of the list
-        .sort((commentA, commentB) => {
-          if (commentA === commentB) return 0;
-          if (commentA.timestamp < commentB.timestamp) return 1;
-          return -1;
-        })
-      );
-    }
-  );
-  const sortedComments = getSortedComments(store);
+  const postId = (loc && loc.postId) || null;  // added null on 24th
+  console.log('postId', postId);
 
   return {
     postId,
-    comments : sortedComments,
+    comments:    getSortedComments(store),  // moved selector to comments.js on 24th
+    fetchStatus: getFetchStatus(store),     // added on 25th
   }
 };
 
