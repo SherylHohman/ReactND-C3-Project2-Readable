@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 // dispatch functions
-import { changeView, getLoc } from '../store/viewData/actionCreators';
+import { changeView } from '../store/viewData/actionCreators';
 import { editPost }  from '../store/posts/actionCreators';
 import { fetchPost } from '../store/posts/actionCreators';
 
@@ -14,6 +14,7 @@ import FetchStatus from './FetchStatus';
 import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories/selectors';
 import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
+import { getLoc } from '../store/viewData/selectors';
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/selectors';
 
 // helpers and constants

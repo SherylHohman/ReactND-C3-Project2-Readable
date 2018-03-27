@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 // dispatch functions
-import { changeView, getLoc } from '../store/viewData/actionCreators';
+import { changeView } from '../store/viewData/actionCreators';
 import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts/actionCreators';
 
 // Components
@@ -12,6 +12,7 @@ import Comments from './Comments';
 import FetchStatus from './FetchStatus';
 
 // Selectors
+import { getLoc } from '../store/viewData/selectors';
 import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 
 // helpers and constants
