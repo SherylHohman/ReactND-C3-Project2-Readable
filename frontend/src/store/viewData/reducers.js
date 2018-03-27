@@ -37,26 +37,26 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
 
 // REDUCERS
 
-function viewData(state=initialState_ViewData, action){
-  // console.log('entering reducer viewData, prevState', state);
-  // console.log('entering reducer viewData, action:'  , action);
-  switch (action.type) {
-    case CHANGE_VIEW:
-      // console.log('viewData state: ', state);
-      // console.log("viewData-actionType _CHANGE_VIEW, action:", action);
-      return  ({
-                ...state,
-                loc: action.loc,
-              });
-    case SORT_BY:
-      return  ({
-                ...state,
-                // TODO: add sort method stored in url ??
-                persistentSortBy: action.persistentSortBy,
-              });
-    default:
-      return state;
-  }
-};
+  function viewData(state=initialState_ViewData, action){
+    // console.log('entering reducer viewData, prevState', state);
+    // console.log('entering reducer viewData, action:'  , action);
+    switch (action.type) {
+      case CHANGE_VIEW:
+        // console.log('viewData state: ', state);
+        // console.log("viewData-actionType _CHANGE_VIEW, action:", action);
+        return  ({
+                  ...state,
+                  loc: action.loc,
+                });
+      case SORT_BY:
+        return  ({
+                  ...state,
+                  // TODO: add sort method stored in url ??
+                  persistentSortBy: action.persistentSortBy,
+                });
+      default:
+        return state;
+    }
+  };
 
 export default viewData
