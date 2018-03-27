@@ -55,7 +55,7 @@ const {
       // TODO: turn loading spinnera off
       case FETCH_COMMENTS_SUCCESS:
         return ({
-          ...state,
+          // ...state,  // this would ADD new comments. I want to REPLACE
           ...action.comments,
         });
       case ADD_COMMENT_SUCCESS:

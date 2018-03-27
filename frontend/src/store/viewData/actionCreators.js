@@ -51,6 +51,11 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
                    );
         return;
       }
+
+      // console.log('viewData.changeView, AM updating viewData, since the url HAS changed',
+      //               'prev loc:', prevLoc,
+      //               'curr loc:', loc
+                   // );
       dispatch ({
         type: CHANGE_VIEW,
         loc,
