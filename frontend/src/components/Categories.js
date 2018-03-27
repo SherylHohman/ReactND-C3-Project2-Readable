@@ -12,9 +12,9 @@ import { fetchCategories} from '../store/categories/actionCreators';
 
 // selectors
 import { getFetchStatus } from '../store/categories/selectors';  // category selectors
-
 // selectors, that should be refactored to regular constants
 import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
+
 // constants/helpers than maybe could be selectors instead
 import { getLocFrom, getLocFromRouter } from '../store/viewData/selectors';
 // import { getLocFrom, getUrl } from '../store/viewData/selectors';
@@ -137,21 +137,36 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('Categories.mSTP, store:', store);
+  console.log('Categories.mSTP, store:', store);
   // console.log('Categories, ownProps:', ownProps)
 
   // this could change..
   const routerProps = ownProps;
+  console.log('Categories.mSTP, routerProps:', routerProps)
+  console.log('Categories.mSTP, routerProps.location:', routerProps.location)
 
-  // so can use as an input to getSelectedCategoryPath
-  const currentUrl = getLocFromRouter(routerProps).url;
-  // const url = getUrl(null, routerProps);
+  const fetchStatus      = getFetchStatus(store);
+  const categoriesArray  = getCategoriesArray(store);
 
-  const categoryUrlToPathLookup  = getCategoryUrlToPathLookup(store);
-  const validCategoryUrls        = getValidCategoryUrls(store);
+  function getSelectedCategoryPath (store) {
+      //  early exit if categories not yet loaded.
+      if (!categoriesArray) {
+        console.log('getSelectedCategoryPath, early exit, categories not yet loaded, \nselectedCategoryPath: ""');
+        return '';
+      }
+      console.log('Categories.mSTP \nstore.categoriesArray:', store.categoriesArray);
 
-  const getSelectedCategoryPath  = () => {
-      console.log('\ncurrentUrl:', currentUrl, '\nvalidCategoryUrls:', validCategoryUrls);
+      // const currentUrl = getLocFromRouter(routerProps).url;
+      const loc = getLocFromRouter(routerProps);
+      // console.log('Categories.mSTP, loc:', loc)
+      const currentUrl = loc.url;
+      // console.log('Categories.mSTP, currentUrl:', currentUrl)
+      // const url = getUrl(null, routerProps);
+      const categoryUrlToPathLookup  = getCategoryUrlToPathLookup(store);
+      // console.log('Categories.mSTP, categoryUrlToPathLookup:', categoryUrlToPathLookup)
+      const validCategoryUrls        = getValidCategoryUrls(store);
+      // console.log('Categories.mSTP, validCategoryUrls:', validCategoryUrls)
+      // console.log('Categories.mSTP.getSelectedCategoryPath \ncurrentUrl:', currentUrl, '\nvalidCategoryUrls:', validCategoryUrls);
       // verify currentUrl EXACTLY matches a valid Category Url
       let selectedCategoryPath;
       if (currentUrl && (validCategoryUrls.indexOf(currentUrl) !== -1)){
@@ -160,17 +175,16 @@ function mapStoreToProps (store, ownProps) {
       }
       else {
           // browser is not on a category path
-          selectedCategoryPath = null;
+          selectedCategoryPath = null  //''  //null;
       }
       return selectedCategoryPath;
     }
+  // const selectedCategoryPath = getSelectedCategoryPath(store, routerProps);
 
-  console.log('Categories.mSTP, \nstore:', store, '\nrouterProps:', routerProps);
-  const selectedCategoryPath = getSelectedCategoryPath(store, routerProps);
+  const selectedCategoryPath = getSelectedCategoryPath(store);
+  console.log('Categories.mSTP, selectedCategoryPath:', selectedCategoryPath);
 
   // Do NOT pass routerProps as 2nd parameter!, or anything else as 2nd param!
-  const fetchStatus      = getFetchStatus(store);
-  const categoriesArray  = getCategoriesArray(store);
 
   return {
       fetchStatus,
