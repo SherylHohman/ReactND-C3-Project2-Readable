@@ -1,71 +1,52 @@
 import { createSelector } from 'reselect';
-
-// ACTION TYPES
-export const CHANGE_VIEW = 'CHANGE_VIEW';
-export const SELECT_CATEGORY = 'SELECT_CATEGORY';
-export const SORT_BY = 'SORT_BY';
-// TODO: export const SORT_ORDER = 'SORT_ORDER'; // Descending, Ascending
+import { ROUTES } from './constants';
 
 // CONSTANTS
 
-  // Valid Values
-  // TODO: Map over these to populate the Heading/Sort Options in the UI
-  export const sortMethods = [
-    {sortBy: "date", text: 'Most Recent'},
-    {sortBy: "voteScore", text: 'Highest Votes'}
-  ];
-  export const sortOrder = [
-    {sortOrder: "descending", text: 'High to Low'},
-    {sortOrder: "ascending",  text: 'Low to High'}
-  ];
+  // const ALL_POSTS_CATEGORY= {name: '', path: ''};
 
-  // TODO: change to an Array, then map over it to populate App.js Routes
-  export const ROUTES= {
-    home:     {
-      name :    'home',
-      route:    '/',
-      params:   [],
-      base:     '/',
-    },
-    category: {
-      name :    'category',
-      route:    '/:categoryPath',
-      params :  ["categoryPath"],
-      base:     '/',
-    },
-    post:     {
-      name :    'post',
-      route:    '/:categoryPath/:postId',
-      params :  ["categoryPath", "postId"],
-      base:     '/',
-    },
-    editPost: {
-      name :    'editPost',
-      route:    '/post/edit/:postId',
-      params :  ["postId"],
-      base:     '/post/edit/',
-    },
-    newPost:  {
-      name :    'newPost',
-      route:    '/post/new',
-      params:   [],
-      base:     '/post/new/',
-    },
-  };
+  // export const HOME  = {
+  //   url: '/',
+  //   category: ALL_POSTS_CATEGORY,
+  //   categoryPath: ALL_POSTS_CATEGORY.path,
+  // }
 
-  // For consistancy,
-  // Add a "category" definition for the home page: posts for "All" Categories
-  // ALL_POSTS_CATEGORY compliments the "categories" defined on server,
-  const ALL_POSTS_CATEGORY= {name: '', path: ''};
-  const ALL_POSTS_URL = '/';
-  export const DEFAULT_SORT_BY = 'date';
-  export const DEFAULT_SORT_ORDER = 'high_to_low';
+  // const ALL_POSTS_URL = HOME.url;
 
-  export const HOME  = {
-    url: ALL_POSTS_URL,
-    category: ALL_POSTS_CATEGORY,
-    categoryPath: ALL_POSTS_CATEGORY.path,
-  }
+
+  // // TODO: change to an Array, then map over it to populate App.js Routes
+  // export const ROUTES= {
+  //   home:     {
+  //     name :    'home',
+  //     route:    '/',
+  //     params:   [],
+  //     base:     '/',
+  //   },
+  //   category: {
+  //     name :    'category',
+  //     route:    '/:categoryPath',
+  //     params :  ["categoryPath"],
+  //     base:     '/',
+  //   },
+  //   post:     {
+  //     name :    'post',
+  //     route:    '/:categoryPath/:postId',
+  //     params :  ["categoryPath", "postId"],
+  //     base:     '/',
+  //   },
+  //   editPost: {
+  //     name :    'editPost',
+  //     route:    '/post/edit/:postId',
+  //     params :  ["postId"],
+  //     base:     '/post/edit/',
+  //   },
+  //   newPost:  {
+  //     name :    'newPost',
+  //     route:    '/post/new',
+  //     params:   [],
+  //     base:     '/post/new/',
+  //   },
+  // };
 
 
 // ROUTE HELPERS
@@ -404,99 +385,6 @@ export const SORT_BY = 'SORT_BY';
       return(loc);
     }
   );
-
-
-// ACTION CREATORS
-
-  export const changeView = (routerProps, prevRouterProps=null) => (dispatch) => {
-      const loc = getLoc(routerProps);
-      // console.log('viewData.changeView, loc:', loc);
-
-      const prevLoc = prevRouterProps ? getLoc(prevRouterProps) : null;
-      if (loc.url === (prevLoc && prevLoc.url)) {
-        // url hasn't changed: don't update store
-        console.log('viewData.changeView, not updating store.loc..',
-                    'prev url:', prevLoc.url,
-                    'curr url:', loc.url
-                   );
-        return;
-      }
-      dispatch ({
-        type: CHANGE_VIEW,
-        loc,
-      })
-  }
-
-  export const changeSort = (persistentSortBy='date') => ({
-    // TODO: add SortBy field to (browser) url ??
-    //   if so, then would need to push the new URL
-    // TODO: either validate the param given,
-    //       or use sortByMethods to populate Component
-    type: SORT_BY,
-    persistentSortBy,
-  })
-
-  // TODO: implement User selectable sort order
-  // export const sortOrder = ({  }) => ({
-  //   type: SORT_ORDER,
-  //   sortOrder: 'DESCENDING'
-  // })
-
-
-// DATA, INITIAL, SAMPLE
-
-  //  "url" is an exact path, as per browser window
-  //  (params, when exist are:) "categoryPath", "postId"
-  //  ("categoryPath" is a url-safe string for the category url. Not including'/'')
-  //  "route" is a route format, where `:` prefix represents a variable name
-  //  "sortOrder" is "Ascending" or "Descending". Not implemented.
-
-  const initialState_ViewData = {
-    loc: {
-      url:  HOME.url,
-      route:     ROUTES.home,
-      routeName: ROUTES.home.routeName,
-      // store params directly on loc
-      ...ROUTES.home.params,  // home route has NO params (currently)
-
-      // match: HOME.url,
-      //  not currently used..
-      //  Leaving definition here, so it's easily available if decide to implement
-      //    it is the "matched portion of the route" as determined by <Route> and <Switch>
-      //    not necessarily the same as the route in the url
-      //  TODO: what "default value should match be set to: home, null,,
-    },
-    // sort method: 'by votes' or 'by date'
-    persistentSortBy:    DEFAULT_SORT_BY,
-    persistentSortOrder: DEFAULT_SORT_ORDER,
-  }
-
-// REDUCERS
-
-function viewData(state=initialState_ViewData, action){
-  // console.log('entering reducer viewData, prevState', state);
-  // console.log('entering reducer viewData, action:'  , action);
-  switch (action.type) {
-    case CHANGE_VIEW:
-      // console.log('viewData state: ', state);
-      // console.log("viewData-actionType _CHANGE_VIEW, action:", action);
-      return  ({
-                ...state,
-                loc: action.loc,
-              });
-    case SORT_BY:
-      return  ({
-                ...state,
-                // TODO: add sort method stored in url ??
-                persistentSortBy: action.persistentSortBy,
-              });
-    default:
-      return state;
-  }
-};
-
-export default viewData
-
 
 
 // NOTE for getLoc:

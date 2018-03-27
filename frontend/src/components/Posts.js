@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 
 // dispatch Action Creators
 import { fetchPosts } from '../store/posts/actionCreators';
-import { changeView, getLoc, changeSort } from '../store/viewData/actionCreators';
+import { changeView, changeSort } from '../store/viewData/actionCreators';
 import { upVotePost, downVotePost, deletePost } from '../store/posts/actionCreators';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // Selectors
+import { getLoc } from '../store/viewData/selectors';
 import { getPostsCurrentCategory, getFetchStatus } from '../store/posts/selectors';
 import { getValidCategoryUrls, getCategoriesObject } from '../store/categories/selectors';
 

@@ -17,11 +17,11 @@ import { getFetchStatus } from '../store/categories/selectors';  // category sel
 import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
 // constants/helpers than maybe could be selectors instead
 import { getLocFrom } from '../store/viewData/selectors';
+import { createCategoryUrlToPathLookup } from '../store/categories/selectors';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/selectors';
 
 // helpers and constants
 import { HOME, DEFAULT_SORT_BY } from '../store/viewData/constants';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
-import { createCategoryUrlToPathLookup } from '../store/categories/constants';
 import { titleCase } from '../utils/helpers';
 
 
