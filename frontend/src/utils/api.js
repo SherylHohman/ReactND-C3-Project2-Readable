@@ -1,4 +1,4 @@
-import { HOME } from '../store/viewData';
+import { HOME } from '../store/viewData/constants';
 
 export const upVote = "upVote";
 export const downVote = "downVote";

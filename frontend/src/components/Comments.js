@@ -1,14 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getLoc } from '../store/viewData';
-import { fetchComments } from '../store/comments';
-import { upVoteComment, downVoteComment } from '../store/comments';
-import { editComment, deleteComment } from '../store/comments';
-import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
+import { createSelector } from'reselect';
+import PropTypes from 'prop-types';
+
+//  Action Creators
+import { fetchComments } from '../store/comments/actionCreators';
+import { upVoteComment, downVoteComment } from '../store/comments/actionCreators';
+import { editComment, deleteComment } from '../store/comments/actionCreators';
+
+//  Components
 import NewComment from './NewComment';
 import Modal from 'react-responsive-modal';
-import PropTypes from 'prop-types';
-import { createSelector } from'reselect';
+
+//  Selectors
+import { getLoc } from '../store/viewData/selectors';
+
+//  Constants and Helpers
+import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 
 
 export class Comments extends Component {

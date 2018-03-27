@@ -2,26 +2,27 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { createSelector } from 'reselect';
 
-import { fetchCategories} from '../store/categories';
+// action Creators
+import { fetchCategories} from '../store/categories/actionCreators';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // selectors
-import { createSelector } from 'reselect';
-import { getFetchStatus } from '../store/categories';  // category selectors
+import { getFetchStatus } from '../store/categories/selectors';  // category selectors
 
 // selectors, that should be refactored to regular constants
-import { getCategoriesArray, getValidCategoryUrls } from '../store/categories';
+import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
 // constants/helpers than maybe could be selectors instead
-import { getLocFrom } from '../store/viewData';
+import { getLocFrom } from '../store/viewData/selectors';
 
 // helpers and constants
-import { HOME, DEFAULT_SORT_BY } from '../store/viewData';
+import { HOME, DEFAULT_SORT_BY } from '../store/viewData/constants';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
+import { createCategoryUrlToPathLookup } from '../store/categories/constants';
 import { titleCase } from '../utils/helpers';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
-import { createCategoryUrlToPathLookup } from '../store/categories';
 
 
 export class Categories extends Component {

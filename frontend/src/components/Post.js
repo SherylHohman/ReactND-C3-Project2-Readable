@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 // dispatch functions
-import { changeView, getLoc } from '../store/viewData';
-import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
+import { changeView, getLoc } from '../store/viewData/actionCreators';
+import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts/actionCreators';
 
 // Components
 import Comments from './Comments';
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 
 // helpers and constants
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { dateMonthYear, titleCase } from '../utils/helpers';
-import PropTypes from 'prop-types';
 
 
 export class Post extends Component {
