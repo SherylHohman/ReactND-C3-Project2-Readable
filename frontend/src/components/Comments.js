@@ -10,11 +10,12 @@ import { editComment, deleteComment } from '../store/comments/actionCreators';
 
 //  Components
 import NewComment from './NewComment';
+import FetchStatus from './FetchStatus';
 import Modal from 'react-responsive-modal';
 
 //  Selectors
 import { getLoc } from '../store/viewData/selectors';
-import { getSortedComments } from '../store/comments/selectors';
+import { getSortedComments, getFetchStatus } from '../store/comments/selectors';
 
 //  Constants and Helpers
 import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
@@ -137,14 +138,24 @@ export class Comments extends Component {
   render() {
     const { comments, postId } = this.props;
 
-    if (postId === null) {
-      // console.log('Comments, are null.');
+        // re (!postId) - don't need to check for it
+        //   b/c Post wouldn't render, hence Comments would not mount
+        //   leave comment here in case app structure changes, and it *is* needed
+    if (this.props.fetchStatus.isFetching ||
+        this.props.fetchStatus.isFetchFailure) {
+        // TODO: add custom messages to FetchStatus
+        //   message="Unable to get comments for this post"
       return (
-        <div>Unable to get comments for this post</div>
-      )
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'comments'}
+          item={this.props.comments}
+          retryCallback={()=>this.props.fetchComments(postId)}
+        />
+      );
+
     }
     if (comments === []) {
-      // console.log('There are no comments for this post.');
       return (
         <div>Be the first to comment on this post</div>
       )
@@ -275,11 +286,10 @@ function mapStoreToProps (store, ownProps) {
 
   const postId = loc && loc.postId;
 
-  const sortedComments = getSortedComments(store);
-
   return {
     postId,
-    comments : sortedComments,
+    comments : getSortedComments(store),
+    fetchStatus:  getFetchStatus(store),
   }
 };
 
