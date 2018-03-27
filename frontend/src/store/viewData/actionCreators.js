@@ -6,16 +6,46 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
 // TODO: (implement then import) SORT_ORDER
 
 
+// HELPER FUNCTIONS
+
+  function isExactBrowserUrl(routerProps){
+    if (!routerProps || !routerProps.match){
+      console.log('ERROR: viewData.isExactBrowserUrl is missing routerProps');
+      return null;
+    }
+    return routerProps.match.isExact;
+  }
+
 // ACTION CREATORS
 
   export const changeView = (routerProps, prevRouterProps=null) => (dispatch) => {
+    // only save isEXACT browser url/routes to the store
+    //   ie if the component matched on a url fragment
+    //    then calls changeView - DONT. because
+    //    its loc.params, loc.route, loc.routeName, (loc.match)
+    //    will reflect only the portion of the url that it needed for the component to render
+
       const loc = getLoc(routerProps);
-      // console.log('viewData.changeView, loc:', loc);
+      console.log('viewData.changeView, loc:', loc);
+      if (!isExactBrowserUrl){
+        console.log('Warning: viewData.actionCreators changeView, NOT saving',
+                    ' routerProps to viewData.loc because this component\'\'s ',
+                    'routerProps do not reflect the full URL in the address bar. ',
+                    'Only Full Browser Urls (loc data) (ie from full page components) ',
+                    'should be saved to store',
+                    '\nrouterProps:', routerProps);
+        return;
+      }
 
       const prevLoc = prevRouterProps ? getLoc(prevRouterProps) : null;
       if (loc.url === (prevLoc && prevLoc.url)) {
         // url hasn't changed: don't update store
-        console.log('viewData.changeView, not updating store.loc..',
+        //  due to the way loc is determined, a New Object Reference could
+        //  be created, when the loc info inside it hasn't changed.
+        //  In this case, leave store as is: if the url is the same, then so is
+        //  everything else (since we're Not looking at or saving Partial Url Matches)
+        //  See above: Only saving url/loc info for the Full Browser Bar Url.
+        console.log('viewData.changeView, not updating store.loc, since the url has Not changed',
                     'prev url:', prevLoc.url,
                     'curr url:', loc.url
                    );
