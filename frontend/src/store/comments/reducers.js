@@ -1,6 +1,8 @@
 import * as ReaderAPI from '../../utils/api';
 import * as commentActionTypes from './constants';
 
+import { combineReducers } from 'redux';
+
 // ACTION TYPES
 
 const {
@@ -39,7 +41,7 @@ const {
 
 // REDUCERs
 
-  function comments(state={}, action) {
+  function fetched(state={}, action) {
 
     switch (action.type){
 
@@ -101,5 +103,62 @@ const {
         return state;
     }
   }
+
+  const fetchStatusInitialState = {
+    isLoading: false,
+    isFetchFailure: false,
+    errorMessage: '',
+  }
+
+  function fetchStatus(state=fetchStatusInitialState, action) {
+
+    switch (action.type){
+
+      case REQUEST_COMMENTS:
+      case REQUEST_ADD_COMMENT:
+      case REQUEST_EDIT_COMMENT:
+      case REQUEST_DELETE_COMMENT:
+      case REQUEST_VOTE_ON_COMMENT:
+        return ({
+          ...state,
+          isLoading: true,
+          isFetchFailure: false,
+          errorMessage: '',
+        })
+
+      // TODO: turn loading spinnera off
+      case FETCH_COMMENTS_SUCCESS:
+      case ADD_COMMENT_SUCCESS:
+      case EDIT_COMMENT_SUCCESS:
+      case DELETE_COMMENT_SUCCESS:
+      case VOTE_ON_COMMENT_SUCCESS:
+        return ({
+          ...state,
+          isLoading: false,
+          isFetchFailure: false,
+          errorMessage: '',
+         });
+
+      case FETCH_COMMENTS_FAILURE:
+      case ADD_COMMENT_FAILURE:
+      case EDIT_COMMENT_FAILURE:
+      case DELETE_COMMENT_FAILURE:
+      case VOTE_ON_COMMENT_FAILURE:
+        return ({
+          ...state,
+          isLoading: false,
+          isFetchFailure: true,
+          errorMessage: action.err,
+        })
+
+      default:
+        return state;
+    }
+  }
+
+const comments = combineReducers({
+  fetched,
+  fetchStatus,
+});
 
 export default comments

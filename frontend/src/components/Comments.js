@@ -14,6 +14,7 @@ import Modal from 'react-responsive-modal';
 
 //  Selectors
 import { getLoc } from '../store/viewData/selectors';
+import { getSortedComments } from '../store/comments/selectors';
 
 //  Constants and Helpers
 import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
@@ -44,8 +45,6 @@ export class Comments extends Component {
 
   componentDidMount(){
     const postId = this.props.postId;
-    // console.log('...in Comments ComponentDidMount, props', this.props);
-    // console.log('Comments componentDidMount ..fetching, comments');
     this.props.fetchComments(postId);
   }
 
@@ -267,32 +266,15 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  // const loc = store.viewData.loc;
   // using routerProps rather than store for the "loc"
   //   prevents re-render
-  //   (affects first/second render at initial PageLoad, does Not need a 3rd)
+  //   (affects initial comment renders at PageLoad,
+  //   by providing postId before changeView can update store with current loc url)
+
   const loc = getLoc(ownProps.routerProps) || null;
 
   const postId = loc && loc.postId;
 
-  const getSortedComments = createSelector(
-    state => store.comments,
-    (comments) => {
-      return (
-        Object.keys(comments)
-        .reduce((acc, commentId) => {
-          return acc.concat([store.comments[commentId]]);
-         }, [])
-        .filter((comment) => !comment.deleted && !comment.parentDeleted)
-          // most recently edited/added to the top/start of the list
-        .sort((commentA, commentB) => {
-          if (commentA === commentB) return 0;
-          if (commentA.timestamp < commentB.timestamp) return 1;
-          return -1;
-        })
-      );
-    }
-  );
   const sortedComments = getSortedComments(store);
 
   return {
