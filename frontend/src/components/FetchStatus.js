@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+// components
 import PageNotFound from '../components/PageNotFound';
-import { HOME } from '../store/viewData';
+// constants and helpers
+import { HOME } from '../store/viewData/constants';
 
 function FetchStatus(props){
   const { isLoading, isFetchFailure }  = props.fetchStatus;

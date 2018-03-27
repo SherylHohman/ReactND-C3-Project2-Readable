@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { fetchComments } from '../store/comments';
-import { upVoteComment, downVoteComment, editComment, deleteComment } from '../store/comments';
-import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
+import PropTypes from 'prop-types';
+
 import NewComment from './NewComment';
 import EditComment from './EditComment';
 import Modal from 'react-responsive-modal';
-import PropTypes from 'prop-types';
+
+import { fetchComments } from '../store/comments';
+import { upVoteComment, downVoteComment, editComment, deleteComment } from '../store/comments';
+import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 
 
 export class Comments extends Component {

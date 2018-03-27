@@ -3,18 +3,18 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 // dispatch functions
-import { changeView, getLoc } from '../store/viewData';
-import { editPost }  from '../store/posts';
-import { fetchPost } from '../store/posts';
+import { changeView, getLoc } from '../store/viewData/actionCreators';
+import { editPost }  from '../store/posts/actionCreators';
+import { fetchPost } from '../store/posts/actionCreators';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getPostsAsObjects, getFetchStatus } from '../store/posts';
-import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories';
-import { getCategoryNames, getCategoriesObject } from '../store/categories';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
+import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories/selectors';
+import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/selectors';
 
 // helpers and constants
 import { titleCase } from '../utils/helpers';

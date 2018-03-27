@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 // dispatch functions
-import { addPost } from '../store/posts';
-import { fetchCategories } from '../store/categories';
+import { addPost } from '../store/posts/actionCreators';
+import { fetchCategories } from '../store/categories/actionCreators';
 
 // Selectors
-import { getCategoryNames, getCategoriesObject } from '../store/categories';
+import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
 
 // helpers and constants
-import { HOME, ROUTES } from '../store/viewData';
+import { HOME, ROUTES } from '../store/viewData/constants';
 import { createId, titleCase } from '../utils/helpers';
-import PropTypes from 'prop-types';
 
 
 export class NewPost extends Component {

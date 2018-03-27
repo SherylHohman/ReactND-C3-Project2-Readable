@@ -4,8 +4,8 @@
 // COMMENTS-refactor-callsEditComment-NotWorking.js is
 //   The WIP version of Comments that *should* work with *this* code
 import React, { Component } from 'react';
-import { editComment } from '../store/comments';
 import { connect } from 'react-redux';
+import { editComment } from '../store/comments/actionCreators';
 import { titleCase } from '../utils/helpers';
 // import PropTypes from 'prop-types';
 
