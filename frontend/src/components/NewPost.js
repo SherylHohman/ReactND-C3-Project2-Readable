@@ -8,6 +8,7 @@ import { fetchCategories } from '../store/categories/actionCreators';
 
 // Selectors
 import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
+import { getLocFrom } from '../store/viewData/selectors';
 
 // helpers and constants
 import { HOME, ROUTES } from '../store/viewData/constants';
@@ -37,15 +38,12 @@ export class NewPost extends Component {
   }
 
   componentDidMount(){
-    // console.log('NewPost.componentDidMount');
     if (this.props.categoryNames){
       this.setState( {categoryName: this.props.categoryNames[0] });
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('EditPost componentWillReceiveProps, nextProps:', nextProps);
-
     // categories never change in life of app, they are fetched at App load
     if ( nextProps.categoryNames &&
          Array.isArray(nextProps.categoryNames) &&
@@ -133,18 +131,12 @@ export class NewPost extends Component {
     this.props.history.push(`${ROUTES.post.base}${categoryPath}/${postId}`);
   }
 
-  // onSubmit(e){
-  //     e.preventDefault();
-  //   }
-
   onCancel(){
-    //  TODO: return to prev url, via history object, instead of the Home Page
-    this.loadHomePage();
+    this.props.history.push(this.props.prevUrl);
   }
 
   onSave(){
     // "Full" Post object has additional fields, initialized by the server.
-
     const newPostData = {
       id:     createId(),
       title:  this.state.title.trim()  || '(untitled)',
@@ -288,6 +280,10 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null;
+
+  // save last PAGE visited so can return to it on cancel
+  const prevUrl = getLocFrom(store).url || HOME.url;
+
   const categoriesObject = getCategoriesObject(store);
 
   const categoryNames =    getCategoryNames(store);
@@ -298,6 +294,7 @@ function mapStoreToProps (store, ownProps) {
     categoryNames,
     categoryName,
     history,
+    prevUrl,
   }
 };
 
