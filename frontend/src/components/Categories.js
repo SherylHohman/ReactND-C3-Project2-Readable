@@ -18,9 +18,9 @@ import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/se
 // constants/helpers than maybe could be selectors instead
 import { getLocFrom, getSortBy } from '../store/viewData/selectors';
 import { createCategoryUrlToPathLookup } from '../store/categories/selectors';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData/selectors';
 
 // helpers and constants
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { HOME, DEFAULT_SORT_BY } from '../store/viewData/constants';
 import { titleCase } from '../utils/helpers';
 

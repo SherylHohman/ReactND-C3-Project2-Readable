@@ -15,9 +15,9 @@ import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories/selectors';
 import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
 import { getLoc } from '../store/viewData/selectors';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData/selectors';
 
 // helpers and constants
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 

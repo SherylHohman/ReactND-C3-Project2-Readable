@@ -76,8 +76,7 @@ export const SORT_BY = 'SORT_BY';
 
 
   // routeName is the SAME as its key (by definition),
-  const validRouteNames = Object.keys(ROUTES);
-
+  export const validRouteNames = Object.keys(ROUTES);
 
   // The following functions compute urls for given params and routeName ONLY
   //  based on the route definition in ROUTES for that routeName
@@ -113,12 +112,13 @@ export const SORT_BY = 'SORT_BY';
     }
     return computedUrl;
   }
-  // used to calculate a url to navigate to routeName and params
+
+  // used to calculate a url to navigate to, based on ROUTES definitions, where:
   //  routeName is a string, must match a ROUTES.name in ROUTES
-  // paramValues is an object of {paramName: paramId} objects
-  //  examples:
-  //  {postId: '6ni6ok3ym7mf1p33lnez'} or
-  //  {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
+  //  paramValues is an object of {paramName: paramId} objects
+  //    examples:
+  //    {postId: '6ni6ok3ym7mf1p33lnez'} or
+  //    {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
   export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home'){
     const requiredParams = ROUTES[routeName].params;
     let computedUrl = requiredParams.reduce((acc, paramName) => {
