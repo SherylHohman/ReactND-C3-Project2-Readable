@@ -40,7 +40,6 @@ export class Posts extends Component {
 
   componentWillReceiveProps(nextProps){
     if (nextProps.sortBy !== this.props.sortBy) {
-      // console.log('Posts.cWRP nextProps: ', nextProps);
       const posts = nextProps.posts || this.props.posts;
       const sortedPosts = sortPosts(posts, nextProps.sortBy);
       this.setState({
@@ -55,7 +54,6 @@ export class Posts extends Component {
 
     if ((nextProps.routerProps  && this.props.routerProps) &&
         (nextProps.routerProps !== this.props.routerProps)){
-      // console.log('__Posts.cWRP rPs, calling changeView/fetch, nextProps.routerProps.location.pathname', nextProps.routerProps.location.pathname);
       this.props.changeView(nextProps.routerProps, this.props.routerProps);
       this.props.fetchPosts(nextProps.categoryPath);
     }
@@ -94,18 +92,11 @@ export class Posts extends Component {
     const havePosts = (this.props && this.props.posts &&
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
                     ? true : false;
-
-    // TODO: state.statusMessage
-    // set status message to display
+    // set message to display when !havePosts
     let statusMessage = ''
-    if (this.props.posts) {
-      if (!Array.isArray(this.props.posts)) {
-        console.log('Posts.render Error: Posts are not in an array format - they canot be mapped over !');
-      }
-      else {
+    if (this.props.posts && Array.isArray(this.props.posts)) {
         statusMessage = 'Be the first to write a post for category: '
                        + titleCase(this.props.categoryPath);
-      }
     }
 
    const getPostUrl = (post) => {
