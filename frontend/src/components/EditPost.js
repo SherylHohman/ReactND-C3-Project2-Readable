@@ -54,20 +54,17 @@ export class EditPost extends Component {
       this.props.fetchPost(this.props.postId);
     }
     else {
-      console.log('EditPost.cDM, have props.post:', this.props.post);
       this.initializeStateFields(this.props.post);
     }
   }
 
   componentWillReceiveProps(nextProps){
     if (nextProps.post !== this.props.post){
-      console.log('EditPost.cWRP, nextProps.post:', nextProps.post, 'props.post:', this.props.post);
       this.initializeStateFields(nextProps.post);
     }
   }
 
   initializeStateFields(post){
-    console.log('initializeStateFields, post:', post);
     const { title, body, category, author } = post;
     this.setState({
         title,
@@ -92,7 +89,8 @@ export class EditPost extends Component {
       return this.state.validField[key];
     })
     const dataHasChanged = keys.some((key) => {
-      return this.state[key].trim() !== this.state.initialValues[key];
+      // return this.state[key].trim() !== this.state.initialValues[key];
+      return this.state[key] !== this.state.initialValues[key];
     })
 
     return allDataIsValid && dataHasChanged;
@@ -101,12 +99,14 @@ export class EditPost extends Component {
   validateField(key, newText){
     // setState is async, so cannot use state's value.
     // validate on newText instead (the value sent to setState)
-    const isValid = !!newText;  // !! empty string, null, undefined
+    // !! empty string, null, undefined
+    const isValid = !!newText;
+
     this.setState({
       validField: {
         ...this.state.validField,
         [key]: isValid,
-      }
+      },
     });
   }
 
@@ -140,7 +140,29 @@ export class EditPost extends Component {
       author:   this.state.author.trim() || '(anonymous)',
       // TODO: automatically populate author from logged in user
     }
+
+    // 1) make keys match between initialValues and editedPostData
+    // 2) saving as new object as "this.state" cannot be read in `some` as written
+    let initialValues = {...this.state.initialValues};
+    initialValues["category"] = initialValues["categoryName"];
+    delete initialValues["categoryName"];
+
+    // wWile canSave checks if the fields have changed, I found it confusing (to the user)
+    //   that adding a trailing space did *not* enable the Save Button.
+    //   so I took away the trim() comparison in `canSave`, so the user can "Save".
+    // Instead, I'll silently not save.  Data is always trimmed before Saving.
+    //   So, I run another check here, this time against trimemd fields, as saved.
+    //   I do *not* want to re-save a post if the saved data will be no different.
+    //   Saves a network request, and (potentially saves an unnecessary re-render),
+
+    const keys = Object.keys(editedPostData);
+    const hasChanged = keys.some((key) => {
+      return editedPostData[key] !== initialValues[key];
+    })
+
+    if (hasChanged) {
       this.props.onSave(this.props.postId, editedPostData);
+    }
   }
 
   render(){
