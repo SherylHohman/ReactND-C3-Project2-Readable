@@ -11,12 +11,12 @@ import { fetchCategories} from '../store/categories/actionCreators';
 import FetchStatus from './FetchStatus';
 
 // selectors
-import { getFetchStatus } from '../store/categories/selectors';  // category selectors
+import { getFetchStatus } from '../store/categories/selectors';
 
 // selectors, that should be refactored to regular constants
 import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
 // constants/helpers than maybe could be selectors instead
-import { getLocFrom } from '../store/viewData/selectors';
+import { getLocFrom, getSortBy } from '../store/viewData/selectors';
 import { createCategoryUrlToPathLookup } from '../store/categories/selectors';
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/selectors';
 
@@ -136,66 +136,36 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  // this could change..
   const routerProps = ownProps;
 
-  // so can use as an input to getSelectedCategoryPath
-  const getUrl = createSelector(
-    getLocFrom,  // must call with (null, routerProps) or (store, routerProps)
-    (loc) => loc.url,
-  );
-  // const url = getUrl(null, routerProps);
-
-  const categoryUrlToPathLookup  = createCategoryUrlToPathLookup(store);
   const getSelectedCategoryPath  = createSelector(
-    getUrl,                     // ( ,routerProps)
-    getValidCategoryUrls,       // ()
+    (routerProps) => getLocFrom(routerProps).url,
+    (store)       => getValidCategoryUrls(store),
+    (store) => createCategoryUrlToPathLookup(store),
 
-    (currentUrl, validCategoryUrls) => {
-      // verify currentUrl EXACTLY matches a valid Category Url
-      let selectedCategoryPath;
-      if (currentUrl && (validCategoryUrls.indexOf(currentUrl) !== -1)){
-          const matchedUrl = currentUrl;
-          selectedCategoryPath = categoryUrlToPathLookup[matchedUrl]
+    (currentUrl, validCategoryUrls, categoryUrlToPathLookup) => {
+      // see if currentUrl EXACTLY matches a valid Category Url
+      if (!currentUrl || (validCategoryUrls.indexOf(currentUrl) === -1)){
+        // browser is not on a category path, memoise null to prevent re-render
+        return null;
       }
-      else {
-          // browser is not on a category path, memoise as null
-          selectedCategoryPath = null;
-      }
-      return selectedCategoryPath;
+      return categoryUrlToPathLookup[currentUrl]
     }
   );
   const selectedCategoryPath = getSelectedCategoryPath(store, routerProps);
 
-  // Do NOT pass routerProps as 2nd parameter!, or anything else as 2nd param!
-  const fetchStatus      = getFetchStatus(store);
-  const categoriesArray  = getCategoriesArray(store);
-
   return {
-      fetchStatus,
-      categories: categoriesArray   || null,
-      sortBy: store.viewData.sortBy || DEFAULT_SORT_BY,
-      selectedCategoryPath,  // null if not on a valid category URL
+      fetchStatus: getFetchStatus(store),
+      categories:  getCategoriesArray(store) || null,
+      sortBy:      getSortBy(store) || DEFAULT_SORT_BY,
+      selectedCategoryPath,
   }
 };
 
+// withRouter gives access to routerProps
 export default withRouter(connect(mapStoreToProps, mapDispatchToProps)(Categories));
 
 
-// getSelectedCategoryPath USES ROUTERPROPS to get the most up-to-date categoryPath
-  // I Do NOT want to use the categoryPath stored in loc, because it is one page refresh behind,
-  //  INITIALLY, and thus requires an extra page render, AFTER the PAGE cDM calls changeView.
-  // Cannot use routerProps to read the categoryPath, because this component matches on '/'
-  //  thus categoryPath will always be non-existant when called from this component.
-  // HENCE, I'm getting the current URL from routerProps.
-  //    Then checking to see if the PAGE url is a category URL.
-  //    IF so, then must reverse lookup the url to matched category
-  //    in order to highlight the selected category.
-  //    Actually, *can* call get... from inside isExact function.
-  //    But that seems too low level a call to make from inside render.
-  //    It's technically fine.  But render should not need to know details on how
-  //    routes are created.  Seems better to give this component the item it actually
-  //    needs/consumes.  In this case that would be categoryPath, NOT categoryUrl.
 
 // NOTE for USING GETLOC getLoc in CATEGORIES component:
     //  url uses location.pathname instead of match.path
