@@ -1,16 +1,12 @@
-import { createSelector } from 'reselect';
+import { ALL_POSTS_CATEGORY } from '../categories/constants';
 
 // ACTION TYPES
+
 export const CHANGE_VIEW = 'CHANGE_VIEW';
 export const SELECT_CATEGORY = 'SELECT_CATEGORY';
 export const SORT_BY = 'SORT_BY';
 // TODO: export const SORT_ORDER = 'SORT_ORDER'; // Descending, Ascending
 
-// TODO:move this into categories/constants, then import it
-  // For consistancy,
-  // Add a "category" definition for the home page: posts for "All" Categories
-  // ALL_POSTS_CATEGORY compliments the "categories" defined on server,
-  const ALL_POSTS_CATEGORY= {name: '', path: ''};
 
 // CONSTANTS
 
@@ -25,10 +21,12 @@ export const SORT_BY = 'SORT_BY';
     {sortOrder: "ascending",  text: 'Low to High'}
   ];
 
+  // const ALL_POSTS_CATEGORY= {name: '', path: ''};
   export const HOME  = {
-    url: '/',
-    category: ALL_POSTS_CATEGORY,
+    url:          '/', //  ROUTES['home'].route
+    category:     ALL_POSTS_CATEGORY,
     categoryPath: ALL_POSTS_CATEGORY.path,
+    routeName:    'home'  //  ROUTES['home'].name,
   }
 
   const ALL_POSTS_URL = HOME.url;
@@ -36,6 +34,7 @@ export const SORT_BY = 'SORT_BY';
   export const DEFAULT_SORT_ORDER = 'descending';
 
 
+  // TODO: Move to a routes.js file
   // TODO: change to an Array, then map over it to populate App.js Routes
   export const ROUTES= {
     home:     {
@@ -72,10 +71,24 @@ export const SORT_BY = 'SORT_BY';
 
 // ROUTE HELPERS
 
+  // TODO: Move these to a routes.js file
+  //       or helpers file (or selectors file, even though not selectors)
+
+
   // routeName is the SAME as its key (by definition),
   const validRouteNames = Object.keys(ROUTES);
 
-  // See also related Selector Function at end of file
+
+  // The following functions compute urls for given params and routeName ONLY
+  //  based on the route definition in ROUTES for that routeName
+  //  (each version of the function takes in that info from a different source)
+  //  used to compute urls a mapped over component item should navigate to
+  //  or to compare a Router url with a Data-Based url
+
+  // See also related Selector Function in ./selectors
+
+  // used to calculate a url to navigate to, based on params and routeName in loc
+  //  loc supplies params AND routeName
   export function calculateRouteUrlFromLoc(loc){
     const routeDef =ROUTES[loc.routeName];
     let routeUrl = routeDef.base;
@@ -90,6 +103,8 @@ export const SORT_BY = 'SORT_BY';
   }
 
   // used to calculate a url to navigate to, based on routeName supplied by component
+  //  loc supplies the params ONLY,
+  //  routeName supplies the route that want to nav to.
   export function computeUrlFromLocParamsAndRouteName(loc, routeName){
     if (!routeName) {routeName = loc.route || 'home';}
     let computedUrl = ROUTES[routeName].base;
@@ -98,10 +113,10 @@ export const SORT_BY = 'SORT_BY';
     }
     return computedUrl;
   }
-  // used to calculate a url to navigate to,
-  //  based on ROUTES definitions, where
-  //  routeName, and params, values are both supplied by the component
-  // paramValues eg:
+  // used to calculate a url to navigate to routeName and params
+  //  routeName is a string, must match a ROUTES.name in ROUTES
+  // paramValues is an object of {paramName: paramId} objects
+  //  examples:
   //  {postId: '6ni6ok3ym7mf1p33lnez'} or
   //  {categoryPath: 'react', postId: '6ni6ok3ym7mf1p33lnez'}
   export function computeUrlFromParamsAndRouteName(paramValues={}, routeName='home'){
@@ -116,5 +131,3 @@ export const SORT_BY = 'SORT_BY';
     }
     return computedUrl;
   }
-
-
