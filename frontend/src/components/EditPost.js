@@ -99,8 +99,8 @@ export class EditPost extends Component {
   validateField(key, newText){
     // setState is async, so cannot use state's value.
     // validate on newText instead (the value sent to setState)
-    // !! empty string, null, undefined
-    const isValid = !!newText;
+
+    const isValid = !!newText;  // !! empty string, null, undefined
 
     this.setState({
       validField: {
@@ -125,11 +125,6 @@ export class EditPost extends Component {
     this.setState({author: titleCase(currentText)});
     this.validateField('author', currentText)
   }
-
-  // onSubmit(e){
-  //   e.preventDefault();
-  // }
-
 
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
@@ -323,16 +318,14 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps ( store, ownProps) {
 
   const postId = getLoc(ownProps.routerProps).postId || null;
-  const post = getPostsAsObjects(store)[postId] || null;
+  const post   = getPostsAsObjects(store)[postId]    || null;
 
-  const categoriesObject = getCategoriesObject(store);
-  const categoryNames =    getCategoryNames(store);
   return {
-    categoriesObject, //:   getCategoriesObject(store),
-    categoryNames,    //:   getCategoryNames(store),
+    categoriesObject:      getCategoriesObject(store),
+    categoryNames:         getCategoryNames(store),
     postId,
     post,
-    fetchStatus: getFetchStatus(store),
+    fetchStatus:           getFetchStatus(store),
     categoriesFetchStatus: getCategoriesFetchStatus(store),
   }
 };
