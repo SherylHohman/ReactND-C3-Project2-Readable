@@ -48,7 +48,6 @@ export class Categories extends Component {
     }
 
     const makeCategoryLink = (categoryPath) => {
-      // return ROUTES.category.base + categoryPath;
       return computeUrlFromParamsAndRouteName(
                       {categoryPath: categoryPath},
                       'category',
@@ -59,7 +58,7 @@ export class Categories extends Component {
       return (this.props.selectedCategoryPath === thisCategoryPath);
     }
 
-    // console.log('Categories.render, re-rendering..');
+    // console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
     return (
       <div>
         {this.props && this.props.categories &&
@@ -136,8 +135,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('Categories.mSTP, store:', store);
-  // console.log('Categories, ownProps:', ownProps)
 
   // this could change..
   const routerProps = ownProps;

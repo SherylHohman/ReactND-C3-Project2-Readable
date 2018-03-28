@@ -20,14 +20,13 @@ class App extends Component{
   componentDidMount() {
     // console.log('Categories componentDidMount ..fetching, categories');
     // Almost every page needs categories, so it's easier to fetch them at App load,
-    //   than for every component to see if they exist, AND fetch if they do not
+    //   than for every component to see if they exist, THEN fetch if they do not.
     //   This is necessary, because any page may be loaded from a (saved URL).
     //   Note: store.categories Never changes throughout the life of the App.
     this.props.fetchCategories();
   }
 
   render() {
-    // console.log('____App render, this.props', this.props);
 
     return (
       <BrowserRouter>
@@ -70,7 +69,7 @@ class App extends Component{
           )} />
 
           {/* Category Route (above) will also absorb Invalid URLs */}
-          {/* so Categories checks for invalid "category paths", and calls PageNotFound */}
+          {/* so Posts also checks for invalid "category paths", and calls PageNotFound */}
           <Route render={(routerProps) => (
             <PageNotFound routerProps={ routerProps } />
           )} />

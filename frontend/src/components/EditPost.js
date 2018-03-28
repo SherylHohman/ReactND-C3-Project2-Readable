@@ -38,8 +38,6 @@ export class EditPost extends Component {
   }
 
   componentDidMount(){
-    // console.log('in EditPost componentDidMount');
-
     this.props.changeView(this.props.routerProps);
 
     if (!this.props.post) {
@@ -75,8 +73,8 @@ export class EditPost extends Component {
     })
   }
   validateField(key, newText){
-    // setState is async, so cannot use state's value
-    // hence validating on newText (the value setState is setting the field to)
+    // setState is async, so cannot use state's value.
+    // validate on newText instead (the value sent to setState)
     const isValid = !!newText;  // !! empty string, null, undefined
     this.setState({
       validField: {
@@ -121,7 +119,6 @@ export class EditPost extends Component {
   }
 
   render(){
-    // console.log('postId:', this.props.postId, 'post:', this.props.post);
 
     const postId = this.props.postId;
 
@@ -137,7 +134,6 @@ export class EditPost extends Component {
       );
     }
 
-    // const postUrl = `${ROUTES.post.base}${postId}`;
     const makePostUrl = () => {
       // first render state will have invalid values - early return
       // also need to wait for asynch fetching et al
@@ -262,7 +258,7 @@ EditPost.propTypes = {
     categoriesObject: PropTypes.object,
     categoryNames: PropTypes.array,
     postId: PropTypes.string,
-    post : PropTypes.object,    // required keys: title, body, category
+    post : PropTypes.object,       // required keys: title, body, category
     fetchPost: PropTypes.func,
     editPost: PropTypes.func,
     changeView: PropTypes.func,
@@ -278,8 +274,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store, ownProps) {
-  // console.log('EditPost.mSTP  store:', store)
-  // console.log('EditPost.mSTP  ownProps', ownProps);
 
   const postId = getLoc(ownProps.routerProps).postId || null;
   const post = getPostsAsObjects(store)[postId] || null;

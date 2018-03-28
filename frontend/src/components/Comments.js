@@ -138,9 +138,9 @@ export class Comments extends Component {
   render() {
     const { comments, postId } = this.props;
 
-        // re (!postId) - don't need to check for it
-        //   b/c Post wouldn't render, hence Comments would not mount
-        //   leave comment here in case app structure changes, and it *is* needed
+        // re: (!postId) - don't need to check for it
+        //   b/c Post won't render without it, hence Comments would not get called
+        //   leave comment here in case app structure changes to make it required
     if (this.props.fetchStatus.isFetching ||
         this.props.fetchStatus.isFetchFailure) {
         // TODO: add custom messages to FetchStatus
