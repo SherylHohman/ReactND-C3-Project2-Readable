@@ -14,6 +14,7 @@ import FetchStatus from './FetchStatus';
 import { getLoc } from '../store/viewData/selectors';
 import { getPostsCurrentCategory, getFetchStatus } from '../store/posts/selectors';
 import { getValidCategoryUrls, getCategoriesObject } from '../store/categories/selectors';
+import { getSortBy, getSortOrder } from '../store/viewData/selectors';
 
 // Actions and Constants, and helpers
 import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
@@ -30,10 +31,6 @@ export class Posts extends Component {
   }
 
   componentDidMount() {
-    // console.log('Posts componentDidMount');
-    // console.log('Posts.cDM rPs  IS calling changeView, this.props.routerProps.location.pathname', this.props.routerProps.location.pathname);
-    // console.log('Posts cDM ..fetching, posts for category:', this.props.categoryPath);
-
     // loc and categoryPath already reflect the value from routerProps as per mapStoreToProps
     this.props.changeView(this.props.routerProps);
     this.props.fetchPosts(this.props.categoryPath);
@@ -42,9 +39,6 @@ export class Posts extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    // console.log('Posts.cWRP nextProps: ', nextProps);
-    // console.log('Posts.cWRP this.Props:', this.props);
-
     if (nextProps.sortBy !== this.props.sortBy) {
       // console.log('Posts.cWRP nextProps: ', nextProps);
       const posts = nextProps.posts || this.props.posts;
@@ -76,13 +70,11 @@ export class Posts extends Component {
   }
 
   render() {
-    // console.log('___Posts.render props:', this.props);
-    // console.log('___Posts.render fetchStatus1:', this.props.fetchStatus);
+    // console.log('___Posts.render);  // to check performance (unnecessary re-renders)
 
     let isInValidUrl;
-    if (!this.props || !this.props.validUrls || !this.props.loc ||
-        this.props.validUrls.indexOf(this.props.loc.url) === -1){
-      // console.log('Posts, isInValidUrl, url:', this.props && this.props.loc && this.props.loc.url)
+    if (!this.props || !this.props.validCategoryUrls || !this.props.loc ||
+        this.props.validCategoryUrls.indexOf(this.props.loc.url) === -1){
       isInValidUrl = true;
     }
     else { isInValidUrl = false; }
@@ -120,7 +112,8 @@ export class Posts extends Component {
       if (Object.keys(this.props.categoriesObject).length === 0){
         // categoriesObject is {}
         // categories must be read from file on server at app initial load (asynch)
-        return '';  //  dummy link value until categoriesObject gets saved to store
+        // dummy link value until categoriesObject gets saved to store (prevents app crash)
+        return '';
       }
       const categoryName = post.category;  // categoryName === key for categoriesObject
       const categoryPath = this.props.categoriesObject[categoryName].path;
@@ -132,7 +125,7 @@ export class Posts extends Component {
       return postLink;
     }
 
-    // console.log('Posts.render re-rendering');
+    // console.log('___Posts.rendering);  // to check performance (unnecessary re-renders)
     return (
       <div>
 
@@ -287,8 +280,6 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps (store, ownProps) {
-  // console.log('store:', store);
-  // console.log('Posts ownProps:', ownProps);
 
   //  performance boost by setting loc via (getLoc(routerProps)),
   //    rather than pulling from store (store.viewData.loc)
@@ -296,6 +287,7 @@ function mapStoreToProps (store, ownProps) {
   //    reason being is that cDM calls changeView, so render happens before
   //      changeView (asynch) can update loc to the store.
   // const loc = store.viewData.loc || null;
+
   const loc = getLoc(ownProps.routerProps) || null;
   const categoryPath = loc.categoryPath    || null
 
@@ -312,23 +304,21 @@ function mapStoreToProps (store, ownProps) {
           posts:     null,
           sortBy:    DEFAULT_SORT_BY,
           sortOrder: DEFAULT_SORT_ORDER,
-          validUrls: null,  //validCategoryUrls,
+          validCategoryUrls: null,
           loc,
-          categoryPath,     // null if not on a validCategoryPath
+          categoryPath,     // null when not on a validCategoryPath
           fetchStatus,
         })
   }
 
-  const posts = getPostsCurrentCategory(store, ownProps);
-
   return {
     categoriesObject: getCategoriesObject(store),
 
-    posts,
-    sortBy:    store.viewData.persistentSortBy,
-    sortOrder: store.viewData.persistentSortOrder,
+    posts:     getPostsCurrentCategory(store, ownProps),
+    sortBy:    getSortBy(store),
+    sortOrder: getSortOrder(store),
 
-    validUrls: validCategoryUrls,
+    validCategoryUrls,
     loc,
     categoryPath,
     fetchStatus,

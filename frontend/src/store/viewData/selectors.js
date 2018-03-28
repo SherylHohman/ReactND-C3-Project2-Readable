@@ -98,6 +98,20 @@ import { ROUTES } from './constants';
 
 // SELECTORS
 
+  // export const getSortBy    = store.viewData.persistentSortBy;
+  // export const getSortOrder = store.viewData.persistentSortOrder;
+
+  // creating selectors here, because considering changing state format.
+  //  This way I won't need update my Posts component to pass (store) when I do.
+  export const getSortBy = createSelector(
+      (store) => store.viewData.persistentSortBy,
+      (sortBy) => { return sortBy }
+  );
+  export const getSortOrder = createSelector(
+      (store) => store.viewData.persistentSortOrder,
+      (sortOrder) => { return sortOrder }
+  );
+
 //  (routerProps is not store, but is like store in that it is the source of truth for Urls.)
 //  viewData.loc simply saves (essential info from) routerProps to store
 //  * after-the-fact *
