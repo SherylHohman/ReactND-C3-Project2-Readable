@@ -16,12 +16,9 @@ import * as categories_ActionTypes from './constants';
     return (dispatch) => {
 
       dispatch({ type: FETCH_CATEGORIES });
-        // TODO: show loading spinner
-
         ReaderAPI.fetchCategories()
-        // fetchCategoriesAPI()
-          .then((response) => {
 
+          .then((response) => {
             if (!response.ok) {
               console.log('__response NOT OK, fetchCategories');
               throw Error(response.statusText);
@@ -29,6 +26,7 @@ import * as categories_ActionTypes from './constants';
             return response;
 
           })
+
           .then((response) => response.json())
           .then((data) => {
             // data.categories is array of category objects {name, url}
@@ -45,6 +43,7 @@ import * as categories_ActionTypes from './constants';
               categories: categoriesObject,
             })}
           )
+
           .catch(err => {
             console.error(err);  //  in case of render error
             dispatch({

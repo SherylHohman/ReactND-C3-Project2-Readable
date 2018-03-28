@@ -1,4 +1,3 @@
-import * as ReaderAPI from '../../utils/api';
 import * as commentActionTypes from './constants';
 
 import { combineReducers } from 'redux';

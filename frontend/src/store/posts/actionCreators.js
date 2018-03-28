@@ -1,8 +1,4 @@
 import * as ReaderAPI from '../../utils/api';
-import { ADD_COMMENT_SUCCESS, DELETE_COMMENT_SUCCESS } from '../comments/constants';
-import { getLoc } from '../viewData/selectors';
-
-// Action Types
 import * as postActionTypes from './constants';
 
 // ACTION TYPES
@@ -212,7 +208,6 @@ const {
             dispatch({
               type: DELETE_POST_SUCCESS,
               id: data.id,
-              // deleted: data.deleted,
               categoryName: data.category,
             })
           )}

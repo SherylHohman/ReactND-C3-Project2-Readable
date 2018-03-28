@@ -1,11 +1,14 @@
-// constants
+// Action Types
+import * as actionTypes from './constants';
+// Constants
 import { HOME, ROUTES } from './constants';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from './constants';
-import * as actionTypes from './constants';
+
 
 // ACTION TYPES
 const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
 // TODO: (implement then import) SORT_ORDER
+
 
 // DATA, INITIAL, SAMPLE
 
@@ -30,20 +33,18 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
       //    not necessarily the same as the route in the url
       //  TODO: what "default value should match be set to: home, null,,
     },
+
     // sort method: 'by votes' or 'by date'
     persistentSortBy:    DEFAULT_SORT_BY,
     persistentSortOrder: DEFAULT_SORT_ORDER,
   }
 
+
 // REDUCERS
 
   function viewData(state=initialState_ViewData, action){
-    // console.log('entering reducer viewData, prevState', state);
-    // console.log('entering reducer viewData, action:'  , action);
     switch (action.type) {
       case CHANGE_VIEW:
-        // console.log('viewData state: ', state);
-        // console.log("viewData-actionType _CHANGE_VIEW, action:", action);
         return  ({
                   ...state,
                   loc: action.loc,
