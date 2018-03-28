@@ -25,13 +25,6 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
       routeName: ROUTES.home.routeName,
       // store params directly on loc
       ...ROUTES.home.params,  // home route has NO params (currently)
-
-      // match: HOME.url,
-      //  not currently used..
-      //  Leaving definition here, so it's easily available if decide to implement
-      //    it is the "matched portion of the route" as determined by <Route> and <Switch>
-      //    not necessarily the same as the route in the url
-      //  TODO: what "default value should match be set to: home, null,,
     },
 
     // sort method: 'by votes' or 'by date'

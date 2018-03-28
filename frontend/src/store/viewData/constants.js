@@ -74,9 +74,19 @@ export const SORT_BY = 'SORT_BY';
   // TODO: Move these to a routes.js file
   //       or helpers file (or selectors file, even though not selectors)
 
-
   // routeName is the SAME as its key (by definition),
   export const validRouteNames = Object.keys(ROUTES);
+
+  export function findRouteNameOfRoute(route){
+    const matchedRouteKey = validRouteNames.find((validRouteName) => {
+      return ROUTES[validRouteName].route === route;
+    });
+    return ROUTES[matchedRouteKey].name || 'home';
+    // TODO: default value for unmatched route: null, '', 'home', 'category'
+    //  usually
+    //  the matched (bad aka 404) route will be a /:category, (category route) or
+    //  the url of a deleted post, /:categoryPath/:postId,  (post route)
+  };
 
   // The following functions compute urls for given params and routeName ONLY
   //  based on the route definition in ROUTES for that routeName
