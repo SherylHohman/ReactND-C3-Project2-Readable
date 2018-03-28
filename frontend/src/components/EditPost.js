@@ -25,52 +25,73 @@ import PropTypes from 'prop-types';
 export class EditPost extends Component {
 
   state = {
-    title: '',
-    body:  '',
-    categoryName: '',
-    author: '',   //  TODO: assign the value of 'LoggedInUser'
+      title:        '',
+      body:         '',
+      categoryName: '',
+      author:       '',   //  TODO: assign the value of 'LoggedInUser'
 
-    validField: {
-      title:  true,
-      author: true,
-      body:   true,
+    initialValues: {
+      title:        '',
+      body:         '',
+      categoryName: '',
+      author:       '',   //  TODO: assign the value of 'LoggedInUser'
     },
+
+    // though an empty field is invalid, don't want to highlight them RED
+    // at page load. instead only "invalidate" the field once it's been "touched"
+    validField: {
+      title:        true,
+      body:         true,
+      categoryName: true,
+      author:       true,
+    },
+
+    anyFieldTouched:false,
   }
 
   componentDidMount(){
     this.props.changeView(this.props.routerProps);
-
     if (!this.props.post) {
       // needed when page is loaded from a saved url
       this.props.fetchPost(this.props.postId);
     }
     else {
-      this.setState({
-        title: this.props.post.title,
-        body : this.props.post.body,
-        categoryName: this.props.post.category,
-        author: this.props.post.author,
-      });
+      console.log('EditPost.cDM, have props.post:', this.props.post);
+      this.initializeStateFields(this.props.post);
     }
-
   }
 
   componentWillReceiveProps(nextProps){
-    if (this.props.post !== nextProps.post){
-      this.setState({
-        title: nextProps.post.title,
-        body: nextProps.post.body,
-        categoryName: nextProps.post.category,
-        author: nextProps.post.author,
-      })
+    if (nextProps.post !== this.props.post){
+      console.log('EditPost.cWRP, nextProps.post:', nextProps.post, 'props.post:', this.props.post);
+      this.initializeStateFields(nextProps.post);
     }
+  }
+
+  initializeStateFields(post){
+    console.log('initializeStateFields, post:', post);
+    const { title, body, category, author } = post;
+    this.setState({
+        title,
+        body,
+        categoryName:  category,
+        author,
+
+      // also stash these values to see if input has changed before saving
+      initialValues: {
+        title,
+        body,
+        categoryName: category,
+        author,
+      },
+    });
   }
 
   canSubmit(){
     const keys = Object.keys(this.state.validField);
     return keys.every((key) => {
       return this.state.validField[key];
-    })
+    }) && this.state.anyFieldTouched;
   }
   validateField(key, newText){
     // setState is async, so cannot use state's value.
@@ -82,6 +103,17 @@ export class EditPost extends Component {
         [key]: isValid,
       }
     });
+
+    // since validateField is only called when user has edited a field,
+    // good place to change this 1X flag.
+    //  anyFieldTouched is not necessary for the app, but to me it was odd seeing
+    //  the Save button automatically highlighted before I've even interacted
+    //  with the form, since all other pages have it disabled until user has
+    //  interacted with it (AND data is valid).  Consistency:
+    //  so adding this "feature" for a subtle visual match to user (my) expectation.
+    if (!this.state.anyFieldTouched) {
+      this.setState({ anyFieldTouched: true })
+    }
   }
 
   controlledTitleField(e, currentText){
@@ -100,22 +132,39 @@ export class EditPost extends Component {
     this.validateField('author', currentText)
   }
 
-  // onSubmit(e){
-  //   e.preventDefault();
-  // }
+  onSubmit(e){
+    e.preventDefault();
+  }
 
 
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
-      title: this.state.title.trim()    || '(untitled)',
-      category: this.state.categoryName || this.props.categoryNames[0],
-      body: this.state.body.trim()      || '(blank)',
-
+      title:    this.state.title.trim()  || '(untitled)',
+      category: this.state.categoryName  || this.props.categoryNames[0],
+      body:     this.state.body.trim()   || '(blank)',
+      author:   this.state.author.trim() || '(anonymous)',
       // TODO: automatically populate author from logged in user
-      author: this.state.author.trim()  || '(anonymous)',
     }
-    this.props.onSave(this.props.postId, editedPostData);
+
+    // 1) make keys match between initialValues and editedPostData
+    // 2) saving as new object as "this.state" cannot be read in `some` as written
+    let initialValues = {...this.state.initialValues};
+    initialValues["category"] = initialValues["categoryName"];
+    delete initialValues["categoryName"];
+
+    // puting comparison here, rather than isValid, because of trim() above,
+    //  and because ok for user to press save. user need not know details of how app works.
+
+    // no need to send to DB if data has not changed
+    const keys = Object.keys(editedPostData);
+    const hasChanged = keys.some((key) => {
+      return editedPostData[key] !== initialValues[key];
+    })
+
+    if (hasChanged) {
+      this.props.onSave(this.props.postId, editedPostData);
+    }
   }
 
   render(){
