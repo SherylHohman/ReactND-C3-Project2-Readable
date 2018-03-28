@@ -26,7 +26,9 @@ export class NewComment extends Component {
   validateField(key, newText){
     // setState is async, so cannot use state's value for this field
     // hence validating on newText (the value setState is setting the field to)
+
     const isValid = !!newText;  // !! empty string, null, undefined
+
     this.setState({
       validField: {
         ...this.state.validField,
@@ -56,7 +58,6 @@ export class NewComment extends Component {
       body: this.state.body.trim() || '(no comment)',
       author: this.state.author.trim() || '(anonymous)',
     }
-    // console.log(newCommentData);
     this.props.onSave(newCommentData);
     this.resetFormFields();
   }

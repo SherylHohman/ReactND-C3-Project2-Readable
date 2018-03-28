@@ -78,7 +78,9 @@ export class NewPost extends Component {
   validateField(key, newText){
     // setState is async, so cannot validate on state's value of the field
     // hence validating on newText (the value setState is setting the field to)
+
     const isValid = !!newText;  // not empty string, null, undefined
+
     this.setState({
       validField: {
         ...this.state.validField,

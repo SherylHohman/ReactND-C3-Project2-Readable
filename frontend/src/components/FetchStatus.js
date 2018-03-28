@@ -12,7 +12,6 @@ function FetchStatus(props){
   const retryCallback = props.retryCallback || null;
 
   if (isFetchFailure) {
-      // console.log('FetchStatus: isFetchFailure', label, id);
       return (
         <div>
           <p>I could not retrieve {label}.</p>
@@ -29,7 +28,6 @@ function FetchStatus(props){
   }
 
   if (isLoading) {
-      // console.log('FetchStatus: Loading..:', label, id);
       return (
         <div>
           <p>looking for your {label}..</p>
@@ -38,7 +36,6 @@ function FetchStatus(props){
   };
 
   if (!id) {
-    // console.log('FetchStatus.(if !id), label, id:', label, id);
       return (
         <PageNotFound routerProps={ props.routerProps } />
       );
