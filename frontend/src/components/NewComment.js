@@ -1,6 +1,10 @@
-import React, { Component } from 'react';import { addComment } from '../store/comments';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
+// import PropTypes from 'prop-types';
+
+import { addComment } from '../store/comments/actionCreators';
 import { createId, titleCase } from '../utils/helpers';
+
 
 export class NewComment extends Component {
 
@@ -22,7 +26,9 @@ export class NewComment extends Component {
   validateField(key, newText){
     // setState is async, so cannot use state's value for this field
     // hence validating on newText (the value setState is setting the field to)
+
     const isValid = !!newText;  // !! empty string, null, undefined
+
     this.setState({
       validField: {
         ...this.state.validField,

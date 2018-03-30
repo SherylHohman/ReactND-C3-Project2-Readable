@@ -2,26 +2,27 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { createSelector } from 'reselect';
 
-import { fetchCategories} from '../store/categories';
+// action Creators
+import { fetchCategories} from '../store/categories/actionCreators';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // selectors
-import { createSelector } from 'reselect';
-import { getFetchStatus } from '../store/categories';  // category selectors
+import { getFetchStatus } from '../store/categories/selectors';
 
 // selectors, that should be refactored to regular constants
-import { getCategoriesArray, getValidCategoryUrls } from '../store/categories';
+import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
 // constants/helpers than maybe could be selectors instead
-import { getLocFrom } from '../store/viewData';
+import { getLocFrom, getSortBy } from '../store/viewData/selectors';
+import { createCategoryUrlToPathLookup } from '../store/categories/selectors';
 
 // helpers and constants
-import { HOME, DEFAULT_SORT_BY } from '../store/viewData';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
+import { HOME, DEFAULT_SORT_BY } from '../store/viewData/constants';
 import { titleCase } from '../utils/helpers';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
-import { createCategoryUrlToPathLookup } from '../store/categories';
 
 
 export class Categories extends Component {
@@ -57,6 +58,7 @@ export class Categories extends Component {
       return (this.props.selectedCategoryPath === thisCategoryPath);
     }
 
+    // console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
     return (
       <div>
         {this.props && this.props.categories &&
@@ -134,46 +136,59 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  // this could change..
   const routerProps = ownProps;
 
-  // so can use as an input to getSelectedCategoryPath
-  const getUrl = createSelector(
-    getLocFrom,  // must call with (null, routerProps) or (store, routerProps)
-    (loc) => loc.url,
-  );
-
-  const categoryUrlToPathLookup  = createCategoryUrlToPathLookup(store);
   const getSelectedCategoryPath  = createSelector(
-    getUrl,                     // ( ,routerProps)
-    getValidCategoryUrls,       // ()
+    (store, routerProps) => getLocFrom(store, routerProps).url,
+    (store) => getValidCategoryUrls(store),
+    (store) => createCategoryUrlToPathLookup(store),
 
-    (currentUrl, validCategoryUrls) => {
-      // verify currentUrl EXACTLY matches a valid Category Url
-      let selectedCategoryPath;
-      if (currentUrl && (validCategoryUrls.indexOf(currentUrl) !== -1)){
-          const matchedUrl = currentUrl;
-          selectedCategoryPath = categoryUrlToPathLookup[matchedUrl]
+    (currentUrl, validCategoryUrls, categoryUrlToPathLookup) => {
+      // see if currentUrl EXACTLY matches a valid Category Url
+      if (!currentUrl || (validCategoryUrls.indexOf(currentUrl) === -1)){
+        // browser is not on a category path, memoise null to prevent re-render
+        return null;
       }
-      else {
-          // browser is not on a category path, memoise as null
-          selectedCategoryPath = null;
-      }
-      return selectedCategoryPath;
+      return categoryUrlToPathLookup[currentUrl]
     }
   );
   const selectedCategoryPath = getSelectedCategoryPath(store, routerProps);
 
-  // Do NOT pass routerProps as 2nd parameter!, or anything else as 2nd param!
-  const fetchStatus      = getFetchStatus(store);
-  const categoriesArray  = getCategoriesArray(store);
-
   return {
-      fetchStatus,
-      categories: categoriesArray   || null,
-      sortBy: store.viewData.sortBy || DEFAULT_SORT_BY,
-      selectedCategoryPath,  // null if not on a valid category URL
+      fetchStatus: getFetchStatus(store),
+      categories:  getCategoriesArray(store) || null,
+      sortBy:      getSortBy(store) || DEFAULT_SORT_BY,
+      selectedCategoryPath,
   }
 };
 
+// withRouter gives access to routerProps
 export default withRouter(connect(mapStoreToProps, mapDispatchToProps)(Categories));
+
+
+
+// NOTE for USING GETLOC getLoc in CATEGORIES component:
+    //  url uses location.pathname instead of match.path
+    //
+    //  if component "matches" on a non-exact route,
+    //  match.path and match.params may NOT reflect the full path
+    //  For example, Categories Component is rendered on every path
+    //  So (inside Categories) ALWAYS: match.path === '/' match.params === ''
+    //    even when browser route is
+    //    '/:categories', path '/react', and params is 'categoryPath: react'
+    //  SO.. use location.pathname for actual url
+    //    BUT.. NOTE params would still be incorrect when inside Categories
+    //    - would need to self-parse the url to get the params of the actual url.
+    //    Fortunately, params are not CURRENTLY needed in components that
+    //    display/match on multiple/non-exact routes
+    //    (Categories is the only such component currently)
+    //    This Note is for FYI TroubleShooting in case this ever changes.
+
+  // NOTE: unlike other components, do NOT use routerProps for the loc.
+  //    this component renders on Every Route, and will always "Match" at route '/'.
+  //    thus the routeName in this component would always be 'home', No Matter
+  //    what the browser URL sais.
+  //    Instead, use viewDate.loc,
+  //    This way Categories renders correctly, with correct "selectedCategory"
+  //      highlighted.
+

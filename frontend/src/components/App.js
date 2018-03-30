@@ -3,19 +3,23 @@ import { connect } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { Link, Switch } from 'react-router-dom';
+
+//  Components
 import Categories from './Categories';
 import Posts from './Posts';
 import Post from './Post';
 import NewPost from './NewPost';
 import EditPost from './EditPost';
 import PageNotFound from './PageNotFound';
-import { fetchCategories } from '../store/categories';
+
+//  Action Creators
+import { fetchCategories } from '../store/categories/actionCreators';
 
 class App extends Component{
 
   componentDidMount() {
     // Almost every page needs categories, so it's easier to fetch them at App load,
-    //   than for every component to see if they exist, AND fetch if they do not
+    //   than for every component to see if they exist, THEN fetch if they do not.
     //   This is necessary, because any page may be loaded from a (saved URL).
     //   Note: store.categories Never changes throughout the life of the App.
     this.props.fetchCategories();
@@ -64,7 +68,7 @@ class App extends Component{
           )} />
 
           {/* Category Route (above) will also absorb Invalid URLs */}
-          {/* so Categories checks for invalid "category paths", and calls PageNotFound */}
+          {/* so Posts also checks for invalid "category paths", and calls PageNotFound */}
           <Route render={(routerProps) => (
             <PageNotFound routerProps={ routerProps } />
           )} />

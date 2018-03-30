@@ -1,6 +1,7 @@
 import expect from 'expect';
 import deepFreeze from 'deep-freeze';
-import viewData from './viewData';
+import viewData from './viewData/reducers';
+// import viewData from './viewData';
 
 
 // test: initializing "undefined" state

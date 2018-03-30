@@ -3,20 +3,22 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 // dispatch Action Creators
-import { fetchPosts } from '../store/posts';
-import { changeView, getLoc, changeSort } from '../store/viewData';
-import { upVotePost, downVotePost, deletePost } from '../store/posts';
+import { fetchPosts } from '../store/posts/actionCreators';
+import { changeView, changeSort } from '../store/viewData/actionCreators';
+import { upVotePost, downVotePost, deletePost } from '../store/posts/actionCreators';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getPostsCurrentCategory, getFetchStatus } from '../store/posts';
-import { getValidCategoryUrls, getCategoriesObject } from '../store/categories';
+import { getLocFrom } from '../store/viewData/selectors';
+import { getPostsCurrentCategory, getFetchStatus } from '../store/posts/selectors';
+import { getValidCategoryUrls, getCategoriesObject } from '../store/categories/selectors';
+import { getSortBy, getSortOrder } from '../store/viewData/selectors';
 
 // Actions and Constants, and helpers
-import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData';
-import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData';
+import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData/constants';
 import { dateMonthYear, titleCase } from '../utils/helpers';
 
 
@@ -66,11 +68,11 @@ export class Posts extends Component {
   }
 
   render() {
+    // console.log('___Posts.render);  // to check performance (unnecessary re-renders)
 
     let isInValidUrl;
-    if (!this.props || !this.props.validUrls || !this.props.loc ||
-        this.props.validUrls.indexOf(this.props.loc.url) === -1){
-      // console.log('Posts, isInValidUrl, url:', this.props && this.props.loc && this.props.loc.url)
+    if (!this.props || !this.props.validCategoryUrls || !this.props.loc ||
+        this.props.validCategoryUrls.indexOf(this.props.loc.url) === -1){
       isInValidUrl = true;
     }
     else { isInValidUrl = false; }
@@ -90,23 +92,19 @@ export class Posts extends Component {
     const havePosts = (this.props && this.props.posts &&
                        Array.isArray(this.props.posts) && this.props.posts.length > 0)
                     ? true : false;
-
+    // set message to display when !havePosts
     let statusMessage = ''
-    if (this.props.posts) {
-      if (!Array.isArray(this.props.posts)) {
-        console.log('Posts.render Error: Posts are not in an array format - they canot be mapped over !');
-      }
-      else {
+    if (this.props.posts && Array.isArray(this.props.posts)) {
         statusMessage = 'Be the first to write a post for category: '
                        + titleCase(this.props.categoryPath);
-      }
     }
 
    const getPostUrl = (post) => {
       if (Object.keys(this.props.categoriesObject).length === 0){
         // categoriesObject is {}
         // categories must be read from file on server at app initial load (asynch)
-        return '';  //  dummy link value until categoriesObject gets saved to store
+        // dummy link value until categoriesObject gets saved to store (prevents app crash)
+        return '';
       }
       const categoryName = post.category;  // categoryName === key for categoriesObject
       const categoryPath = this.props.categoriesObject[categoryName].path;
@@ -118,6 +116,7 @@ export class Posts extends Component {
       return postLink;
     }
 
+    // console.log('___Posts.rendering);  // to check performance (unnecessary re-renders)
     return (
       <div>
 
@@ -273,9 +272,14 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  //  Fewer re-renders by setting loc from routerProps,,
-  //  rather than pulling from store (store.viewData.loc)
-  const loc = getLoc(ownProps.routerProps) || null;
+  //  performance boost by setting loc via (getLoc(routerProps)),
+  //    rather than pulling from store (store.viewData.loc)
+  //    The latter requires an extra render - 1st using OLD url, 2nd using correct URL
+  //    reason being is that cDM calls changeView, so render happens before
+  //      changeView (asynch) can update loc to the store.
+  // const loc = store.viewData.loc || null;
+
+  const loc = getLocFrom(store, ownProps.routerProps) || null;
   const categoryPath = loc.categoryPath    || null
 
   const validCategoryUrls = getValidCategoryUrls(store);
@@ -290,23 +294,21 @@ function mapStoreToProps (store, ownProps) {
           posts:     null,
           sortBy:    DEFAULT_SORT_BY,
           sortOrder: DEFAULT_SORT_ORDER,
-          validUrls: null,  // validCategoryUrls,
+          validCategoryUrls: null,
           loc,
-          categoryPath,     // null if not on a validCategoryPath
+          categoryPath,     // null when not on a validCategoryPath
           fetchStatus,
         })
   }
 
-  const posts = getPostsCurrentCategory(store, ownProps);
-
   return {
     categoriesObject: getCategoriesObject(store),
 
-    posts,
-    sortBy:    store.viewData.persistentSortBy,
-    sortOrder: store.viewData.persistentSortOrder,
+    posts:     getPostsCurrentCategory(store, ownProps),
+    sortBy:    getSortBy(store),
+    sortOrder: getSortOrder(store),
 
-    validUrls: validCategoryUrls,
+    validCategoryUrls,
     loc,
     categoryPath,
     fetchStatus,

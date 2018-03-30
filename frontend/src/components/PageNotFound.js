@@ -1,6 +1,6 @@
 import React    from 'react';
 import { Link } from 'react-router-dom';
-import { HOME } from '../store/viewData';
+import { HOME } from '../store/viewData/constants';
 
 function PageNotFound (props){
   return (

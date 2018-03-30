@@ -3,20 +3,21 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 // dispatch functions
-import { changeView, getLoc } from '../store/viewData';
-import { editPost }  from '../store/posts';
-import { fetchPost } from '../store/posts';
+import { changeView } from '../store/viewData/actionCreators';
+import { editPost }  from '../store/posts/actionCreators';
+import { fetchPost } from '../store/posts/actionCreators';
 
 // Components
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getPostsAsObjects, getFetchStatus } from '../store/posts';
-import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories';
-import { getCategoryNames, getCategoriesObject } from '../store/categories';
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
+import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories/selectors';
+import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
+import { getLocFrom } from '../store/viewData/selectors';
 
 // helpers and constants
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { titleCase } from '../utils/helpers';
 import PropTypes from 'prop-types';
 
@@ -24,61 +25,88 @@ import PropTypes from 'prop-types';
 export class EditPost extends Component {
 
   state = {
-    title: '',
-    body:  '',
-    categoryName: '',
-    author: '',   //  TODO: assign the value of 'LoggedInUser'
+      title:        '',
+      body:         '',
+      categoryName: '',
+      author:       '',   //  TODO: assign the value of 'LoggedInUser'
 
+    initialValues: {
+      title:        '',
+      body:         '',
+      categoryName: '',
+      author:       '',   //  TODO: assign the value of 'LoggedInUser'
+    },
+
+    // though an empty field is invalid, don't want to highlight them RED
+    // at page load. instead only "invalidate" the field once it's been "touched"
     validField: {
-      title:  true,
-      author: true,
-      body:   true,
+      title:        true,
+      body:         true,
+      categoryName: true,
+      author:       true,
     },
   }
 
   componentDidMount(){
     this.props.changeView(this.props.routerProps);
-
     if (!this.props.post) {
       // needed when page is loaded from a saved url
       this.props.fetchPost(this.props.postId);
     }
     else {
-      this.setState({
-        title: this.props.post.title,
-        body : this.props.post.body,
-        categoryName: this.props.post.category,
-        author: this.props.post.author,
-      });
+      this.initializeStateFields(this.props.post);
     }
   }
 
   componentWillReceiveProps(nextProps){
-    if (this.props.post !== nextProps.post){
-      this.setState({
-        title: nextProps.post.title,
-        body: nextProps.post.body,
-        categoryName: nextProps.post.category,
-        author: nextProps.post.author,
-      })
+    if (nextProps.post !== this.props.post){
+      this.initializeStateFields(nextProps.post);
     }
+  }
+
+  initializeStateFields(post){
+    const { title, body, category, author } = post;
+    this.setState({
+        title,
+        body,
+        categoryName:  category,
+        author,
+
+      // also stash these values to see if input has changed before saving
+      initialValues: {
+        title,
+        body,
+        categoryName: category,
+        author,
+      },
+    });
   }
 
   canSubmit(){
     const keys = Object.keys(this.state.validField);
-    return keys.every((key) => {
+
+    const allDataIsValid =  keys.every((key) => {
       return this.state.validField[key];
     })
+    const dataHasChanged = keys.some((key) => {
+      // return this.state[key].trim() !== this.state.initialValues[key];
+      return this.state[key] !== this.state.initialValues[key];
+    })
+
+    return allDataIsValid && dataHasChanged;
+
   }
   validateField(key, newText){
-    // setState is async, so cannot use state's value
-    // hence validating on newText (the value setState is setting the field to)
+    // setState is async, so cannot use state's value.
+    // validate on newText instead (the value sent to setState)
+
     const isValid = !!newText;  // !! empty string, null, undefined
+
     this.setState({
       validField: {
         ...this.state.validField,
         [key]: isValid,
-      }
+      },
     });
   }
 
@@ -101,14 +129,35 @@ export class EditPost extends Component {
   onSave(postUrl){
     //  sending only changed values, rather than the whole post, hence the name
     const editedPostData = {
-      title: this.state.title.trim()    || '(untitled)',
-      category: this.state.categoryName || this.props.categoryNames[0],
-      body: this.state.body.trim()      || '(blank)',
-
+      title:    this.state.title.trim()  || '(untitled)',
+      category: this.state.categoryName  || this.props.categoryNames[0],
+      body:     this.state.body.trim()   || '(blank)',
+      author:   this.state.author.trim() || '(anonymous)',
       // TODO: automatically populate author from logged in user
-      author: this.state.author.trim()  || '(anonymous)',
     }
-    this.props.onSave(this.props.postId, editedPostData);
+
+    // 1) make keys match between initialValues and editedPostData
+    // 2) saving as new object as "this.state" cannot be read in `some` as written
+    let initialValues = {...this.state.initialValues};
+    initialValues["category"] = initialValues["categoryName"];
+    delete initialValues["categoryName"];
+
+    // wWile canSave checks if the fields have changed, I found it confusing (to the user)
+    //   that adding a trailing space did *not* enable the Save Button.
+    //   so I took away the trim() comparison in `canSave`, so the user can "Save".
+    // Instead, I'll silently not save.  Data is always trimmed before Saving.
+    //   So, I run another check here, this time against trimemd fields, as saved.
+    //   I do *not* want to re-save a post if the saved data will be no different.
+    //   Saves a network request, and (potentially saves an unnecessary re-render),
+
+    const keys = Object.keys(editedPostData);
+    const hasChanged = keys.some((key) => {
+      return editedPostData[key] !== initialValues[key];
+    })
+
+    if (hasChanged) {
+      this.props.onSave(this.props.postId, editedPostData);
+    }
   }
 
   render(){
@@ -267,17 +316,16 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store, ownProps) {
-  const postId = getLoc(ownProps.routerProps).postId || null;
-  const post = getPostsAsObjects(store)[postId] || null;
 
-  const categoriesObject = getCategoriesObject(store);
-  const categoryNames =    getCategoryNames(store);
+  const postId = getLocFrom(store, ownProps.routerProps).postId || null;
+  const post   = getPostsAsObjects(store)[postId]    || null;
+
   return {
-    categoriesObject, //:   getCategoriesObject(store),
-    categoryNames,    //:   getCategoryNames(store),
+    categoriesObject:      getCategoriesObject(store),
+    categoryNames:         getCategoryNames(store),
     postId,
     post,
-    fetchStatus: getFetchStatus(store),
+    fetchStatus:           getFetchStatus(store),
     categoriesFetchStatus: getCategoriesFetchStatus(store),
   }
 };

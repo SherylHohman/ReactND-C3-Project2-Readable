@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getLoc } from '../store/viewData';
-import { fetchComments } from '../store/comments';
-import { upVoteComment, downVoteComment } from '../store/comments';
-import { editComment, deleteComment } from '../store/comments';
-import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
-import NewComment from './NewComment';
-import Modal from 'react-responsive-modal';
 import PropTypes from 'prop-types';
-import { createSelector } from'reselect';
+
+//  Action Creators
+import { fetchComments } from '../store/comments/actionCreators';
+import { upVoteComment, downVoteComment } from '../store/comments/actionCreators';
+import { editComment, deleteComment } from '../store/comments/actionCreators';
+
+//  Components
+import NewComment from './NewComment';
+import FetchStatus from './FetchStatus';
+import Modal from 'react-responsive-modal';
+
+//  Selectors
+import { getLocFrom } from '../store/viewData/selectors';
+import { getSortedComments, getFetchStatus } from '../store/comments/selectors';
+
+//  Constants and Helpers
+import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
 
 
 export class Comments extends Component {
@@ -128,10 +137,22 @@ export class Comments extends Component {
   render() {
     const { comments, postId } = this.props;
 
-    if (postId === null) {
+        // re: (!postId) - don't need to check for it
+        //   b/c Post won't render without it, hence Comments would not get called
+        //   leave comment here in case app structure changes to make it required
+    if (this.props.fetchStatus.isFetching ||
+        this.props.fetchStatus.isFetchFailure) {
+        // TODO: add custom messages to FetchStatus
+        //   message="Unable to get comments for this post"
       return (
-        <div>Unable to get comments for this post</div>
-      )
+        <FetchStatus routerProps={ this.props.routerProps }
+          fetchStatus={this.props.fetchStatus}
+          label={'comments'}
+          item={this.props.comments}
+          retryCallback={()=>this.props.fetchComments(postId)}
+        />
+      );
+
     }
     if (comments === []) {
       return (
@@ -256,34 +277,18 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps (store, ownProps) {
 
   // using routerProps rather than store for the "loc"
-  //   prevents re-render due to incorrect loc values at page initia load
-  const loc = getLoc(ownProps.routerProps) || null;
+  //   prevents re-render
+  //   (affects initial comment renders at PageLoad,
+  //   by providing postId before changeView can update store with current loc url)
+
+  const loc = getLocFrom(store, ownProps.routerProps) || null;
 
   const postId = loc && loc.postId;
 
-  const getSortedComments = createSelector(
-    state => store.comments,
-    (comments) => {
-      return (
-        Object.keys(comments)
-        .reduce((acc, commentId) => {
-          return acc.concat([store.comments[commentId]]);
-         }, [])
-        .filter((comment) => !comment.deleted && !comment.parentDeleted)
-          // most recently edited/added to the top/start of the list
-        .sort((commentA, commentB) => {
-          if (commentA === commentB) return 0;
-          if (commentA.timestamp < commentB.timestamp) return 1;
-          return -1;
-        })
-      );
-    }
-  );
-  const sortedComments = getSortedComments(store);
-
   return {
     postId,
-    comments : sortedComments,
+    comments : getSortedComments(store),
+    fetchStatus:  getFetchStatus(store),
   }
 };
 

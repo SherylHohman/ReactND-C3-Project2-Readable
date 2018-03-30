@@ -1,15 +1,15 @@
 import { combineReducers } from 'redux';
-import categories from "./categories";
-import posts from "./posts";
-import comments from "./comments";
-import user from "./user";
-import viewData from './viewData';
+import categories from './categories/reducers';
+import posts      from './posts/reducers';
+import comments   from './comments/reducers';
+// import user       from './user';
+import viewData   from './viewData/reducers';
 
 const rootReducer = combineReducers({
   categories,
   posts,
   comments,
-  user,
+  // user,
   viewData,
 });
 

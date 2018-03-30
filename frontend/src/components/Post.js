@@ -1,22 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 // dispatch functions
-import { changeView, getLoc } from '../store/viewData';
-import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts';
+import { changeView } from '../store/viewData/actionCreators';
+import { upVotePost, downVotePost, deletePost, fetchPost } from '../store/posts/actionCreators';
 
 // Components
 import Comments from './Comments';
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getPostsAsObjects, getFetchStatus } from '../store/posts';
+import { getLocFrom } from '../store/viewData/selectors';
+import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 
 // helpers and constants
-import { computeUrlFromParamsAndRouteName } from '../store/viewData';
+import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { dateMonthYear, titleCase } from '../utils/helpers';
-import PropTypes from 'prop-types';
 
 
 export class Post extends Component {
@@ -37,6 +38,8 @@ export class Post extends Component {
   }
 
   render(){
+    // console.log('Post.rendering..); // used to monitor unnecessary re-renders
+
     const postId = this.props.postId;
 
     if (!this.props.post) {
@@ -172,25 +175,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  //  call getLoc from routerProps RATHER THAN store.viewData.loc
-  //    to get most up-to-date postId here
-  //    rather than wait for cDM to call updateView and store to asynch update
-  //    store.viewData.loc (url,postId,categoryPath,..) to the current Page
-  //    based on routerProps info.
-  //  Optimization:
-  //    uses routerProps to get infor for CURRENT browser Url
-  //    rather than the one saved to store
-  //    This is because routerProps is the source of truth for this component
-  //    (since component ONLY renders on EXACT match)
-  //  This is because at componentDidMount, store has the url of the PREVIOUS
-  //    page.  cDM THEN calls changeView to UPDATE store to make it in synch
-  //    with the current browser url..
-  //  Which would then re-trigger a re-render with the updated (correct) url.
-  //  Instead, set component props using router's url, so loc doesn't change
-  //    after store's url is updated, cuz it *already* had the new value.
-
-
-  const loc = getLoc(ownProps.routerProps) || null;
+  const loc = getLocFrom(store, ownProps.routerProps) || null;
   const postId = loc.postId;   // *always* Exists on *this* page/component/route
 
   const post = getPostsAsObjects(store)[postId] || null;
@@ -208,3 +193,23 @@ function mapStoreToProps (store, ownProps) {
 };
 
 export default connect(mapStoreToProps, mapDispatchToProps)(Post);
+
+
+  // Note on getLoc (store vs routerProps):
+
+    //  call getLoc from routerProps RATHER THAN store.viewData.loc
+    //    to get most up-to-date postId here
+    //    rather than wait for cDM to call updateView and store to asynch update
+    //    store.viewData.loc (url,postId,categoryPath,..) to the current Page
+    //    based on routerProps info.
+    //  Optimization:
+    //    uses routerProps to get infor for CURRENT browser Url
+    //    rather than the one saved to store
+    //    This is because routerProps is the source of truth for this component
+    //    (since component ONLY renders on EXACT match)
+    //  This is because at componentDidMount, store has the url of the PREVIOUS
+    //    page.  cDM THEN calls changeView to UPDATE store to make it in synch
+    //    with the current browser url..
+    //  Which would then re-trigger a re-render with the updated (correct) url.
+    //  Instead, set component props using router's url, so loc doesn't change
+    //    after store's url is updated, cuz it *already* had the new value.

@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 // dispatch functions
-import { addPost } from '../store/posts';
-import { fetchCategories } from '../store/categories';
+import { addPost } from '../store/posts/actionCreators';
+import { fetchCategories } from '../store/categories/actionCreators';
 
 // Selectors
-import { getCategoryNames, getCategoriesObject } from '../store/categories';
+import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
+import { getLocFrom } from '../store/viewData/selectors';
 
 // helpers and constants
-import { HOME, ROUTES } from '../store/viewData';
+import { HOME, ROUTES } from '../store/viewData/constants';
 import { createId, titleCase } from '../utils/helpers';
-import PropTypes from 'prop-types';
 
 
 export class NewPost extends Component {
@@ -75,7 +76,9 @@ export class NewPost extends Component {
   validateField(key, newText){
     // setState is async, so cannot validate on state's value of the field
     // hence validating on newText (the value setState is setting the field to)
+
     const isValid = !!newText;  // not empty string, null, undefined
+
     this.setState({
       validField: {
         ...this.state.validField,
@@ -129,13 +132,11 @@ export class NewPost extends Component {
   }
 
   onCancel(){
-    //  TODO: return to prev url, via history object, instead of the Home Page
-    this.loadHomePage();
+    this.props.history.push(this.props.prevUrl);
   }
 
   onSave(){
     // "Full" Post object has additional fields, initialized by the server.
-
     const newPostData = {
       id:     createId(),
       title:  this.state.title.trim()  || '(untitled)',
@@ -279,6 +280,10 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null;
+
+  // save last PAGE visited so can return to it on cancel
+  const prevUrl = getLocFrom(store).url || HOME.url;
+
   const categoriesObject = getCategoriesObject(store);
 
   const categoryNames =    getCategoryNames(store);
@@ -289,6 +294,7 @@ function mapStoreToProps (store, ownProps) {
     categoryNames,
     categoryName,
     history,
+    prevUrl,
   }
 };
 
