@@ -11,7 +11,7 @@ import { upVotePost, downVotePost, deletePost } from '../store/posts/actionCreat
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getLoc } from '../store/viewData/selectors';
+import { getLocFrom } from '../store/viewData/selectors';
 import { getPostsCurrentCategory, getFetchStatus } from '../store/posts/selectors';
 import { getValidCategoryUrls, getCategoriesObject } from '../store/categories/selectors';
 import { getSortBy, getSortOrder } from '../store/viewData/selectors';
@@ -279,7 +279,7 @@ function mapStoreToProps (store, ownProps) {
   //      changeView (asynch) can update loc to the store.
   // const loc = store.viewData.loc || null;
 
-  const loc = getLoc(ownProps.routerProps) || null;
+  const loc = getLocFrom(store, ownProps.routerProps) || null;
   const categoryPath = loc.categoryPath    || null
 
   const validCategoryUrls = getValidCategoryUrls(store);

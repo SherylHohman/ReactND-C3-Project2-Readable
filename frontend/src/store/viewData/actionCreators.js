@@ -1,19 +1,28 @@
-import { getLoc } from './selectors';
+import { getLocFromRouter } from './selectors';
 import * as actionTypes from './constants';
+// Not a Selector - it's actually a helperFunction re:routerProps
+// import { isExactBrowserUrl } from './selectors';
 
 // ACTION TYPES
 const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
 // TODO: (implement then import) SORT_ORDER
 
 
-// HELPER FUNCTIONS
+// // HELPER FUNCTIONS (for routerProps)  //(not sure which file to place this function)
 
-  function isExactBrowserUrl(routerProps){
+  export function isExactBrowserUrl(routerProps){
     if (!routerProps || !routerProps.match){
       console.log('ERROR: viewData.isExactBrowserUrl is missing routerProps');
       return null;
     }
-    return routerProps.match.isExact;
+    // console.log('viewData.selectors, isExactBrowserUrl',
+    //             '\n', (routerProps.match.url === routerProps.location.pathname),
+    //             '\n', routerProps.match.isExact,
+    //             '\n  url:', routerProps.location.pathname,
+    //             '\nmatch:', routerProps.match.url,
+    //             // '\nrouterProps:', routerProps,
+    //             );
+    return routerProps.match.url === routerProps.location.pathname;
   }
 
 // ACTION CREATORS
@@ -25,8 +34,8 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
     //    its loc.params, loc.route, loc.routeName, (loc.match)
     //    will reflect only the portion of the url that it needed for the component to render
 
-      const loc = getLoc(routerProps);
-      console.log('viewData.changeView, loc:', loc);
+      const loc = getLocFromRouter(routerProps);
+      // console.log('viewData.changeView, loc:', loc);
       if (!isExactBrowserUrl){
         console.log('Warning: viewData.actionCreators changeView, NOT saving',
                     ' routerProps to viewData.loc because this component\'\'s ',
@@ -37,7 +46,7 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
         return;
       }
 
-      const prevLoc = prevRouterProps ? getLoc(prevRouterProps) : null;
+      const prevLoc = prevRouterProps ? getLocFromRouter(prevRouterProps) : null;
       if (loc.url === (prevLoc && prevLoc.url)) {
         // url hasn't changed: don't update store
         //  due to the way loc is determined, a New Object Reference could
@@ -52,10 +61,10 @@ const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
         return;
       }
 
-      console.log('viewData.changeView, AM updating viewData, since the url HAS changed',
-                    'prev loc:', prevLoc,
-                    'curr loc:', loc
-                   );
+      // console.log('viewData.changeView, AM updating viewData, since the url HAS changed',
+      //               'prev loc:', prevLoc,
+      //               'curr loc:', loc
+      //              );
       dispatch ({
         type: CHANGE_VIEW,
         loc,

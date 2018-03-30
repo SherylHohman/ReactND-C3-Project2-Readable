@@ -12,7 +12,7 @@ import Comments from './Comments';
 import FetchStatus from './FetchStatus';
 
 // Selectors
-import { getLoc } from '../store/viewData/selectors';
+import { getLocFrom } from '../store/viewData/selectors';
 import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 
 // helpers and constants
@@ -175,7 +175,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  const loc = getLoc(ownProps.routerProps) || null;
+  const loc = getLocFrom(store, ownProps.routerProps) || null;
   const postId = loc.postId;   // *always* Exists on *this* page/component/route
 
   const post = getPostsAsObjects(store)[postId] || null;

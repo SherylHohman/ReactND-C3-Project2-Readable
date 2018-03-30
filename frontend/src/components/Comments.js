@@ -13,7 +13,7 @@ import FetchStatus from './FetchStatus';
 import Modal from 'react-responsive-modal';
 
 //  Selectors
-import { getLoc } from '../store/viewData/selectors';
+import { getLocFrom } from '../store/viewData/selectors';
 import { getSortedComments, getFetchStatus } from '../store/comments/selectors';
 
 //  Constants and Helpers
@@ -281,7 +281,7 @@ function mapStoreToProps (store, ownProps) {
   //   (affects initial comment renders at PageLoad,
   //   by providing postId before changeView can update store with current loc url)
 
-  const loc = getLoc(ownProps.routerProps) || null;
+  const loc = getLocFrom(store, ownProps.routerProps) || null;
 
   const postId = loc && loc.postId;
 

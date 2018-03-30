@@ -14,7 +14,7 @@ import FetchStatus from './FetchStatus';
 import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 import { getFetchStatus as getCategoriesFetchStatus} from '../store/categories/selectors';
 import { getCategoryNames, getCategoriesObject } from '../store/categories/selectors';
-import { getLoc } from '../store/viewData/selectors';
+import { getLocFrom } from '../store/viewData/selectors';
 
 // helpers and constants
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
@@ -317,7 +317,7 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps ( store, ownProps) {
 
-  const postId = getLoc(ownProps.routerProps).postId || null;
+  const postId = getLocFrom(store, ownProps.routerProps).postId || null;
   const post   = getPostsAsObjects(store)[postId]    || null;
 
   return {

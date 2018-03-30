@@ -139,8 +139,8 @@ function mapStoreToProps (store, ownProps) {
   const routerProps = ownProps;
 
   const getSelectedCategoryPath  = createSelector(
-    (routerProps) => getLocFrom(routerProps).url,
-    (store)       => getValidCategoryUrls(store),
+    (store, routerProps) => getLocFrom(store, routerProps).url,
+    (store) => getValidCategoryUrls(store),
     (store) => createCategoryUrlToPathLookup(store),
 
     (currentUrl, validCategoryUrls, categoryUrlToPathLookup) => {

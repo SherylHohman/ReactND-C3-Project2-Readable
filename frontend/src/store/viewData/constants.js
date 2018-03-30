@@ -88,13 +88,13 @@ export const SORT_BY = 'SORT_BY';
     //  the url of a deleted post, /:categoryPath/:postId,  (post route)
   };
 
+
   // The following functions compute urls for given params and routeName ONLY
   //  based on the route definition in ROUTES for that routeName
   //  (each version of the function takes in that info from a different source)
   //  used to compute urls a mapped over component item should navigate to
   //  or to compare a Router url with a Data-Based url
 
-  // See also related Selector Function in ./selectors
 
   // used to calculate a url to navigate to, based on params and routeName in loc
   //  loc supplies params AND routeName

@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-import { getLoc } from '../viewData/selectors';
+import { getLocFrom } from '../viewData/selectors';
 
 
 // SELECTORS - Return store data in format ready to be consumed by UI
@@ -18,6 +18,7 @@ export const getPosts = createSelector(
     return postsArray;
   }
 );
+
 export const getPost = (store, postId) => store.posts[postId];
   // TODO:
   //    getPost selector:
@@ -40,7 +41,7 @@ export const getPost = (store, postId) => store.posts[postId];
 
 // B  -- requires less rendering and fewer function calls than A) (see Notes below)
 const getRouterCategoryPath = (store, ownProps) =>
-  (getLoc(ownProps.routerProps).categoryPath);
+  (getLocFrom(store, ownProps.routerProps).categoryPath);
 
 // (only valid Category Routes make it to this function)
 export const getPostsCurrentCategory = createSelector(
