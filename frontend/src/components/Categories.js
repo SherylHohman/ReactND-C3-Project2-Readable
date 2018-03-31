@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-import { createSelector } from 'reselect';
 
 // action Creators
 import { fetchCategories} from '../store/categories/actionCreators';
@@ -11,13 +9,10 @@ import { fetchCategories} from '../store/categories/actionCreators';
 import FetchStatus from './FetchStatus';
 
 // selectors
-import { getFetchStatus } from '../store/categories/selectors';
-
-// selectors, that should be refactored to regular constants
-import { getCategoriesArray, getValidCategoryUrls } from '../store/categories/selectors';
-// constants/helpers than maybe could be selectors instead
-import { getLocFrom, getSortBy } from '../store/viewData/selectors';
-import { createCategoryUrlToPathLookup } from '../store/categories/selectors';
+import { getCurrentCategoryPath } from '../store/categories/selectors';
+import { getSortBy } from '../store/viewData/selectors';
+// values should not change - after initial categories fetch (successfully)
+import { getFetchStatus, getCategoriesArray } from '../store/categories/selectors';
 
 // helpers and constants
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
@@ -26,10 +21,29 @@ import { titleCase } from '../utils/helpers';
 
 
 export class Categories extends Component {
-// TODO refactor to functional component
 
   clickDisabled(e){
     e.preventDefault();
+  }
+
+  shouldComponentUpdate(nextProps, nextState){
+    // because null !== null memoizing null on a non-categoryPath doesn't work
+
+    // apply the check only AFTER categories have been fetched
+    //  (categories fetch should only happen once during the life of the app)
+    //  (and is initiated at app load, in App.js)
+    if (nextProps.fetchStatus !== this.props.fetchStatus) {
+      return true;
+    }
+    // cannot check for !currentCategoryPath because Home Page categoryPath === ''
+    return !( // prev and this route are not category routes - null refs aren't same
+              (nextProps.currentCategoryPath  === typeof(null) &&
+               this.props.currentCategoryPath === typeof(null)
+              )  ||
+              // unlikely, given the way the routes vs avail links are currently layed out
+              // future-proofing though cuz it could be a difficlut to trace bug if that changed
+              (nextProps.currentCategoryPath === this.props.currentCategoryPath)
+            )
   }
 
   render() {
@@ -55,7 +69,7 @@ export class Categories extends Component {
     }
 
     const isExactPath = (thisCategoryPath) => {
-      return (this.props.selectedCategoryPath === thisCategoryPath);
+      return (this.props.currentCategoryPath === thisCategoryPath);
     }
 
     // console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
@@ -128,67 +142,36 @@ export class Categories extends Component {
 
 }
 
+
 function mapDispatchToProps(dispatch){
   return ({
     fetchCategories: () => dispatch(fetchCategories()),
   })
 }
 
-function mapStoreToProps (store, ownProps) {
+function mapStoreToProps (store) {
 
-  const routerProps = ownProps;
-
-  const getSelectedCategoryPath  = createSelector(
-    (store, routerProps) => getLocFrom(store, routerProps).url,
-    (store) => getValidCategoryUrls(store),
-    (store) => createCategoryUrlToPathLookup(store),
-
-    (currentUrl, validCategoryUrls, categoryUrlToPathLookup) => {
-      // see if currentUrl EXACTLY matches a valid Category Url
-      if (!currentUrl || (validCategoryUrls.indexOf(currentUrl) === -1)){
-        // browser is not on a category path, memoise null to prevent re-render
-        return null;
-      }
-      return categoryUrlToPathLookup[currentUrl]
-    }
-  );
-  const selectedCategoryPath = getSelectedCategoryPath(store, routerProps);
+  // routerProps always matches on '/' for categories component, so
+  //    MUST pass in null, as 2nd param to force using the "stored" route
+  // Currently, I am removing access to routerProps, or ownProps.
+  //    So *As Is* this 2nd param is not strictly necessary (as it's "undefined")
+  //    However, if mapStoreToProps is changed have access to _ownProps_, then it will
+  //    be AUTOMATICALLY passed to getCurrentCategoryPath, and interpreted as
+  //    routerProps, whether routerProps itself exists or not.
+  //    If ownProps!==routerProps, a runtime error might result when "get.."
+  //    tries to access a "routerProps" property on the "ownProps" variable.
+  //    If routerProps *does* become available, then the "get..." selectors
+  //    will try to use routerProps instead of store for this component.
+  //    And as stated previously, routerProps would yield incorrect results.
+  //    Hence, Explicitly passing "null" as 2nd param future proofs against errors
+  const currentCategoryPath = getCurrentCategoryPath(store, null);
 
   return {
       fetchStatus: getFetchStatus(store),
       categories:  getCategoriesArray(store) || null,
       sortBy:      getSortBy(store) || DEFAULT_SORT_BY,
-      selectedCategoryPath,
+      currentCategoryPath,
   }
 };
 
-// withRouter gives access to routerProps
-export default withRouter(connect(mapStoreToProps, mapDispatchToProps)(Categories));
-
-
-
-// NOTE for USING GETLOC getLoc in CATEGORIES component:
-    //  url uses location.pathname instead of match.path
-    //
-    //  if component "matches" on a non-exact route,
-    //  match.path and match.params may NOT reflect the full path
-    //  For example, Categories Component is rendered on every path
-    //  So (inside Categories) ALWAYS: match.path === '/' match.params === ''
-    //    even when browser route is
-    //    '/:categories', path '/react', and params is 'categoryPath: react'
-    //  SO.. use location.pathname for actual url
-    //    BUT.. NOTE params would still be incorrect when inside Categories
-    //    - would need to self-parse the url to get the params of the actual url.
-    //    Fortunately, params are not CURRENTLY needed in components that
-    //    display/match on multiple/non-exact routes
-    //    (Categories is the only such component currently)
-    //    This Note is for FYI TroubleShooting in case this ever changes.
-
-  // NOTE: unlike other components, do NOT use routerProps for the loc.
-  //    this component renders on Every Route, and will always "Match" at route '/'.
-  //    thus the routeName in this component would always be 'home', No Matter
-  //    what the browser URL sais.
-  //    Instead, use viewDate.loc,
-  //    This way Categories renders correctly, with correct "selectedCategory"
-  //      highlighted.
-
+export default connect(mapStoreToProps, mapDispatchToProps)(Categories);
