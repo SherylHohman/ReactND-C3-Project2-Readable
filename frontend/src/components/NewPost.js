@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 // dispatch functions
+import { changeView } from '../store/viewData/actionCreators';
 import { addPost } from '../store/posts/actionCreators';
 import { fetchCategories } from '../store/categories/actionCreators';
 
@@ -38,6 +39,8 @@ export class NewPost extends Component {
   }
 
   componentDidMount(){
+    this.props.changeView(this.props.routerProps);
+
     if (this.props.categoryNames){
       this.setState( {categoryName: this.props.categoryNames[0] });
     }
@@ -186,6 +189,7 @@ export class NewPost extends Component {
 
     const canSubmit = this.canSubmit();
 
+    console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
     return  (
       <div>
 
@@ -273,8 +277,9 @@ NewPost.propTypes = {
 
 function mapDispatchToProps(dispatch){
   return ({
-    onSave: (newPostData) => dispatch(addPost(newPostData)),
+    changeView: (routerProps) => dispatch(changeView(routerProps)),
     fetchCategories:  (postId) => dispatch(fetchCategories(postId)),
+    onSave: (newPostData) => dispatch(addPost(newPostData)),
   })
 }
 
