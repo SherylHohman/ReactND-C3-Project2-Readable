@@ -116,7 +116,7 @@ export class Posts extends Component {
       return postLink;
     }
 
-    // console.log('___Posts.rendering);  // to check performance (unnecessary re-renders)
+    // console.log('___Posts.rendering');  // to check performance (unnecessary re-renders)
     return (
       <div>
 

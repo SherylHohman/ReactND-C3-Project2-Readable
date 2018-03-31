@@ -6,7 +6,7 @@ import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER } from './constants';
 
 
 // ACTION TYPES
-const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
+const { CHANGE_VIEW, SORT_BY } = actionTypes;
 // TODO: (implement then import) SORT_ORDER
 
 

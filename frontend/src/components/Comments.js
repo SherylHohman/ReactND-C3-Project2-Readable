@@ -135,6 +135,7 @@ export class Comments extends Component {
   }
 
   render() {
+    // console.log('Comments.render, re-rendering..');  // monitor for unnecessary re-renders
     const { comments, postId } = this.props;
 
         // re: (!postId) - don't need to check for it

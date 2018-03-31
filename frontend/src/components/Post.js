@@ -13,6 +13,7 @@ import FetchStatus from './FetchStatus';
 
 // Selectors
 import { getLocFrom } from '../store/viewData/selectors';
+// import { getPost, getFetchStatus } from '../store/posts/selectors';
 import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 
 // helpers and constants
@@ -38,7 +39,7 @@ export class Post extends Component {
   }
 
   render(){
-    // console.log('Post.rendering..); // used to monitor unnecessary re-renders
+    // console.log('Post.rendering..'); // used to monitor unnecessary re-renders
 
     const postId = this.props.postId;
 

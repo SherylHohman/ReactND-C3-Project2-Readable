@@ -4,7 +4,7 @@ import * as actionTypes from './constants';
 // import { isExactBrowserUrl } from './selectors';
 
 // ACTION TYPES
-const { CHANGE_VIEW, SELECT_CATEGORY, SORT_BY } = actionTypes;
+const { CHANGE_VIEW, SORT_BY } = actionTypes;
 // TODO: (implement then import) SORT_ORDER
 
 

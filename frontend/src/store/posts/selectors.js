@@ -20,24 +20,15 @@ export const getPosts = createSelector(
 );
 
 export const getPost = (store, postId) => store.posts[postId];
-  // TODO:
-  //    getPost selector:
-  //    will be useful to create a wrapper container around Post and EditPost
-  //      then selector would not change between viewing and editing the post
-  //    Also, the wrapper container could reuse the code for showing fetching status vs 404
 
-  // const havePostId = (store, postId) => postId;
-  //    even better: compute postId from routerProps
+// export const getPostFrom = createSelector(
+//   (store, routerProps) => getPostsAsObjects(store),
+//   (store, routerProps) => getLocFrom(store, routerProps).postId || null,
 
-  // const postId = getLoc(ownProps.routerProps).postId || null;
-
-  // export const getPost = createSelector(
-  //   getPosts,
-  //   // havePostId,
-  //   (store, routerProps) => getLoc(routerProps).postId || null,
-  //   (posts, postId) => store.fetchedPosts[postId];
-  // );
-
+//   (posts, postId) => {
+//     return (posts.length>0 && postId && posts[postId]) || null
+//   }
+// );
 
 // B  -- requires less rendering and fewer function calls than A) (see Notes below)
 const getRouterCategoryPath = (store, ownProps) =>

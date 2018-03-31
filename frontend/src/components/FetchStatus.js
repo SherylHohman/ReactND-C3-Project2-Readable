@@ -6,6 +6,7 @@ import PageNotFound from '../components/PageNotFound';
 import { HOME } from '../store/viewData/constants';
 
 function FetchStatus(props){
+  // console.log('FetchStatus.render, re-rendering..');  // monitor for unnecessary re-renders
   const { isLoading, isFetchFailure }  = props.fetchStatus;
   const label         = props.label         || 'item';
   const id            = props.id            || '';

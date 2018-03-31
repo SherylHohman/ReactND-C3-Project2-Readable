@@ -6,7 +6,8 @@ import registerServiceWorker from './registerServiceWorker';
 
 //  Middlewares
 import thunk  from 'redux-thunk';
-import logger from 'redux-logger'
+// optionally imported below..
+// import logger from 'redux-logger'
 
 //  App
 import rootReducer from './store/index.js';

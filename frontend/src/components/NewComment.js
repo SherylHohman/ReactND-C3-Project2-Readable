@@ -83,6 +83,7 @@ export class NewComment extends Component {
 
 
   render(){
+    // console.log('NewComment.render, re-rendering..');  // monitor for unnecessary re-renders
 
     const canSubmit = this.canSubmit();
 

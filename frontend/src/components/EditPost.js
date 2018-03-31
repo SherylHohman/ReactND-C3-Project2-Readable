@@ -161,6 +161,7 @@ export class EditPost extends Component {
   }
 
   render(){
+     // console.log('EditPost.render, re-rendering..');  // monitor for unnecessary re-renders
 
     const postId = this.props.postId;
 

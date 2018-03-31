@@ -116,23 +116,21 @@ export const getCurrentCategoryPath  = createSelector(
       //  shouldComponentUpdate to return false if prev AND curr are BOTH NULL
       //  REM: '' indicates Home path, which displays "All" categories
 
-      // for monitoring how app/reselect works
+      // to monitor reselect and app re-rendering
       // console.log('categories.selectors getCurrentCategoryPath',
       //             '\ncurrentUrl:', currentUrl,
-      //             '\nvalidCategoryUrls:', validCategoryUrls,
       //             '\ncategoryUrlToPathLookup:', categoryUrlToPathLookup,
       //             '\ncategoryUrlToPathLookup[currentUrl]: null'
       //             );
 
       return null;
     }
-      // for monitoring how app/reselect works
+      // to monitor reselect and app re-rendering
       // console.log('categories.selectors getCurrentCategoryPath',
       //             '\ncurrentUrl:', currentUrl,
-      //             '\nvalidCategoryUrls:', validCategoryUrls,
       //             '\ncategoryUrlToPathLookup:', categoryUrlToPathLookup,
       //             '\ncategoryUrlToPathLookup[currentUrl]:', categoryUrlToPathLookup[currentUrl]
-      //           );  //  app and reselect monitoring
+      //             );
 
     return categoryUrlToPathLookup[currentUrl]
   }
