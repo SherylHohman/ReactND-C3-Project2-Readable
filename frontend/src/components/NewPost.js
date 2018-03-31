@@ -19,6 +19,8 @@ import { createId, titleCase } from '../utils/helpers';
 export class NewPost extends Component {
 
   state = {
+    prevUrl:'',   // make sure this is ONLY updated in cDM, NOT cWRP
+
     title:  '',
     author: '',   //  TODO: assign the value of 'LoggedInUser'
     body:   '',
@@ -35,14 +37,19 @@ export class NewPost extends Component {
       title:  false,
       author: false,
       body:   false,
-    }
+    },
   }
 
   componentDidMount(){
+    // setState and changeView are both asynch.
+    // doubt changeView would ever finish BEFORE setState
+    // but just in case: Make Sure THIS line occurs before changeView
+    this.setState( {prevUrl: this.props.prevUrl} );
+
     this.props.changeView(this.props.routerProps);
 
     if (this.props.categoryNames){
-      this.setState( {categoryName: this.props.categoryNames[0] });
+      this.setState( {categoryName: this.props.categoryNames[0]} );
     }
   }
 
@@ -135,7 +142,7 @@ export class NewPost extends Component {
   }
 
   onCancel(){
-    this.props.history.push(this.props.prevUrl);
+    this.props.history.push(this.state.prevUrl);
   }
 
   onSave(){
@@ -189,7 +196,7 @@ export class NewPost extends Component {
 
     const canSubmit = this.canSubmit();
 
-    console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
+    console.log('NewPost.render, re-rendering..');  // monitor for unnecessary re-renders
     return  (
       <div>
 
@@ -287,6 +294,9 @@ function mapStoreToProps (store, ownProps) {
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null;
 
   // save last PAGE visited so can return to it on cancel
+  // gets saved to STATE at (FIRST PAGE LOAD ONLY), because props.prevUrl gets
+  //   overwritten with the url of *this* page, when this component re-renders
+  //   (because mounting this page triggers the store to be updated to this url)
   const prevUrl = getLocFrom(store).url || HOME.url;
 
   const categoriesObject = getCategoriesObject(store);
