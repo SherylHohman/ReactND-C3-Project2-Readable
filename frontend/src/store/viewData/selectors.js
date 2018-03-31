@@ -138,7 +138,7 @@ import { isExactBrowserUrl } from './actionCreators';
         return locFromRouter;
       }
 
-      const hasChanged = keysR.any(key => {
+      const hasChanged = keysR.some(key => {
         return urlR[key] !== urlS[key]
       });
       // console.log('deep loc returning:', hasChanged ? 'locFromRouter' : 'locFromStore')
