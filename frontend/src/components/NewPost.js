@@ -48,22 +48,16 @@ export class NewPost extends Component {
 
     this.props.changeView(this.props.routerProps);
 
-    if (this.props.categoryNames){
-      this.setState( {categoryName: this.props.categoryNames[0]} );
+    if (this.props.categoryName){
+      this.setState( {categoryName: this.props.categoryName} );
     }
   }
 
   componentWillReceiveProps(nextProps){
-    // categories never change in life of app, they are fetched at App load
-    if ( nextProps.categoryNames &&
-         Array.isArray(nextProps.categoryNames) &&
-         nextProps.categoryNames[0]
+    if ( nextProps.categoryName &&
+         (nextProps.categoryName !== this.state.categoryName)
        ){
-        // default: initialize "selected" category to the first in the list
-        // TODO: add a "Select Category" option, and set it as the default instead
-        this.setState({
-          categoryName: nextProps.categoryNames[0],
-        })
+        this.setState( {categoryName: nextProps.categoryName} );
       }
   }
 
@@ -279,7 +273,7 @@ NewPost.propTypes = {
 // TODO: how to make required, when using redux.store
 // TODO: how to require specific keys to exist on an (required) object
   categories: PropTypes.array,
-    history: PropTypes.object,
+     history: PropTypes.object,
 }
 
 function mapDispatchToProps(dispatch){
@@ -300,9 +294,11 @@ function mapStoreToProps (store, ownProps) {
   const prevUrl = getLocFrom(store).url || HOME.url;
 
   const categoriesObject = getCategoriesObject(store);
+  const categoryNames    = getCategoryNames(store);
 
-  const categoryNames =    getCategoryNames(store);
-  const categoryName=      categoryNames[0] || HOME.category;
+  // set an default value
+  // TODO: add a "Select Category.." option, and set it as the default instead
+  const categoryName  = categoryNames[0] || HOME.category.name;
 
   return {
     categoriesObject,
