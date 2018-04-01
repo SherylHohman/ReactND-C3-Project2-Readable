@@ -25,26 +25,6 @@ export class Categories extends Component {
     e.preventDefault();
   }
 
-  shouldComponentUpdate(nextProps, nextState){
-    // because null !== null memoizing null on a non-categoryPath doesn't work
-
-    // apply the check only AFTER categories have been fetched
-    //  (categories fetch should only happen once during the life of the app)
-    //  (and is initiated at app load, in App.js)
-    if (nextProps.fetchStatus !== this.props.fetchStatus) {
-      return true;
-    }
-    // cannot check for !currentCategoryPath because Home Page categoryPath === ''
-    return !( // prev and this route are not category routes - null refs aren't same
-              (nextProps.currentCategoryPath  === typeof(null) &&
-               this.props.currentCategoryPath === typeof(null)
-              )  ||
-              // unlikely, given the way the routes vs avail links are currently layed out
-              // future-proofing though cuz it could be a difficlut to trace bug if that changed
-              (nextProps.currentCategoryPath === this.props.currentCategoryPath)
-            )
-  }
-
   render() {
 
     // categories fetch was initiated from App.js
@@ -71,7 +51,7 @@ export class Categories extends Component {
       return (this.props.currentCategoryPath === thisCategoryPath);
     }
 
-    console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
+    // console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
     return (
       <div>
         {this.props && this.props.categories &&

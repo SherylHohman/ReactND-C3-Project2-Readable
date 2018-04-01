@@ -111,27 +111,8 @@ export const getCurrentCategoryPath  = createSelector(
     // see if currentUrl EXACTLY matches a valid Category Url
     if (!currentUrl || (validCategoryUrls.indexOf(currentUrl) === -1)){
       // browser is not on a category path, memoise null to prevent re-render
-
-      // Actually, memoizing null doesn't work. Must customize
-      //  shouldComponentUpdate to return false if prev AND curr are BOTH NULL
-      //  REM: '' indicates Home path, which displays "All" categories
-
-      // to monitor reselect and app re-rendering
-      // console.log('categories.selectors getCurrentCategoryPath',
-      //             '\ncurrentUrl:', currentUrl,
-      //             '\ncategoryUrlToPathLookup:', categoryUrlToPathLookup,
-      //             '\ncategoryUrlToPathLookup[currentUrl]: null'
-      //             );
-
       return null;
     }
-      // to monitor reselect and app re-rendering
-      // console.log('categories.selectors getCurrentCategoryPath',
-      //             '\ncurrentUrl:', currentUrl,
-      //             '\ncategoryUrlToPathLookup:', categoryUrlToPathLookup,
-      //             '\ncategoryUrlToPathLookup[currentUrl]:', categoryUrlToPathLookup[currentUrl]
-      //             );
-
     return categoryUrlToPathLookup[currentUrl]
   }
 );
