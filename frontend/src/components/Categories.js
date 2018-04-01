@@ -10,7 +10,6 @@ import FetchStatus from './FetchStatus';
 
 // selectors
 import { getCurrentCategoryPath } from '../store/categories/selectors';
-import { getSortBy } from '../store/viewData/selectors';
 // values should not change - after initial categories fetch (successfully)
 import { getFetchStatus, getCategoriesArray } from '../store/categories/selectors';
 
@@ -72,7 +71,7 @@ export class Categories extends Component {
       return (this.props.currentCategoryPath === thisCategoryPath);
     }
 
-    // console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
+    console.log('Categories.render, re-rendering..');  // monitor for unnecessary re-renders
     return (
       <div>
         {this.props && this.props.categories &&
@@ -169,7 +168,6 @@ function mapStoreToProps (store) {
   return {
       fetchStatus: getFetchStatus(store),
       categories:  getCategoriesArray(store) || null,
-      sortBy:      getSortBy(store) || DEFAULT_SORT_BY,
       currentCategoryPath,
   }
 };
