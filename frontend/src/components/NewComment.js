@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 import { addComment } from '../store/comments/actionCreators';
 import { createId, titleCase } from '../utils/helpers';
@@ -134,6 +134,10 @@ export class NewComment extends Component {
 
 }
 
+NewComment.propTypes = {
+  onSave: PropTypes.func.isRequired,
+}
+
 function mapDispatchToProps(dispatch){
   return ({
     onSave: (newCommentData) => dispatch(addComment(newCommentData)),
@@ -141,6 +145,7 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStoreToProps ( store, ...ownProps ) {
+  // TODO: should be useing a selector to get this value
   return {
     postId : store.viewData.loc.postId,
   }

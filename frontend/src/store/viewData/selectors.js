@@ -1,8 +1,35 @@
 import { createSelector } from 'reselect';
+import PropTypes from 'prop-types';
+
 import { ROUTES, findRouteNameOfRoute } from './constants';
 
 // routerProps helper function, NOT an actionCreator - not sure what file to place this func in
 import { isExactBrowserUrl } from './actionCreators';
+
+
+
+// CONSTANTS and HELPERS for EXPORT
+
+  //  TODO: not sure which file to put this in (constants, viewData, selectors)
+  //        Putting it in selectors for now because this is where I compute loc
+  //        So it is closest to the "source" if loc definition changes
+  //        properties components need in order to save "their" (rendering)
+  //        url to viewData.loc
+
+  export const locPropTypes = {
+      location: PropTypes.shape({
+        pathname: PropTypes.string.isRequired,
+      }).isRequired,
+      match: PropTypes.shape({
+        params: PropTypes.object.isRequired,
+        path: PropTypes.string.isRequired,
+      }).isRequired,
+  }
+  export const routerPropTypes = {
+    routerProps: PropTypes.shape({
+      ...locPropTypes
+    }).isRequired,
+  }
 
 
 // SELECTORS - SORT (ie non LOC items)

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { Route } from 'react-router-dom';
 import { Link, Switch } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 //  Components
 import Categories from './Categories';
@@ -80,6 +81,11 @@ class App extends Component{
     );
   }
 }
+
+App.propTypes = {
+  fetchCategories: PropTypes.func.isRequired,
+}
+
 
 function mapDispatchToProps(dispatch){
   return ({

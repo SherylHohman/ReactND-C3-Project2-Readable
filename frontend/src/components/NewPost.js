@@ -14,6 +14,7 @@ import { getLocFrom } from '../store/viewData/selectors';
 // helpers and constants
 import { HOME, ROUTES } from '../store/viewData/constants';
 import { createId, titleCase } from '../utils/helpers';
+import { locPropTypes } from '../store/viewData/selectors';
 
 
 export class NewPost extends Component {
@@ -270,10 +271,18 @@ export class NewPost extends Component {
 }
 
 NewPost.propTypes = {
-// TODO: how to make required, when using redux.store
-// TODO: how to require specific keys to exist on an (required) object
-  categories: PropTypes.array,
-     history: PropTypes.object,
+  routerProps: PropTypes.shape({
+    ...locPropTypes,
+
+    history: PropTypes.shape({
+      push: PropTypes.func.isRequired,
+    }),
+
+  //  TODO: .isRequired yields errors if this is the First Page Loaded, why??
+  changeView:      PropTypes.func,  //.isRequired,
+  fetchCategories: PropTypes.func,  //.isRequired,
+  onSave:          PropTypes.func,  //.isRequired,
+  }),
 }
 
 function mapDispatchToProps(dispatch){

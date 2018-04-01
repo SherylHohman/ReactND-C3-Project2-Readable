@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
-
+import PropTypes from 'prop-types';
 // action Creators
 import { fetchCategories} from '../store/categories/actionCreators';
 
@@ -119,6 +119,10 @@ export class Categories extends Component {
     );
   }
 
+}
+
+Categories.propTypes = {
+  fetchCategories: PropTypes.func.isRequired,
 }
 
 

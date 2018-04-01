@@ -10,6 +10,8 @@ const { CHANGE_VIEW, SORT_BY } = actionTypes;
 
 // // HELPER FUNCTIONS (for routerProps)  //(not sure which file to place this function)
 
+  // TODO: move to selectors file, as that is the file that deals with the
+  //       inner workings of routerProps, and knows its shape the best
   export function isExactBrowserUrl(routerProps){
     if (!routerProps || !routerProps.match){
       console.log('ERROR: viewData.isExactBrowserUrl is missing routerProps');
@@ -46,6 +48,7 @@ const { CHANGE_VIEW, SORT_BY } = actionTypes;
         return;
       }
 
+      // TODO: re-write to pull prev value from store, rather than needint it to be passed in
       const prevLoc = prevRouterProps ? getLocFromRouter(prevRouterProps) : null;
       if (loc.url === (prevLoc && prevLoc.url)) {
         // url hasn't changed: don't update store

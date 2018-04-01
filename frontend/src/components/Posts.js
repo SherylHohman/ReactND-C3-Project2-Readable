@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 // dispatch Action Creators
 import { fetchPosts } from '../store/posts/actionCreators';
@@ -20,6 +21,7 @@ import { getSortBy, getSortOrder } from '../store/viewData/selectors';
 import { ROUTES, computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_ORDER} from '../store/viewData/constants';
 import { dateMonthYear, titleCase } from '../utils/helpers';
+import { routerPropTypes } from '../store/viewData/selectors';
 
 
 export class Posts extends Component {
@@ -256,6 +258,15 @@ function sortPosts(posts, sortMethod=DEFAULT_SORT_BY, orderBy=DEFAULT_SORT_ORDER
   return sorted;
 };
 
+Posts.propTypes = {
+  ...routerPropTypes,
+  fetchPosts: PropTypes.func.isRequired,
+  onUpVotePost: PropTypes.func.isRequired,
+  onDownVotePost: PropTypes.func.isRequired,
+  onDeletePost: PropTypes.func.isRequired,
+  changeView: PropTypes.func.isRequired,
+  onChangeSort: PropTypes.func.isRequired,
+}
 
 function mapDispatchToProps(dispatch){
   return ({

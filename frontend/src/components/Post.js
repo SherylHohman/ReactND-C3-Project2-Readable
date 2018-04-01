@@ -19,6 +19,7 @@ import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
 // helpers and constants
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { dateMonthYear, titleCase } from '../utils/helpers';
+import { routerPropTypes } from '../store/viewData/selectors';
 
 
 export class Post extends Component {
@@ -156,10 +157,16 @@ export class Post extends Component {
   }
 }
 
-// TODO: how to use PropTypes ".isRequired" with redux store?
-// const { object, func } = PropTypes;
 Post.propTypes = {
-  post: PropTypes.object//.isRequired,
+  ...routerPropTypes,
+
+  onUpVotePost:   PropTypes.func.isRequired,
+  onDownVotePost: PropTypes.func.isRequired,
+
+  deletePost:     PropTypes.func.isRequired,
+  changeView:     PropTypes.func.isRequired,
+
+  fetchPost:      PropTypes.func.isRequired,
 }
 
 function mapDispatchToProps(dispatch){

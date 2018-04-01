@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
 //  Action Creators
 import { fetchComments } from '../store/comments/actionCreators';
 import { upVoteComment, downVoteComment } from '../store/comments/actionCreators';
@@ -18,14 +17,9 @@ import { getSortedComments, getFetchStatus } from '../store/comments/selectors';
 
 //  Constants and Helpers
 import { dateMonthYear, timeIn12HourFormat, titleCase } from '../utils/helpers';
-
+import { routerPropTypes } from '../store/viewData/selectors';
 
 export class Comments extends Component {
-
-  static propTypes = {
-    postId: PropTypes.string,//.isRequired,
-    comments: PropTypes.array,
-  }
 
   state = {
     isOpenModal: false,
@@ -263,6 +257,15 @@ export class Comments extends Component {
     )
   }
 
+}
+
+Comments.propTypes = {
+    ...routerPropTypes,
+  fetchComments:      PropTypes.func.isRequired,
+  onUpVoteComment:    PropTypes.func.isRequired,
+  onDownVoteComment:  PropTypes.func.isRequired,
+  onDeleteComment:    PropTypes.func.isRequired,
+  updateComment:      PropTypes.func.isRequired,
 }
 
 function mapDispatchToProps(dispatch){

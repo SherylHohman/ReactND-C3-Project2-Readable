@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 // components
 import PageNotFound from '../components/PageNotFound';
 // constants and helpers
 import { HOME } from '../store/viewData/constants';
+import { routerPropTypes } from '../store/viewData/selectors';
 
 function FetchStatus(props){
   // console.log('FetchStatus.render, re-rendering..');  // monitor for unnecessary re-renders
@@ -42,5 +44,14 @@ function FetchStatus(props){
       );
     };
 };
+
+  FetchStatus.propTypes = {
+    ...routerPropTypes,
+    fetchStatus:   PropTypes.object.isRequired,
+    label:         PropTypes.string.isRequired,
+    retryCallback: PropTypes.func.isRequired,
+    id:            PropTypes.string,
+  }
+
 
 export default FetchStatus

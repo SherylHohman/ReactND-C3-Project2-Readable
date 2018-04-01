@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 // dispatch functions
 import { changeView } from '../store/viewData/actionCreators';
@@ -19,7 +20,7 @@ import { getLocFrom } from '../store/viewData/selectors';
 // helpers and constants
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
 import { titleCase } from '../utils/helpers';
-import PropTypes from 'prop-types';
+import { routerPropTypes } from '../store/viewData/selectors';
 
 
 export class EditPost extends Component {
@@ -295,17 +296,11 @@ export class EditPost extends Component {
 
 }
 
-EditPost.propTypes = {
-    // TODO: how to make required, when using redux.store
-    // TODO: how to require specific keys to exist on an (required) object
-    categoriesObject: PropTypes.object,
-    categoryNames: PropTypes.array,
-    postId: PropTypes.string,
-    post : PropTypes.object,       // required keys: title, body, category
-    fetchPost: PropTypes.func,
-    editPost: PropTypes.func,
-    changeView: PropTypes.func,
-    routerProps: PropTypes.object, // needs match, (maybe location, history.push)
+  EditPost.propTypes = {
+    ...routerPropTypes,
+    onSave:     PropTypes.func.isRequired,
+    changeView: PropTypes.func.isRequired,
+    fetchPost:  PropTypes.func.isRequired,
 }
 
 function mapDispatchToProps(dispatch){
