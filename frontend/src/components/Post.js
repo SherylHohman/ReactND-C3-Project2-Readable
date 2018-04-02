@@ -108,6 +108,18 @@ export class Post extends Component {
 
     return (
       <div>
+        {/*Add Post*/}
+        <Link to={computeUrlFromParamsAndRouteName( {},'newPost' )}
+              style={{"height":"100%",
+                      "width" :"100%"
+                    }}
+              >
+          <div><button><h2>Add New Post</h2></button></div>
+        </Link>
+
+        <hr />
+
+        {/* Post */}
         <div>
             <Link to={makeUrl('post')}
                   onClick={this.disableClick}
@@ -150,9 +162,13 @@ export class Post extends Component {
               </Link>
             </div>
         </div>
+
         <hr />
+
+        {/* Comments */}
         <h3>{commentCount} Comments</h3>
         <Comments routerProps={ this.props.routerProps } />
+
       </div>
     );
 
