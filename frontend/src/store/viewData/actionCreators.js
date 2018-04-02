@@ -17,13 +17,6 @@ const { CHANGE_VIEW, SORT_BY } = actionTypes;
       console.log('ERROR: viewData.isExactBrowserUrl is missing routerProps');
       return null;
     }
-    // console.log('viewData.selectors, isExactBrowserUrl',
-    //             '\n', (routerProps.match.url === routerProps.location.pathname),
-    //             '\n', routerProps.match.isExact,
-    //             '\n  url:', routerProps.location.pathname,
-    //             '\nmatch:', routerProps.match.url,
-    //             // '\nrouterProps:', routerProps,
-    //             );
     return routerProps.match.url === routerProps.location.pathname;
   }
 
@@ -37,7 +30,6 @@ const { CHANGE_VIEW, SORT_BY } = actionTypes;
     //    will reflect only the portion of the url that it needed for the component to render
 
       const loc = getLocFromRouter(routerProps);
-      // console.log('viewData.changeView, loc:', loc);
       if (!isExactBrowserUrl){
         console.log('Warning: viewData.actionCreators changeView, NOT saving',
                     ' routerProps to viewData.loc because this component\'\'s ',
@@ -48,7 +40,7 @@ const { CHANGE_VIEW, SORT_BY } = actionTypes;
         return;
       }
 
-      // TODO: re-write to pull prev value from store, rather than needint it to be passed in
+      // TODO: re-write to pull prev value from store, rather than needing it to be passed in
       const prevLoc = prevRouterProps ? getLocFromRouter(prevRouterProps) : null;
       if (loc.url === (prevLoc && prevLoc.url)) {
         // url hasn't changed: don't update store
@@ -64,10 +56,6 @@ const { CHANGE_VIEW, SORT_BY } = actionTypes;
         return;
       }
 
-      // console.log('viewData.changeView, AM updating viewData, since the url HAS changed',
-      //               'prev loc:', prevLoc,
-      //               'curr loc:', loc
-      //              );
       dispatch ({
         type: CHANGE_VIEW,
         loc,

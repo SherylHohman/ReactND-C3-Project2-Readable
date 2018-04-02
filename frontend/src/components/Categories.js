@@ -15,7 +15,7 @@ import { getFetchStatus, getCategoriesArray } from '../store/categories/selector
 
 // helpers and constants
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
-import { HOME, DEFAULT_SORT_BY } from '../store/viewData/constants';
+import { HOME } from '../store/viewData/constants';
 import { titleCase } from '../utils/helpers';
 
 
@@ -135,18 +135,9 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps (store) {
 
   // routerProps always matches on '/' for categories component, so
-  //    MUST pass in null, as 2nd param to force using the "stored" route
-  // Currently, I am removing access to routerProps, or ownProps.
-  //    So *As Is* this 2nd param is not strictly necessary (as it's "undefined")
-  //    However, if mapStoreToProps is changed have access to _ownProps_, then it will
-  //    be AUTOMATICALLY passed to getCurrentCategoryPath, and interpreted as
-  //    routerProps, whether routerProps itself exists or not.
-  //    If ownProps!==routerProps, a runtime error might result when "get.."
-  //    tries to access a "routerProps" property on the "ownProps" variable.
-  //    If routerProps *does* become available, then the "get..." selectors
-  //    will try to use routerProps instead of store for this component.
-  //    And as stated previously, routerProps would yield incorrect results.
-  //    Hence, Explicitly passing "null" as 2nd param future proofs against errors
+  //    Pass in null, as 2nd param to forces using the "stored" route.
+  //    Explicitly passing this 2nd param to remind that it takes 2 parms,
+  //    and that I never want to pass in routerProps from this component.
   const currentCategoryPath = getCurrentCategoryPath(store, null);
 
   return {
