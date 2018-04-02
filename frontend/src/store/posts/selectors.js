@@ -4,9 +4,20 @@ import { getLocFrom } from '../viewData/selectors';
 
 
 // SELECTORS - Return store data in format ready to be consumed by UI
-export const getFetchStatus    = (store) => store.posts.fetchStatus;
-export const getPostsAsObjects = (store) => store.posts.fetchedPosts;
 
+// export const getFetchStatus    = (store) => store.posts.fetchStatus;
+export const getFetchStatus = createSelector(
+  (store) => store.posts.fetchStatus,
+  (fetchStatus) => fetchStatus
+);
+
+// export const getPostsAsObjects = (store) => store.posts.fetchedPosts;
+export const getPostsAsObjects = createSelector(
+  (store) => store.posts.fetchedPosts,
+  (postsAsObjects) => postsAsObjects
+);
+
+// called as (store, routerProps)
 export const getPosts = createSelector(
   getPostsAsObjects,
   (postObjects) => {
@@ -19,17 +30,29 @@ export const getPosts = createSelector(
   }
 );
 
-export const getPost = (store, postId) => store.posts[postId];
+// TODO: this should be moved to viewData.selectors
+// (store, routerProps=null)
+// (routerProps is optional, but mSTP, connect WILL auto send all ownProps(aka routerProps) if avail,
+export const getPostIdFrom = createSelector(
+  getLocFrom,
+  (loc) => loc.postId
+);
 
-// export const getPostFrom = createSelector(
-//   (store, routerProps) => getPostsAsObjects(store),
-//   (store, routerProps) => getLocFrom(store, routerProps).postId || null,
+// (store, routerProps=null)
+// (routerProps is optional, but mSTP, connect WILL auto send all ownProps(aka routerProps) if avail,
+export const getPostFrom = createSelector(
+  getPostIdFrom,
+  getPostsAsObjects,
+  (postId, postsAsObjects) => {
+    console.log('posts/selectors.getPostFrom, postId:', postId);
+    console.log('posts/selectors.getPostFrom, postsAsObjects:', postsAsObjects);
+    if (postId && Object.keys(postsAsObjects).length>0) {
+      return postsAsObjects[postId]
+    }
+  }
+);
 
-//   (posts, postId) => {
-//     return (posts.length>0 && postId && posts[postId]) || null
-//   }
-// );
-
+// TODO: should this be moved to ROUTES (viewData/constants) ??
 // B  -- requires less rendering and fewer function calls than A) (see Notes below)
 const getRouterCategoryPath = (store, ownProps) =>
   (getLocFrom(store, ownProps.routerProps).categoryPath);

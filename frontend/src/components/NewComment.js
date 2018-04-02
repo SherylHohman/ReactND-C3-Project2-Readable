@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { addComment } from '../store/comments/actionCreators';
+import { addComment }  from '../store/comments/actionCreators';
+// import { getPostFrom } from '../store/posts/selectors';
+import { getPostIdFrom } from '../store/posts/selectors';
 import { createId, titleCase } from '../utils/helpers';
 
 
@@ -144,10 +146,9 @@ function mapDispatchToProps(dispatch){
   })
 }
 
-function mapStoreToProps ( store, ...ownProps ) {
-  // TODO: should be useing a selector to get this value
+function mapStoreToProps ( store, ownProps ) {
   return {
-    postId : store.viewData.loc.postId,
+    postId: getPostIdFrom(store, null),
   }
 };
 

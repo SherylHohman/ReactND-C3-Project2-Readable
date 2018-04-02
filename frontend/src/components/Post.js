@@ -14,7 +14,9 @@ import FetchStatus from './FetchStatus';
 // Selectors
 import { getLocFrom } from '../store/viewData/selectors';
 // import { getPost, getFetchStatus } from '../store/posts/selectors';
-import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
+// import { getPostsAsObjects, getFetchStatus } from '../store/posts/selectors';
+import { getFetchStatus } from '../store/posts/selectors';
+import { getPostIdFrom, getPostFrom } from '../store/posts/selectors';
 
 // helpers and constants
 import { computeUrlFromParamsAndRouteName } from '../store/viewData/constants';
@@ -183,14 +185,15 @@ function mapDispatchToProps(dispatch){
 
 function mapStoreToProps (store, ownProps) {
 
-  const loc = getLocFrom(store, ownProps.routerProps) || null;
-  const postId = loc.postId;   // *always* Exists on *this* page/component/route
+  const routerProps = ownProps.routerProps;
 
-  const post = getPostsAsObjects(store)[postId] || null;
+  const postId = getPostIdFrom(store, routerProps);
+  const post = getPostFrom(store, routerProps) || null;
+
   const fetchStatus = getFetchStatus(store);
 
   // So can easily redirect to Post's (former) category when deleting the post.
-  const categoryPath = loc.categoryPath || null;
+  const categoryPath = getLocFrom(store, routerProps).categoryPath || null;
 
   return {
     post,
