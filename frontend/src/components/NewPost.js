@@ -137,7 +137,12 @@ export class NewPost extends Component {
   }
 
   onCancel(){
-    this.props.history.push(this.state.prevUrl);
+    if (this.props.history.length > 1 ){
+    this.props.history.goBack();
+    }
+    else {
+      this.loadHomePage();
+    }
   }
 
   onSave(){
@@ -275,7 +280,7 @@ NewPost.propTypes = {
     ...locPropTypes,
 
     history: PropTypes.shape({
-      push: PropTypes.func.isRequired,
+      goBack: PropTypes.func.isRequired,
     }),
 
   //  TODO: .isRequired yields errors if this is the First Page Loaded, why??
@@ -296,12 +301,6 @@ function mapDispatchToProps(dispatch){
 function mapStoreToProps (store, ownProps) {
   const history = (ownProps.routerProps && ownProps.routerProps.history )|| null;
 
-  // save last PAGE visited so can return to it on cancel
-  // gets saved to STATE at (FIRST PAGE LOAD ONLY), because props.prevUrl gets
-  //   overwritten with the url of *this* page, when this component re-renders
-  //   (because mounting this page triggers the store to be updated to this url)
-  const prevUrl = getLocFrom(store).url || HOME.url;
-
   const categoriesObject = getCategoriesObject(store);
   const categoryNames    = getCategoryNames(store);
 
@@ -314,7 +313,6 @@ function mapStoreToProps (store, ownProps) {
     categoryNames,
     categoryName,
     history,
-    prevUrl,
   }
 };
 
